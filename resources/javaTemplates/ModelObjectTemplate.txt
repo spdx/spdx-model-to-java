@@ -34,6 +34,9 @@ public class {{{className}}} extends {{{superClass}}} {{#compareUsingProperties}
 	{{#objectPropertyValueSet}}
 	Set<{{{type}}}> {{{propertyName}}}s;
 	{{/objectPropertyValueSet}}
+	{{#enumPropertyValueCollection}}
+	Collection<{{{type}}}> {{{propertyName}}}s;
+	{{/enumPropertyValueCollection}}
 	
 	/**
 	 * Create the {{{className}}} with default model store and generated anonymous ID
@@ -67,6 +70,9 @@ public class {{{className}}} extends {{{superClass}}} {{#compareUsingProperties}
 		{{#objectPropertyValueCollection}}
 		{{{propertyName}}}s = (Collection<{{{type}}}>)(Collection<?>)this.getObjectPropertyValueCollection(SpdxConstants.{{{propertyConstant}}}, {{{type}}}.class);
 		{{/objectPropertyValueCollection}}
+		{{#enumPropertyValueCollection}}
+		{{{propertyName}}}s = (Collection<{{{type}}}>)(Collection<?>)this.getObjectPropertyValueCollection(SpdxConstants.{{{propertyConstant}}}, {{{type}}}.class);
+		{{/enumPropertyValueCollection}}
 		{{#stringCollection}}
 		{{{propertyName}}}s = (Collection<String>)(Collection<?>)this.getObjectPropertyValueCollection(SpdxConstants.{{{propertyConstant}}}, String.class);
 		{{/stringCollection}}
@@ -92,6 +98,14 @@ public class {{{className}}} extends {{{superClass}}} {{#compareUsingProperties}
 		{{#verifySuperclass}}
 		retval.addAll(super.verify(verifiedIds, specVersion));
 		{{/verifySuperclass}}
+		List<ProfileIdentifierType> profiles;
+		try {
+			profiles = getCreationInfo().isPresent() ? 
+					new ArrayList<>(getCreationInfo().get().getProfiles()) : new ArrayList<>();
+		} catch (InvalidSPDXAnalysisException e) {
+			retval.add("Error getting subject for Annotation: "+e.getMessage());
+			profiles = new ArrayList<>();
+		}
 		{{#elementProperties}}
 		Optional<{{{type}}}> {{{propertyName}}};
 		try {
@@ -100,7 +114,7 @@ public class {{{className}}} extends {{{superClass}}} {{#compareUsingProperties}
 				retval.addAll({{{propertyName}}}.get().verify(verifiedIds, specVersion));
 			{{#required}}
 			} else {
-				if (getProfile() in {{{requiredProfiles}}}) {
+				if (!Collections.disjoint(profiles, Arrays.asList(new ProfileIdentifierType[] { {{{requiredProfiles}}} }))) {
 					retval.add("Missing {{{propertyName}}} in {{{propertyName}}}");
 				}
 			{{/required}}
@@ -117,7 +131,7 @@ public class {{{className}}} extends {{{superClass}}} {{#compareUsingProperties}
 				retval.addAll({{{propertyName}}}.get().verify(verifiedIds, specVersion));
 			{{#required}}
 			else {
-				if (getProfile() in {{{requiredProfiles}}}) {
+				if (!Collections.disjoint(profiles, Arrays.asList(new ProfileIdentifierType[] { {{{requiredProfiles}}} }))) {
 					retval.add("Missing {{{propertyName}}} in {{{className}}}");
 				}
 			{{/required}}
@@ -134,7 +148,7 @@ public class {{{className}}} extends {{{superClass}}} {{#compareUsingProperties}
 				retval.addAll({{{propertyName}}}.get().verify(verifiedIds, specVersion));
 			{{#required}}
 			else {
-				if (getProfile() in {{{requiredProfiles}}}) {
+				if (!Collections.disjoint(profiles, Arrays.asList(new ProfileIdentifierType[] { {{{requiredProfiles}}} }))) {
 					retval.add("Missing {{{propertyName}}} in {{{className}}}");
 				}
 			{{/required}}
@@ -211,6 +225,18 @@ public class {{{className}}} extends {{{superClass}}} {{#compareUsingProperties}
 		}
 		{{/max}}
 		{{/objectPropertyValueCollection}}
+		{{#enumPropertyValueCollection}}
+		{{#min}}
+		if ({{{propertyName}}}s.size() < {{{min}}}) {
+			retval.add("{{{propertyName}}}s size " + {{{propertyName}}}s.size() + " is less than {{{min}}} in {{{className}}}");
+		}
+		{{/min}}
+		{{#max}}
+		if ({{{propertyName}}}s.size() > {{{max}}}) {
+			retval.add("{{{propertyName}}}s size " + {{{propertyName}}}s.size() + " is greater than {{{max}}} in {{{className}}}");
+		}
+		{{/max}}
+		{{/enumPropertyValueCollection}}
 		{{#stringCollection}}
 		{{#pattern}}
 		for (String {{{propertyName}}}:{{{propertyName}}}s) {
@@ -254,6 +280,11 @@ public class {{{className}}} extends {{{superClass}}} {{#compareUsingProperties}
 		return {{{propertyName}}}s;
 	}
 	{{/objectPropertyValueCollection}}
+	{{#enumPropertyValueCollection}}
+	public Collection<{{{type}}}> {{{getter}}}s() {
+		return {{{propertyName}}}s;
+	}
+	{{/enumPropertyValueCollection}}
 	{{#stringCollection}}
 	public Collection<String> {{{getter}}}s() {
 		return {{{propertyName}}}s;

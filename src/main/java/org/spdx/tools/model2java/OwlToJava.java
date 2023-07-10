@@ -5,12 +5,10 @@
 package org.spdx.tools.model2java;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
-import java.io.UnsupportedEncodingException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -370,7 +368,7 @@ public class OwlToJava {
 		STRING,
 		OBJECT_COLLECTION,
 		STRING_COLLECTION,
-		OBJECT_SET
+		OBJECT_SET, ENUM_COLLECTION
 	}
 
 
@@ -566,7 +564,11 @@ public class OwlToJava {
 			@Nullable Node dataTypeRestriction, @Nullable Integer minRestriction, @Nullable Integer maxRestriction) {
 		String typeUri = getTypeUri(range, classTypeRestriction, dataTypeRestriction);
 		if (enumerationTypes.contains(typeUri)) {
-			return PropertyType.ENUM;
+			if (Objects.isNull(maxRestriction) || maxRestriction > 1) {
+				return PropertyType.ENUM_COLLECTION;
+			} else {
+				return PropertyType.ENUM;
+			}
 		} else if (BOOLEAN_TYPE.equals(typeUri)) {
 			return PropertyType.BOOLEAN;
 		} else if  (INTEGER_TYPES.contains(typeUri)) {
@@ -706,6 +708,7 @@ public class OwlToJava {
 		mustacheMap.put("objectPropertyValueCollection", propertyMap.get(PropertyType.OBJECT_COLLECTION));
 		mustacheMap.put("stringCollection", propertyMap.get(PropertyType.STRING_COLLECTION));
 		mustacheMap.put("objectPropertyValueSet", propertyMap.get(PropertyType.OBJECT_SET));
+		mustacheMap.put("enumPropertyValueCollection", propertyMap.get(PropertyType.ENUM_COLLECTION));
 		mustacheMap.put("suppressUnchecked", !(propertyMap.get(PropertyType.OBJECT_COLLECTION).isEmpty() &&
 				propertyMap.get(PropertyType.OBJECT_SET).isEmpty() &&
 				propertyMap.get(PropertyType.STRING_COLLECTION).isEmpty()));
@@ -843,7 +846,8 @@ public class OwlToJava {
 		}
 		retval.put("type", type);
 		retval.put("required", min != null && min > 0);
-		retval.put("requiredProfiles", "NOT IMPLEMENTED");
+		//TODO: Add any additional profile restrictions
+		retval.put("requiredProfiles",  namespaceToProfileIdentifierType(nameSpace));
 		if (Objects.nonNull(pattern)) {
 			retval.put("pattern", pattern);
 		}
@@ -864,6 +868,14 @@ public class OwlToJava {
 		retval.put("propertyConstant", propConstant);
 		propertyUrisForConstants.add(property.getURI());
 		return retval;
+	}
+
+	/**
+	 * @param nameSpace
+	 * @return the ProfileIdentifierType string associated with the namespace
+	 */
+	private String namespaceToProfileIdentifierType(String nameSpace) {
+		return "ProfileIdentifierType." + uriToName(nameSpace).toUpperCase();
 	}
 
 	/**
@@ -922,6 +934,8 @@ public class OwlToJava {
 	private List<String> buildImports(List<String> localImports) {
 		List<String> retval = new ArrayList<>();
 		retval.add("import java.util.ArrayList;");
+		retval.add("import java.util.Arrays;");
+		retval.add("import java.util.Collections;");
 		retval.add("import java.util.List;");
 		retval.add("import java.util.Optional;");
 		retval.add("import java.util.Set;");
