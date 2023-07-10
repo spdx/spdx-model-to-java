@@ -58,6 +58,9 @@ public class {{{className}}} extends {{{superClass}}} {{#compareUsingProperties}
 	 * @param create true if {{{className}}} is to be created
 	 * @throws InvalidSPDXAnalysisException when unable to create the {{{className}}}
 	 */
+	 {{#suppressUnchecked}}
+	 @SuppressWarnings("unchecked")
+	 {{/suppressUnchecked}}
 	public {{{className}}}(IModelStore modelStore, String objectUri, ModelCopyManager copyManager,
 			boolean create)	throws InvalidSPDXAnalysisException {
 		super(modelStore, objectUri, copyManager, create);
@@ -87,7 +90,7 @@ public class {{{className}}} extends {{{superClass}}} {{#compareUsingProperties}
 	protected List<String> _verify(Set<String> verifiedIds, String specVersion) {
 		List<String> retval = new ArrayList<>();
 		{{#verifySuperclass}}
-		retval.addAll(super._verify(verifiedIds, specVersion);
+		retval.addAll(super.verify(verifiedIds, specVersion));
 		{{/verifySuperclass}}
 		{{#elementProperties}}
 		Optional<{{{type}}}> {{{propertyName}}};
@@ -96,7 +99,7 @@ public class {{{className}}} extends {{{superClass}}} {{#compareUsingProperties}
 			if ({{{propertyName}}}.isPresent()) {
 				retval.addAll({{{propertyName}}}.get().verify(verifiedIds, specVersion));
 			{{#required}}
-			else {
+			} else {
 				if (getProfile() in {{{requiredProfiles}}}) {
 					retval.add("Missing {{{propertyName}}} in {{{propertyName}}}");
 				}
@@ -111,7 +114,7 @@ public class {{{className}}} extends {{{superClass}}} {{#compareUsingProperties}
 		try {
 			{{{propertyName}}} = {{{getter}}}();
 			if ({{{propertyName}}}.isPresent()) {
-				retval.addAll({{{propertyName}}}.get()._verify(verifiedIds, specVersion));
+				retval.addAll({{{propertyName}}}.get().verify(verifiedIds, specVersion));
 			{{#required}}
 			else {
 				if (getProfile() in {{{requiredProfiles}}}) {
@@ -195,18 +198,40 @@ public class {{{className}}} extends {{{superClass}}} {{#compareUsingProperties}
 		{{/stringProperties}}
 		{{#objectPropertyValueCollection}}
 		for ({{{type}}} {{{propertyName}}}:{{{propertyName}}}s) {
-			retval.addAll({{{propertyName}}}._verify(verifiedIds, specVersion));
+			retval.addAll({{{propertyName}}}.verify(verifiedIds, specVersion));
 		}
+		{{#min}}
+		unimplemented
+		{{/min}}
+		{{#max}}
+		unimplemented
+		{{/max}}
 		{{/objectPropertyValueCollection}}
 		{{#stringCollection}}
-		for ({{{type}}} {{{propertyName}}}:{{{propertyName}}}s) {
-			retval.addAll({{{propertyName}}}._verify(verifiedIds, specVersion));
+		{{#pattern}}
+		for (String {{{propertyName}}}:{{{propertyName}}}s) {
+			if (!Pattern.matches({{{pattern}}}, {{{propertyName}}}) {
+				retval.add("{{{propertyName}}} value '" + {{{propertyName}}} + 
+					"' does not match the pattern '{{{pattern}}}'");
 		}
+		{{/pattern}}
+		{{#min}}
+		unimplemented
+		{{/min}}
+		{{#max}}
+		unimplemented
+		{{/max}}
 		{{/stringCollection}}
 		{{#objectPropertyValueSet}}
 		for ({{{type}}} {{{propertyName}}}:{{{propertyName}}}s) {
-			retval.addAll({{{propertyName}}}._verify(verifiedIds, specVersion));
+			retval.addAll({{{propertyName}}}.verify(verifiedIds, specVersion));
 		}
+		{{#min}}
+		unimplemented
+		{{/min}}
+		{{#max}}
+		unimplemented
+		{{/max}}
 		{{/objectPropertyValueSet}}
 		return retval;
 	}
@@ -241,7 +266,7 @@ public class {{{className}}} extends {{{superClass}}} {{#compareUsingProperties}
 	 * @return this to chain setters
 	 * @throws InvalidSPDXAnalysisException 
 	 */
-	public {{{className}}} {{{setter}}}({{{propertyType}}} {{{propertyName}}}) throws InvalidSPDXAnalysisException {
+	public {{{className}}} {{{setter}}}({{{type}}} {{{propertyName}}}) throws InvalidSPDXAnalysisException {
 		setPropertyValue(SpdxConstants.{{{propertyConstant}}}, {{{propertyName}}});
 		return this;
 	}
@@ -252,8 +277,17 @@ public class {{{className}}} extends {{{superClass}}} {{#compareUsingProperties}
 	/**
 	 * @return the {{{propertyName}}}
 	 */
+	 @SuppressWarnings("unchecked")
 	public Optional<{{{type}}}> {{{getter}}}() throws InvalidSPDXAnalysisException {
-		return getPropertyValue(SpdxConstants.{{{propertyConstant}}});
+		Optional<Object> retval = getObjectPropertyValue(SpdxConstants.{{{propertyConstant}}});
+		if (retval.isPresent()) {
+			if (!(retval.get() instanceof {{{type}}})) {
+				throw new InvalidSPDXAnalysisException("Incorrect type stored for {{{propertyname}}}");
+			}
+			return (Optional<{{{type}}}>)(Optional<?>)(retval);
+		} else {
+			return Optional.empty();
+		}
 	}
 	
 	/**
@@ -261,7 +295,7 @@ public class {{{className}}} extends {{{superClass}}} {{#compareUsingProperties}
 	 * @return this to chain setters
 	 * @throws InvalidSPDXAnalysisException 
 	 */
-	public {{{className}}} {{{setter}}}({{{propertyType}}} {{{propertyName}}}) throws InvalidSPDXAnalysisException {
+	public {{{className}}} {{{setter}}}({{{type}}} {{{propertyName}}}) throws InvalidSPDXAnalysisException {
 		setPropertyValue(SpdxConstants.{{{propertyConstant}}}, {{{propertyName}}});
 		return this;
 	}
@@ -280,7 +314,7 @@ public class {{{className}}} extends {{{superClass}}} {{#compareUsingProperties}
 	 * @return this to chain setters
 	 * @throws InvalidSPDXAnalysisException 
 	 */
-	public {{{className}}} {{{setter}}}({{{propertyType}}} {{{propertyName}}}) throws InvalidSPDXAnalysisException {
+	public {{{className}}} {{{setter}}}({{{type}}} {{{propertyName}}}) throws InvalidSPDXAnalysisException {
 		setPropertyValue(SpdxConstants.{{{propertyConstant}}}, {{{propertyName}}});
 		return this;
 	}
@@ -290,8 +324,17 @@ public class {{{className}}} extends {{{superClass}}} {{#compareUsingProperties}
 	/**
 	 * @return the {{{propertyName}}}
 	 */
+	 @SuppressWarnings("unchecked")
 	public Optional<{{{type}}}> {{{getter}}}() throws InvalidSPDXAnalysisException {
-		return getEnumPropertyValue(SpdxConstants.{{{propertyConstant}}});
+		Optional<Enum<?>> retval = getEnumPropertyValue(SpdxConstants.{{{propertyConstant}}});
+		if (retval.isPresent()) {
+			if (!(retval.get() instanceof {{{type}}})) {
+				throw new InvalidSPDXAnalysisException("Incorrect type stored for {{{propertyname}}}");
+			}
+			return (Optional<{{{type}}}>)(Optional<?>)(retval);
+		} else {
+			return Optional.empty();
+		}
 	}
 	
 	/**
@@ -299,7 +342,7 @@ public class {{{className}}} extends {{{superClass}}} {{#compareUsingProperties}
 	 * @return this to chain setters
 	 * @throws InvalidSPDXAnalysisException 
 	 */
-	public {{{className}}} {{{setter}}}({{{propertyType}}} {{{propertyName}}}) throws InvalidSPDXAnalysisException {
+	public {{{className}}} {{{setter}}}({{{type}}} {{{propertyName}}}) throws InvalidSPDXAnalysisException {
 		setPropertyValue(SpdxConstants.{{{propertyConstant}}}, {{{propertyName}}});
 		return this;
 	}
@@ -318,7 +361,7 @@ public class {{{className}}} extends {{{superClass}}} {{#compareUsingProperties}
 	 * @return this to chain setters
 	 * @throws InvalidSPDXAnalysisException 
 	 */
-	public {{{className}}} {{{setter}}}({{{propertyType}}} {{{propertyName}}}) throws InvalidSPDXAnalysisException {
+	public {{{className}}} {{{setter}}}({{{type}}} {{{propertyName}}}) throws InvalidSPDXAnalysisException {
 		setPropertyValue(SpdxConstants.{{{propertyConstant}}}, {{{propertyName}}});
 		return this;
 	}
@@ -338,7 +381,7 @@ public class {{{className}}} extends {{{superClass}}} {{#compareUsingProperties}
 	 * @return this to chain setters
 	 * @throws InvalidSPDXAnalysisException 
 	 */
-	public {{{className}}} {{{setter}}}({{{propertyType}}} {{{propertyName}}}) throws InvalidSPDXAnalysisException {
+	public {{{className}}} {{{setter}}}({{{type}}} {{{propertyName}}}) throws InvalidSPDXAnalysisException {
 		setPropertyValue(SpdxConstants.{{{propertyConstant}}}, {{{propertyName}}});
 		return this;
 	}
@@ -357,30 +400,11 @@ public class {{{className}}} extends {{{superClass}}} {{#compareUsingProperties}
 	 * @return this to chain setters
 	 * @throws InvalidSPDXAnalysisException 
 	 */
-	public {{{className}}} {{{setter}}}({{{propertyType}}} {{{propertyName}}}) throws InvalidSPDXAnalysisException {
+	public {{{className}}} {{{setter}}}({{{type}}} {{{propertyName}}}) throws InvalidSPDXAnalysisException {
 		setPropertyValue(SpdxConstants.{{{propertyConstant}}}, {{{propertyName}}});
 		return this;
 	}
 	{{/stringProperties}}
-	{{#objectProperties}}
-	
-	/**
-	 * @return the {{{propertyName}}}
-	 */
-	public Optional<{{{type}}}> {{{getter}}}() throws InvalidSPDXAnalysisException {
-		return getPropertyValue(SpdxConstants.{{{propertyConstant}}});
-	}
-	
-	/**
-	 * @param {{{propertyName}}} the {{{propertyName}}} to set
-	 * @return this to chain setters
-	 * @throws InvalidSPDXAnalysisException 
-	 */
-	public {{{className}}} {{{setter}}}({{{propertyType}}} {{{propertyName}}}) throws InvalidSPDXAnalysisException {
-		setPropertyValue(SpdxConstants.{{{propertyConstant}}}, {{{propertyName}}});
-		return this;
-	}
-	{{/objectProperties}}
 	
 	{{#compareUsingProperties}}
 	/* (non-Javadoc)
@@ -410,11 +434,11 @@ public class {{{className}}} extends {{{superClass}}} {{#compareUsingProperties}
 		try {
 			StringBuilder sb = new StringBuilder();
 			{{#toStringProperties}}
-			Optional<{{{toStringProperties.type}}}> {{{toStringProperties.name}}} = {{{toStringProperties.getter}}};
-			if ({{{toStringProperties.name}}}.isPresent()) {
-				sb.append({{{toStringProperties.name}}}.get().toString());
+			Optional<{{{type}}}> {{{name}}} = {{{getter}}};
+			if ({{{name}}}.isPresent()) {
+				sb.append({{{name}}}.get().toString());
 			} else {
-				sb.append("{{{toStringProperties.type}}}-Missing");
+				sb.append("[{{{type}}}-Missing]");
 			}
 			sb.append(" ");
 			{{/toStringProperties}}

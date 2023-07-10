@@ -5,10 +5,12 @@
 package org.spdx.tools.model2java;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
+import java.io.UnsupportedEncodingException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -317,13 +319,15 @@ public class OwlToJava {
 	private static final String STRING_TYPE = "http://www.w3.org/2001/XMLSchema#string";
 	private static final String ELEMENT_TYPE_URI = "https://spdx.org/rdf/Core/Element";
 	private static final String ELEMENT_TYPE_ANY_LICENSE_INFO = "https://spdx.org/rdf/Licensing/AnyLicenseInfo";
+	private static final String DATE_TIME_TYPE = "https://spdx.org/rdf/Core/DateTime";
+	private static final String ANY_URI_TYPE = "http://www.w3.org/2001/XMLSchema#anyURI";
+	private static final String OWL_THING_URI = "http://www.w3.org/2002/07/owl#Thing";
+	
 	static final String TEMPLATE_CLASS_PATH = "resources" + "/" + "javaTemplates";
 	static final String TEMPLATE_ROOT_PATH = "resources" + File.separator + "javaTemplates";
 	private static final String JAVA_CLASS_TEMPLATE = "ModelObjectTemplate.txt";
 	private static final String ENUM_CLASS_TEMPLATE = "EnumTemplate.txt";
-	private static final String DATE_TIME_TYPE = "https://spdx.org/rdf/Core/DateTime";
-	private static final String ANY_URI_TYPE = "http://www.w3.org/2001/XMLSchema#anyURI";
-	private static final String OWL_THING_URI = "http://www.w3.org/2002/07/owl#Thing";
+	private static final String SPDX_CONSTANTS_TEMPLATE = "SpdxConstantsTemplate.txt";
 	
 	private static Set<String> INTEGER_TYPES = new HashSet<>();
 	static {
@@ -336,6 +340,9 @@ public class OwlToJava {
 	private static Map<String, String> RESERVED_JAVA_WORDS = new HashMap<>();
 	static {
 		RESERVED_JAVA_WORDS.put("Package", "SpdxPackage");
+		RESERVED_JAVA_WORDS.put("package", "spdxPackage");
+		RESERVED_JAVA_WORDS.put("File", "SpdxFile");
+		RESERVED_JAVA_WORDS.put("file", "spdxFile");
 	}
 	
 	private static Set<String> SET_TYPE_URIS = new HashSet<>(); // set of URI's for types should be treated as sets
@@ -347,10 +354,11 @@ public class OwlToJava {
 	Map<Node, Shape> shapeMap = null;
 	
 	Set<String> enumClassUris = new HashSet<>(); // Set of enum URI's
-	Set<String> constantStrings = new HashSet<>(); // Set of all constants needed for the Java source files
+	Set<String> propertyUrisForConstants = new HashSet<>(); // Map of property URI's to be included in the SPDX Constants file
 	Set<String> enumerationTypes = new HashSet<>(); // Set of URI's for enumeration types
 	Set<String> anyLicenseInfoTypes = new HashSet<>(); // Set of URI's for AnyLicenseInfo types
 	Set<String> elementTypes = new HashSet<>(); // Set of URI's for Elemen types
+	Set<String> stringTypes = new HashSet<>(); // set of classes which subtype from String
 	
 	public enum PropertyType {
 		ELEMENT,
@@ -391,6 +399,9 @@ public class OwlToJava {
 			String comment = ontClass.getComment(null);
 			String classUri = ontClass.getURI();
 			String name = ontClass.getLocalName();
+			if (RESERVED_JAVA_WORDS.containsKey(name)) {
+				name = RESERVED_JAVA_WORDS.get(name);
+			}
 			Shape classShape = shapeMap.get(ontClass.asNode());
 			List<Statement> props = new ArrayList<>();
 			ontClass.listProperties().forEach(stmt -> {
@@ -408,7 +419,7 @@ public class OwlToJava {
 				//TODO: Handle individual classes
 				if (isEnumClass(ontClass)) {
 					generateJavaEnum(dir, classUri, name, allIndividuals, comment);
-				} else {
+				} else if (!stringTypes.contains(classUri)) { // TODO: we may want to handle String subtypes in the future
 					try {
 						generateJavaClass(dir, classUri, name, properties, classShape, comment, superClassUri);
 					} catch (OwlToJavaException e) {
@@ -419,7 +430,82 @@ public class OwlToJava {
 				warnings.add("I/O Error generating Java class for "+name+":" + e.getMessage());
 			}
 		});
+		generateSpdxConstants(dir);
 		return warnings;
+	}
+
+	/**
+	 * Generates the SPDX Constants file
+	 * @param dir source directory for the constants file
+	 * @throws IOException thrown if any IO errors occurs
+	 */
+	private void generateSpdxConstants(File dir) throws IOException {
+		Map<String, Set<String>> namespaceToPropUri = new HashMap<>();
+		for (String propUri:propertyUrisForConstants) {
+			String nameSpaceUri = this.uriToNamespaceUri(propUri);
+			Set<String> propUriSet = namespaceToPropUri.get(nameSpaceUri);
+			if (Objects.isNull(propUriSet)) {
+				propUriSet = new HashSet<>();
+				namespaceToPropUri.put(nameSpaceUri, propUriSet);
+			}
+			propUriSet.add(propUri);
+		}
+		Map<String, Object> mustacheMap = new HashMap<>();
+		List<Map<String, Object>> namespaceMustacheList = new ArrayList<>();
+		List<String> namespaceUris = new ArrayList<String>(namespaceToPropUri.keySet());
+		Collections.sort(namespaceUris);
+		for (String namespaceUri:namespaceUris) {
+			Map<String, Object> namespaceMustacheMap = new HashMap<>();
+			String namespaceName = uriToName(namespaceUri);
+			namespaceMustacheMap.put("namespaceName", namespaceName);
+			String namespaceConstantName = camelCaseToConstCase(namespaceName) + "_NAMESPACE";
+			namespaceMustacheMap.put("namespaceConstantName", namespaceConstantName);
+			namespaceMustacheMap.put("namespaceUri", namespaceUri);
+			List<String> propertyUris = new ArrayList<>(namespaceToPropUri.get(namespaceUri));
+			Collections.sort(propertyUris);
+			List<Map<String, Object>> propMustacheList = new ArrayList<>();
+			for (String propUri:propertyUris) {
+				Map<String, Object> propMustacheMap = new HashMap<>();
+				String propertyName = uriToName(propUri);
+				String propertyConstantName = propertyNameToPropertyConstant(propertyName, namespaceName);
+				propMustacheMap.put("propertyConstantName", propertyConstantName);
+				propMustacheMap.put("propertyConstantValue", propertyName);
+				propMustacheList.add(propMustacheMap);
+			}
+			namespaceMustacheMap.put("propertyDescriptors", propMustacheList);
+			namespaceMustacheList.add(namespaceMustacheMap);
+		}
+		mustacheMap.put("namespaces", namespaceMustacheList);
+		Path path = dir.toPath().resolve("src").resolve("main").resolve("java").resolve("org")
+				.resolve("spdx").resolve("library");
+		Files.createDirectories(path);
+		File constantsFile = path.resolve("SpdxConstants.java").toFile();
+		constantsFile.createNewFile();	
+		writeMustacheFile(SPDX_CONSTANTS_TEMPLATE, constantsFile, mustacheMap);
+	}
+	
+	private void writeMustacheFile(String templateName, File file, Map<String, Object> mustacheMap) throws IOException {
+		String templateDirName = TEMPLATE_ROOT_PATH;
+		File templateDirectoryRoot = new File(templateDirName);
+		if (!(templateDirectoryRoot.exists() && templateDirectoryRoot.isDirectory())) {
+			templateDirName = TEMPLATE_CLASS_PATH;
+		}
+		DefaultMustacheFactory builder = new DefaultMustacheFactory(templateDirName);
+		Mustache mustache = builder.compile(templateName);
+		FileOutputStream stream = null;
+		OutputStreamWriter writer = null;
+		try {
+			stream = new FileOutputStream(file);
+			writer = new OutputStreamWriter(stream, "UTF-8");
+	        mustache.execute(writer, mustacheMap);
+		} finally {
+			if (writer != null) {
+				writer.close();
+			}
+			if (stream != null) {
+				stream.close();
+			}
+		}
 	}
 
 	/**
@@ -443,6 +529,8 @@ public class OwlToJava {
 				anyLicenseInfoTypes.add(ontClass.getURI());
 			} else if (isElementClass(ontClass, superClasses)) {
 				elementTypes.add(ontClass.getURI());
+			} else if (isStringClass(ontClass, superClasses)) {
+				stringTypes.add(ontClass.getURI());
 			}
 		});
 	}
@@ -484,7 +572,8 @@ public class OwlToJava {
 		} else if  (INTEGER_TYPES.contains(typeUri)) {
 			return PropertyType.INTEGER;
 			//TODO: Add in specific types and type checking for DATE_TIME_TYPE and ANY_URI_TYPE
-		} else if  (STRING_TYPE.equals(typeUri) || DATE_TIME_TYPE.equals(typeUri) || ANY_URI_TYPE.equals(typeUri)) {
+		} else if  (STRING_TYPE.equals(typeUri) || DATE_TIME_TYPE.equals(typeUri) ||
+				ANY_URI_TYPE.equals(typeUri) || stringTypes.contains(typeUri)) {
 			if (Objects.isNull(maxRestriction) || maxRestriction > 1) {
 				return PropertyType.STRING_COLLECTION;
 			} else {
@@ -518,6 +607,24 @@ public class OwlToJava {
 		});
 	}
 
+	/**
+	 * @param ontClass class
+	 * @param superClasses list of all superclasses for the class
+	 * @return true if the class is an Element or a subclass of String
+	 */
+	private boolean isStringClass(OntClass ontClass,
+			List<OntClass> superClasses) {
+		if (STRING_TYPE.equals(ontClass.getURI())) {
+			return true;
+		}
+		for (OntClass superClass:superClasses) {
+			if (STRING_TYPE.equals(superClass.getURI())) {
+				return true;
+			}
+		}
+		return false;
+	}
+	
 	/**
 	 * @param ontClass class
 	 * @param superClasses list of all superclasses for the class
@@ -588,7 +695,7 @@ public class OwlToJava {
 		mustacheMap.put("className", name);
 		mustacheMap.put("classProfile", uriToProfile(classUri));
 		Map<PropertyType, List<Map<String, Object>>> propertyMap = findProperties(properties, classShape, 
-				requiredImports, constantStrings, classUri);
+				requiredImports, propertyUrisForConstants, classUri);
 		mustacheMap.put("elementProperties", propertyMap.get(PropertyType.ELEMENT));
 		mustacheMap.put("objectProperties", propertyMap.get(PropertyType.OBJECT));
 		mustacheMap.put("anyLicenseInfoProperties", propertyMap.get(PropertyType.ANY_LICENSE_INFO));
@@ -597,17 +704,20 @@ public class OwlToJava {
 		mustacheMap.put("integerProperties", propertyMap.get(PropertyType.INTEGER));
 		mustacheMap.put("stringProperties", propertyMap.get(PropertyType.STRING));
 		mustacheMap.put("objectPropertyValueCollection", propertyMap.get(PropertyType.OBJECT_COLLECTION));
-		mustacheMap.put("stringCollection", propertyMap.get(PropertyType.STRING));
+		mustacheMap.put("stringCollection", propertyMap.get(PropertyType.STRING_COLLECTION));
 		mustacheMap.put("objectPropertyValueSet", propertyMap.get(PropertyType.OBJECT_SET));
+		mustacheMap.put("suppressUnchecked", !(propertyMap.get(PropertyType.OBJECT_COLLECTION).isEmpty() &&
+				propertyMap.get(PropertyType.OBJECT_SET).isEmpty() &&
+				propertyMap.get(PropertyType.STRING_COLLECTION).isEmpty()));
 		mustacheMap.put("year", "2023"); // TODO - use actual year
 		mustacheMap.put("pkgName", pkgName);
 		
-		List<String> imports = buildImports(new ArrayList<String>(requiredImports));
-		mustacheMap.put("imports", imports.toArray(new String[imports.size()]));
 		mustacheMap.put("classComments", toClassComment(comment));
 		String superClass = getSuperClass(superClassUri, requiredImports, classUri);
 		mustacheMap.put("superClass", superClass);
 		mustacheMap.put("verifySuperclass", superClass != "ModelObject");
+		List<String> imports = buildImports(new ArrayList<String>(requiredImports));
+		mustacheMap.put("imports", imports.toArray(new String[imports.size()]));
 		//TODO: Implement
 		mustacheMap.put("compareUsingProperties", false); // use properties to implement compareTo
 		mustacheMap.put("compareProperties", new ArrayList<Map<String, Object>>()); // List of property mustache maps to use in compare
@@ -617,27 +727,7 @@ public class OwlToJava {
 		//TODO: Figure out how to handle version specific verify
 		//TODO: Add builder to template
 		
-		String templateDirName = TEMPLATE_ROOT_PATH;
-		File templateDirectoryRoot = new File(templateDirName);
-		if (!(templateDirectoryRoot.exists() && templateDirectoryRoot.isDirectory())) {
-			templateDirName = TEMPLATE_CLASS_PATH;
-		}
-		DefaultMustacheFactory builder = new DefaultMustacheFactory(templateDirName);
-		Mustache mustache = builder.compile(JAVA_CLASS_TEMPLATE);
-		FileOutputStream stream = null;
-		OutputStreamWriter writer = null;
-		try {
-			stream = new FileOutputStream(sourceFile);
-			writer = new OutputStreamWriter(stream, "UTF-8");
-	        mustache.execute(writer, mustacheMap);
-		} finally {
-			if (writer != null) {
-				writer.close();
-			}
-			if (stream != null) {
-				stream.close();
-			}
-		}
+		writeMustacheFile(JAVA_CLASS_TEMPLATE, sourceFile, mustacheMap);
 	}
 	
 
@@ -645,13 +735,13 @@ public class OwlToJava {
 	 * @param properties direct ontology properties
 	 * @param classShape Shape for the class containing the properties
 	 * @param requiredImport set of required imports for this class - updated with any additional imports
-	 * @param constantString set of constant strings - updated with any additional constant values
+	 * @param propertyUrisForConstants set of URI's for any properties - updated with any additional values
 	 * @param classUri URI for the class containing the properties
 	 * @return map of mustache strings to properties for any properties returning a type of Element
 	 * @throws OwlToJavaException 
 	 */
 	private Map<PropertyType, List<Map<String, Object>>> findProperties(List<OntProperty> properties, Shape classShape, 
-			Set<String> requiredImports, Set<String> constantStrings, String classUri) throws OwlToJavaException {
+			Set<String> requiredImports, Set<String> propertyUrisForConstants, String classUri) throws OwlToJavaException {
 		Map<PropertyType, List<Map<String, Object>>> retval = new HashMap<>();
 		for (PropertyType value:PropertyType.values()) {
 			retval.put(value, new ArrayList<Map<String, Object>>());
@@ -663,32 +753,35 @@ public class OwlToJava {
 		}
 		for (OntProperty property:properties) {
 			PropertyShape propertyShape = propShapeMap.get(property.getURI());
-			if (Objects.isNull(propertyShape)) {
-				throw new OwlToJavaException("Missing property shape for "+property.getLocalName()+" in "+classUri);
+			if (!Objects.isNull(propertyShape)) {
+				Map<String, Object> mustacheMap = propertyToMustachMap(property, propertyShape, requiredImports, propertyUrisForConstants, classUri);
+				retval.get(mustacheMap.get("propertyType")).add(mustacheMap);
 			}
-			Map<String, Object> mustacheMap = propertyToMustachMap(property, propertyShape, requiredImports, constantStrings, classUri);
-			retval.get(mustacheMap.get("propertyType")).add(mustacheMap);
 		}
 		return retval;
 	}
 
 	/**
-	 * Maps a property to mustache mapp adding any required import strings and adding any required constant strings
+	 * Maps a property to mustache map adding any required import strings and adding any required constant strings
 	 * @param property Property to convert to Mustache appropriate map
 	 * @param classShape Shape of the class using the property
 	 * @param requiredImport set of required imports for this class - updated with any additional imports
-	 * @param constantString set of constant strings - updated with any additional constant values
+	 * @param propertyUrisForConstants set of URI's for any properties - updated with any additional values
 	 * @param classUri URI of the class using the property
 	 * @return map of Mustache strings to values for a give ontology property
 	 * @throws OwlToJavaException 
 	 */
 	private Map<String, Object> propertyToMustachMap(OntProperty property, Shape propertyShape,
-			Set<String> requiredImports, Set<String> constantStrings, String classUri) throws OwlToJavaException {
+			Set<String> requiredImports, Set<String> propertyUrisForConstants, String classUri) throws OwlToJavaException {
 		//TODO: Implement
 		Map<String, Object> retval = new HashMap<>();
-		String nameSpace = uriToNamespace(classUri);
-		retval.put("propertyName", property.getLocalName());
-		String getSetName = property.getLocalName().substring(0, 1).toUpperCase() + property.getLocalName().substring(1);
+		String nameSpace = uriToNamespaceUri(classUri);
+		String name = property.getLocalName();
+		if (RESERVED_JAVA_WORDS.containsKey(name)) {
+			name = RESERVED_JAVA_WORDS.get(name);
+		}
+		retval.put("propertyName", name);
+		String getSetName = name.substring(0, 1).toUpperCase() + name.substring(1);
 		retval.put("getter", "get" + getSetName);
 		retval.put("setter", "set" + getSetName);
 		
@@ -728,7 +821,10 @@ public class OwlToJava {
 		}
 		OntResource rangeResource = ranges.get(0);
 		PropertyType propertyType = determinePropertyType(rangeResource, classRestriction, dataTypeRestriction, min, max);
-		retval.put("propertyType", propertyType);
+		if (PropertyType.OBJECT_COLLECTION.equals(propertyType) || PropertyType.STRING_COLLECTION.equals(propertyType)) {
+			requiredImports.add("import java.util.Collection;");
+		}
+ 		retval.put("propertyType", propertyType);
 		String typeUri = getTypeUri(rangeResource, classRestriction, dataTypeRestriction);
 		String type;
 		if (BOOLEAN_TYPE.equals(typeUri)) {
@@ -741,9 +837,8 @@ public class OwlToJava {
 			type = uriToName(typeUri);
 			if (!typeUri.startsWith(nameSpace) && 
 					(PropertyType.ENUM.equals(propertyType) || PropertyType.OBJECT.equals(propertyType) ||
-							PropertyType.OBJECT_COLLECTION.equals(propertyType) || PropertyType.OBJECT_SET.equals(propertyType))) {
-				
-				requiredImports.add("import "+uriToPkg(uriToNamespace(typeUri)) + "." + uriToName(typeUri) +";");
+							PropertyType.OBJECT_COLLECTION.equals(propertyType) || PropertyType.OBJECT_SET.equals(propertyType))) {				
+				requiredImports.add("import "+uriToPkg(typeUri) + "." + uriToName(typeUri) +";");
 			}
 		}
 		retval.put("type", type);
@@ -763,11 +858,11 @@ public class OwlToJava {
 			retval.put("pattern", StringEscapeUtils.escapeJava(pattern));
 		}
 		retval.put("uri", property.getURI());
-		String propNameSpace = uriToNamespace(property.getURI());
+		String propNameSpace = uriToNamespaceUri(property.getURI());
 		propNameSpace = propNameSpace.substring(propNameSpace.lastIndexOf('/')+1);
-		String propConstant = camelCaseToConstCase(propNameSpace) + "_" + camelCaseToConstCase(property.getLocalName());
+		String propConstant = propertyNameToPropertyConstant(name, propNameSpace);
 		retval.put("propertyConstant", propConstant);
-		constantStrings.add(propConstant + " = new PropertyDescriptor(" + property.getURI() + ", " + propNameSpace + ");");
+		propertyUrisForConstants.add(property.getURI());
 		return retval;
 	}
 
@@ -775,7 +870,7 @@ public class OwlToJava {
 	 * @param uri URI used for classes and properties
 	 * @return namespace portion of the URI
 	 */
-	private String uriToNamespace(String uri) {
+	private String uriToNamespaceUri(String uri) {
 		return uri.substring(0, uri.lastIndexOf('/'));
 	}
 	
@@ -784,7 +879,7 @@ public class OwlToJava {
 	 * @return profile name (last segment of the namespace)
 	 */
 	private String uriToProfile(String uri) {
-		String namespace = uriToNamespace(uri);
+		String namespace = uriToNamespaceUri(uri);
 		return uriToName(namespace);
 	}
 	
@@ -814,9 +909,9 @@ public class OwlToJava {
 		if (Objects.isNull(superClassUri) || OWL_THING_URI.equals(superClassUri)) {
 			return "ModelObject";
 		}
-		String classNameSpace = uriToNamespace(classUri);
+		String classNameSpace = uriToNamespaceUri(classUri);
 		if (!superClassUri.startsWith(classNameSpace)) {
-			requiredImports.add("import "+uriToPkg(superClassUri)+";");
+			requiredImports.add("import " + uriToPkg(superClassUri) + "." + uriToName(superClassUri) + ";");
 		}
 		return uriToName(superClassUri);
 	}
@@ -828,12 +923,16 @@ public class OwlToJava {
 		List<String> retval = new ArrayList<>();
 		retval.add("import java.util.ArrayList;");
 		retval.add("import java.util.List;");
+		retval.add("import java.util.Optional;");
 		retval.add("import java.util.Set;");
 		retval.add("");
 		retval.add("import org.spdx.library.DefaultModelStore;");
 		retval.add("import org.spdx.library.InvalidSPDXAnalysisException;");
 		retval.add("import org.spdx.library.ModelCopyManager;");
+		retval.add("import org.spdx.library.SpdxConstants;");
+		retval.add("import org.spdx.library.model.ModelObject;");
 		retval.add("import org.spdx.storage.IModelStore;");
+		retval.add("import org.spdx.storage.IModelStore.IdType;");
 		retval.add("");
 		Collections.sort(localImports);
 		for (String localImport:localImports) {
@@ -888,28 +987,7 @@ public class OwlToJava {
 		}
 		mustacheMap.put("enumValues", enumValues);
 		File sourceFile = createJavaSourceFile(classUri, dir);
-		
-		String templateDirName = TEMPLATE_ROOT_PATH;
-		File templateDirectoryRoot = new File(templateDirName);
-		if (!(templateDirectoryRoot.exists() && templateDirectoryRoot.isDirectory())) {
-			templateDirName = TEMPLATE_CLASS_PATH;
-		}
-		DefaultMustacheFactory builder = new DefaultMustacheFactory(templateDirName);
-		Mustache mustache = builder.compile(ENUM_CLASS_TEMPLATE);
-		FileOutputStream stream = null;
-		OutputStreamWriter writer = null;
-		try {
-			stream = new FileOutputStream(sourceFile);
-			writer = new OutputStreamWriter(stream, "UTF-8");
-	        mustache.execute(writer, mustacheMap);
-		} finally {
-			if (writer != null) {
-				writer.close();
-			}
-			if (stream != null) {
-				stream.close();
-			}
-		}
+		writeMustacheFile(ENUM_CLASS_TEMPLATE, sourceFile, mustacheMap);
 	}
 	
 	/**
@@ -935,6 +1013,16 @@ public class OwlToJava {
 			}
 		}
 		return retval.toString();
+	}
+	
+	/**
+	 * Convert the prop name to the name of the constant used for the PropertyDescriptor
+	 * @param propName name of the property
+	 * @param namespaceName name of the namespace
+	 * @return property constant name
+	 */
+	private String propertyNameToPropertyConstant(String propName, String namespaceName) {
+		return   camelCaseToConstCase(namespaceName) + "_PROP_" + camelCaseToConstCase(propName);
 	}
 
 	/**
@@ -996,7 +1084,7 @@ public class OwlToJava {
 				.resolve("spdx").resolve("library").resolve("model");
 		String[] parts = classUri.substring(SPDX_URI_PREFIX.length()).split("/");
 		for (int i = 0; i < parts.length-1; i++) {
-			path = path.resolve(parts[i]);
+			path = path.resolve(parts[i].toLowerCase());
 		}
 		Files.createDirectories(path);
 		File retval = path.resolve(parts[parts.length-1] + ".java").toFile();
@@ -1010,10 +1098,10 @@ public class OwlToJava {
 	 */
 	private String uriToPkg(String classUri) {
 		String[] parts = classUri.substring(SPDX_URI_PREFIX.length()).split("/");
-		StringBuilder sb = new StringBuilder("org.spdx.library");
-		for (String part:parts) {
+		StringBuilder sb = new StringBuilder("org.spdx.library.model");
+		for (int i = 0; i < parts.length-1; i++) {
 			sb.append(".");
-			sb.append(part.toLowerCase());
+			sb.append(parts[i].toLowerCase());
 		}
 		return sb.toString();
 	}

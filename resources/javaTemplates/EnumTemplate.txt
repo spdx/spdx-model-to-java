@@ -18,6 +18,8 @@
  
 package {{{pkgName}}};
 
+import org.spdx.library.IndividualUriValue;
+
 {{{classComment}}}
 public enum {{{name}}} implements IndividualUriValue {
 
