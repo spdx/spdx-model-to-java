@@ -45,3 +45,5 @@ public enum {{{name}}} implements IndividualUriValue {
 	public String getNameSpace() {
 		return "{{{classUri}}}";
 	}
+}
+

@@ -181,7 +181,7 @@ public class {{{className}}} extends {{{superClass}}} {{#compareUsingProperties}
 		{{/integerProperties}}
 		{{#stringProperties}}
 		try {
-			Optional<{{{type}}}> {{{propertyName}}} = {{{getter}}}();
+			Optional<String> {{{propertyName}}} = {{{getter}}}();
 			{{#required}}
 			if (!{{{propertyName}}}.isPresent()) {
 				retval.add("Missing {{{propertyName}}} in {{{className}}}");
@@ -201,10 +201,14 @@ public class {{{className}}} extends {{{superClass}}} {{#compareUsingProperties}
 			retval.addAll({{{propertyName}}}.verify(verifiedIds, specVersion));
 		}
 		{{#min}}
-		unimplemented
+		if ({{{propertyName}}}s.size() < {{{min}}}) {
+			retval.add("{{{propertyName}}}s size " + {{{propertyName}}}s.size() + " is less than {{{min}}} in {{{className}}}");
+		}
 		{{/min}}
 		{{#max}}
-		unimplemented
+		if ({{{propertyName}}}s.size() > {{{max}}}) {
+			retval.add("{{{propertyName}}}s size " + {{{propertyName}}}s.size() + " is greater than {{{max}}} in {{{className}}}");
+		}
 		{{/max}}
 		{{/objectPropertyValueCollection}}
 		{{#stringCollection}}
@@ -216,10 +220,14 @@ public class {{{className}}} extends {{{superClass}}} {{#compareUsingProperties}
 		}
 		{{/pattern}}
 		{{#min}}
-		unimplemented
+		if ({{{propertyName}}}s.size() < {{{min}}}) {
+			retval.add("{{{propertyName}}}s size " + {{{propertyName}}}s.size() + " is less than {{{min}}} in {{{className}}}");
+		}
 		{{/min}}
 		{{#max}}
-		unimplemented
+		if ({{{propertyName}}}s.size() > {{{max}}}) {
+			retval.add("{{{propertyName}}}s size " + {{{propertyName}}}s.size() + " is greater than {{{max}}} in {{{className}}}");
+		}
 		{{/max}}
 		{{/stringCollection}}
 		{{#objectPropertyValueSet}}
@@ -227,10 +235,14 @@ public class {{{className}}} extends {{{superClass}}} {{#compareUsingProperties}
 			retval.addAll({{{propertyName}}}.verify(verifiedIds, specVersion));
 		}
 		{{#min}}
-		unimplemented
+		if ({{{propertyName}}}s.size() < {{{min}}}) {
+			retval.add("{{{propertyName}}}s size " + {{{propertyName}}}s.size() + " is less than {{{min}}} in {{{className}}}");
+		}
 		{{/min}}
 		{{#max}}
-		unimplemented
+		if ({{{propertyName}}}s.size() > {{{max}}}) {
+			retval.add("{{{propertyName}}}s size " + {{{propertyName}}}s.size() + " is greater than {{{max}}} in {{{className}}}");
+		}
 		{{/max}}
 		{{/objectPropertyValueSet}}
 		return retval;
@@ -243,7 +255,7 @@ public class {{{className}}} extends {{{superClass}}} {{#compareUsingProperties}
 	}
 	{{/objectPropertyValueCollection}}
 	{{#stringCollection}}
-	public Collection<{{{type}}}> {{{getter}}}s() {
+	public Collection<String> {{{getter}}}s() {
 		return {{{propertyName}}}s;
 	}
 	{{/stringCollection}}
@@ -391,7 +403,7 @@ public class {{{className}}} extends {{{superClass}}} {{#compareUsingProperties}
 	/**
 	 * @return the {{{propertyName}}}
 	 */
-	public Optional<{{{type}}}> {{{getter}}}() throws InvalidSPDXAnalysisException {
+	public Optional<String> {{{getter}}}() throws InvalidSPDXAnalysisException {
 		return getStringPropertyValue(SpdxConstants.{{{propertyConstant}}});
 	}
 	
@@ -400,7 +412,7 @@ public class {{{className}}} extends {{{superClass}}} {{#compareUsingProperties}
 	 * @return this to chain setters
 	 * @throws InvalidSPDXAnalysisException 
 	 */
-	public {{{className}}} {{{setter}}}({{{type}}} {{{propertyName}}}) throws InvalidSPDXAnalysisException {
+	public {{{className}}} {{{setter}}}(String {{{propertyName}}}) throws InvalidSPDXAnalysisException {
 		setPropertyValue(SpdxConstants.{{{propertyConstant}}}, {{{propertyName}}});
 		return this;
 	}
