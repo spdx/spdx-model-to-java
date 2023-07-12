@@ -719,6 +719,9 @@ public class OwlToJava {
 		String superClass = getSuperClass(superClassUri, requiredImports, classUri);
 		mustacheMap.put("superClass", superClass);
 		mustacheMap.put("verifySuperclass", superClass != "ModelObject");
+		if (!this.uriToNamespaceUri(classUri).endsWith("Core")) {
+			requiredImports.add("import org.spdx.library.model.core.ProfileIdentifierType;");
+		}
 		List<String> imports = buildImports(new ArrayList<String>(requiredImports));
 		mustacheMap.put("imports", imports.toArray(new String[imports.size()]));
 		//TODO: Implement
@@ -776,7 +779,6 @@ public class OwlToJava {
 	 */
 	private Map<String, Object> propertyToMustachMap(OntProperty property, Shape propertyShape,
 			Set<String> requiredImports, Set<String> propertyUrisForConstants, String classUri) throws OwlToJavaException {
-		//TODO: Implement
 		Map<String, Object> retval = new HashMap<>();
 		String nameSpace = uriToNamespaceUri(classUri);
 		String name = property.getLocalName();
@@ -824,23 +826,28 @@ public class OwlToJava {
 		}
 		OntResource rangeResource = ranges.get(0);
 		PropertyType propertyType = determinePropertyType(rangeResource, classRestriction, dataTypeRestriction, min, max);
-		if (PropertyType.OBJECT_COLLECTION.equals(propertyType) || PropertyType.STRING_COLLECTION.equals(propertyType)) {
+		if (PropertyType.OBJECT_COLLECTION.equals(propertyType) || PropertyType.STRING_COLLECTION.equals(propertyType) ||
+				PropertyType.ENUM_COLLECTION.equals(propertyType)) {
 			requiredImports.add("import java.util.Collection;");
 		}
  		retval.put("propertyType", propertyType);
 		String typeUri = getTypeUri(rangeResource, classRestriction, dataTypeRestriction);
 		String type;
 		if (BOOLEAN_TYPE.equals(typeUri)) {
-			type = "boolean";
+			type = "Boolean";
 		} else if (STRING_TYPE.equals(typeUri) || DATE_TIME_TYPE.equals(typeUri)) {
 			type = "String";
 		} else if (INTEGER_TYPES.contains(typeUri)) {
-			type = "int";
+			type = "Integer";
 		} else {
 			type = uriToName(typeUri);
 			if (!typeUri.startsWith(nameSpace) && 
 					(PropertyType.ENUM.equals(propertyType) || PropertyType.OBJECT.equals(propertyType) ||
-							PropertyType.OBJECT_COLLECTION.equals(propertyType) || PropertyType.OBJECT_SET.equals(propertyType))) {				
+							PropertyType.OBJECT_COLLECTION.equals(propertyType) || 
+							PropertyType.ENUM_COLLECTION.equals(propertyType) || 
+							PropertyType.OBJECT_SET.equals(propertyType) ||
+							PropertyType.ANY_LICENSE_INFO.equals(propertyType) ||
+							PropertyType.ELEMENT.equals(propertyType))) {				
 				requiredImports.add("import "+uriToPkg(typeUri) + "." + uriToName(typeUri) +";");
 			}
 		}
@@ -1101,7 +1108,9 @@ public class OwlToJava {
 			path = path.resolve(parts[i].toLowerCase());
 		}
 		Files.createDirectories(path);
-		File retval = path.resolve(parts[parts.length-1] + ".java").toFile();
+		String fileName = RESERVED_JAVA_WORDS.containsKey(parts[parts.length-1]) ? 
+				RESERVED_JAVA_WORDS.get(parts[parts.length-1]) : parts[parts.length-1];
+		File retval = path.resolve(fileName + ".java").toFile();
 		retval.createNewFile();
 		return retval;
 	}

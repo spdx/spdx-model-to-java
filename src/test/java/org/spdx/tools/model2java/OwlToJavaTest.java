@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.List;
 import java.util.Objects;
 
 import org.apache.jena.ontology.OntModel;
@@ -43,7 +44,8 @@ public class OwlToJavaTest extends TestCase {
 				OntModel model = ModelFactory.createOntologyModel(OntModelSpec.OWL_MEM);
 				model.read(is, "", "Turtle");
 				otj = new OwlToJava(model);
-				otj.generate(tempDir);
+				List<String> warnings = otj.generate(tempDir);
+				assertTrue(warnings.isEmpty());
 				Path aIPath = tempDir.toPath().resolve("src")
 					.resolve("main")
 					.resolve("java")

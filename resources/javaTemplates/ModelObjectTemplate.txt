@@ -93,25 +93,17 @@ public class {{{className}}} extends {{{superClass}}} {{#compareUsingProperties}
 	 * @see org.spdx.library.model.ModelObject#_verify(java.util.List)
 	 */
 	@Override
-	protected List<String> _verify(Set<String> verifiedIds, String specVersion) {
+	protected List<String> _verify(Set<String> verifiedIds, String specVersion, List<ProfileIdentifierType> profiles) {
 		List<String> retval = new ArrayList<>();
 		{{#verifySuperclass}}
-		retval.addAll(super.verify(verifiedIds, specVersion));
+		retval.addAll(super.verify(verifiedIds, specVersion, profiles));
 		{{/verifySuperclass}}
-		List<ProfileIdentifierType> profiles;
-		try {
-			profiles = getCreationInfo().isPresent() ? 
-					new ArrayList<>(getCreationInfo().get().getProfiles()) : new ArrayList<>();
-		} catch (InvalidSPDXAnalysisException e) {
-			retval.add("Error getting subject for Annotation: "+e.getMessage());
-			profiles = new ArrayList<>();
-		}
 		{{#elementProperties}}
-		Optional<{{{type}}}> {{{propertyName}}};
+		Optional<Element> {{{propertyName}}};
 		try {
 			{{{propertyName}}} = {{{getter}}}();
 			if ({{{propertyName}}}.isPresent()) {
-				retval.addAll({{{propertyName}}}.get().verify(verifiedIds, specVersion));
+				retval.addAll({{{propertyName}}}.get().verify(verifiedIds, specVersion, profiles));
 			{{#required}}
 			} else {
 				if (!Collections.disjoint(profiles, Arrays.asList(new ProfileIdentifierType[] { {{{requiredProfiles}}} }))) {
@@ -128,7 +120,7 @@ public class {{{className}}} extends {{{superClass}}} {{#compareUsingProperties}
 		try {
 			{{{propertyName}}} = {{{getter}}}();
 			if ({{{propertyName}}}.isPresent()) {
-				retval.addAll({{{propertyName}}}.get().verify(verifiedIds, specVersion));
+				retval.addAll({{{propertyName}}}.get().verify(verifiedIds, specVersion, profiles));
 			{{#required}}
 			else {
 				if (!Collections.disjoint(profiles, Arrays.asList(new ProfileIdentifierType[] { {{{requiredProfiles}}} }))) {
@@ -145,7 +137,7 @@ public class {{{className}}} extends {{{superClass}}} {{#compareUsingProperties}
 		try {
 			{{{propertyName}}} = {{{getter}}}();
 			if ({{{propertyName}}}.isPresent()) {
-				retval.addAll({{{propertyName}}}.get().verify(verifiedIds, specVersion));
+				retval.addAll({{{propertyName}}}.get().verify(verifiedIds, specVersion, profiles));
 			{{#required}}
 			else {
 				if (!Collections.disjoint(profiles, Arrays.asList(new ProfileIdentifierType[] { {{{requiredProfiles}}} }))) {
@@ -212,7 +204,7 @@ public class {{{className}}} extends {{{superClass}}} {{#compareUsingProperties}
 		{{/stringProperties}}
 		{{#objectPropertyValueCollection}}
 		for ({{{type}}} {{{propertyName}}}:{{{propertyName}}}s) {
-			retval.addAll({{{propertyName}}}.verify(verifiedIds, specVersion));
+			retval.addAll({{{propertyName}}}.verify(verifiedIds, specVersion, profiles));
 		}
 		{{#min}}
 		if ({{{propertyName}}}s.size() < {{{min}}}) {
@@ -258,7 +250,7 @@ public class {{{className}}} extends {{{superClass}}} {{#compareUsingProperties}
 		{{/stringCollection}}
 		{{#objectPropertyValueSet}}
 		for ({{{type}}} {{{propertyName}}}:{{{propertyName}}}s) {
-			retval.addAll({{{propertyName}}}.verify(verifiedIds, specVersion));
+			retval.addAll({{{propertyName}}}.verify(verifiedIds, specVersion, profiles));
 		}
 		{{#min}}
 		if ({{{propertyName}}}s.size() < {{{min}}}) {
@@ -300,7 +292,7 @@ public class {{{className}}} extends {{{superClass}}} {{#compareUsingProperties}
 	/**
 	 * @return the {{{propertyName}}}
 	 */
-	public Optional<{{{type}}}> {{{getter}}}() throws InvalidSPDXAnalysisException {
+	public Optional<Element> {{{getter}}}() throws InvalidSPDXAnalysisException {
 		return getElementPropertyValue(SpdxConstants.{{{propertyConstant}}});
 	}
 	
@@ -309,7 +301,7 @@ public class {{{className}}} extends {{{superClass}}} {{#compareUsingProperties}
 	 * @return this to chain setters
 	 * @throws InvalidSPDXAnalysisException 
 	 */
-	public {{{className}}} {{{setter}}}({{{type}}} {{{propertyName}}}) throws InvalidSPDXAnalysisException {
+	public {{{className}}} {{{setter}}}(Element {{{propertyName}}}) throws InvalidSPDXAnalysisException {
 		setPropertyValue(SpdxConstants.{{{propertyConstant}}}, {{{propertyName}}});
 		return this;
 	}
