@@ -88,275 +88,6 @@ public class {{{className}}} extends {{{superClass}}} {{#compareUsingProperties}
 	public String getType() {
 		return "{{{classProfile}}}.{{{className}}}";
 	}
-
-	/* (non-Javadoc)
-	 * @see org.spdx.library.model.ModelObject#_verify(java.util.List)
-	 */
-	@Override
-	protected List<String> _verify(Set<String> verifiedIds, String specVersion, List<ProfileIdentifierType> profiles) {
-		List<String> retval = new ArrayList<>();
-		{{#verifySuperclass}}
-		retval.addAll(super.verify(verifiedIds, specVersion, profiles));
-		{{/verifySuperclass}}
-		{{#elementProperties}}
-		{{#nonOptional}}
-		Element {{{propertyName}}};
-		try {
-			{{{propertyName}}} = {{{getter}}}();
-			if (Objects.nonNull({{{propertyName}}})) {
-				retval.addAll({{{propertyName}}}.verify(verifiedIds, specVersion, profiles));
-		{{/nonOptional}}
-		{{^nonOptional}}
-		Optional<Element> {{{propertyName}}};
-		try {
-			{{{propertyName}}} = {{{getter}}}();
-			if ({{{propertyName}}}.isPresent()) {
-				retval.addAll({{{propertyName}}}.get().verify(verifiedIds, specVersion, profiles));
-		{{/nonOptional}}
-			{{#required}}
-			} else {
-				if (!Collections.disjoint(profiles, Arrays.asList(new ProfileIdentifierType[] { {{{requiredProfiles}}} }))) {
-					retval.add("Missing {{{propertyName}}} in {{{propertyName}}}");
-				}
-			{{/required}}
-			}
-		} catch (InvalidSPDXAnalysisException e) {
-			retval.add("Error getting {{{propertyName}}} for {{{className}}}: "+e.getMessage());
-		}
-		{{/elementProperties}}
-		{{#objectProperties}}
-		{{#nonOptional}}
-		{{{type}}} {{{propertyName}}};
-		try {
-			{{{propertyName}}} = {{{getter}}}();
-			if (Objects.nonNull({{{propertyName}}})) {
-				retval.addAll({{{propertyName}}}.verify(verifiedIds, specVersion, profiles));
-		{{/nonOptional}}
-		{{^nonOptional}}
-		Optional<{{{type}}}> {{{propertyName}}};
-		try {
-			{{{propertyName}}} = {{{getter}}}();
-			if ({{{propertyName}}}.isPresent()) {
-				retval.addAll({{{propertyName}}}.get().verify(verifiedIds, specVersion, profiles));
-		{{/nonOptional}}
-			{{#required}}
-			else {
-				if (!Collections.disjoint(profiles, Arrays.asList(new ProfileIdentifierType[] { {{{requiredProfiles}}} }))) {
-					retval.add("Missing {{{propertyName}}} in {{{className}}}");
-				}
-			{{/required}}
-			}
-		} catch (InvalidSPDXAnalysisException e) {
-			retval.add("Error getting {{{propertyName}}} for {{{className}}}: "+e.getMessage());
-		}
-		{{/objectProperties}}
-		{{#anyLicenseInfoProperties}}
-		{{#nonOptional}}
-		{{{type}}} {{{propertyName}}};
-		try {
-			{{{propertyName}}} = {{{getter}}}();
-			if (Objects.nonNull({{{propertyName}}})) {
-				retval.addAll({{{propertyName}}}.verify(verifiedIds, specVersion, profiles));
-		{{/nonOptional}}
-		{{^nonOptional}}
-		Optional<{{{type}}}> {{{propertyName}}};
-		try {
-			{{{propertyName}}} = {{{getter}}}();
-			if ({{{propertyName}}}.isPresent()) {
-				retval.addAll({{{propertyName}}}.get().verify(verifiedIds, specVersion, profiles));
-		{{/nonOptional}}
-			{{#required}}
-			else {
-				if (!Collections.disjoint(profiles, Arrays.asList(new ProfileIdentifierType[] { {{{requiredProfiles}}} }))) {
-					retval.add("Missing {{{propertyName}}} in {{{className}}}");
-				}
-			{{/required}}
-			}
-		} catch (InvalidSPDXAnalysisException e) {
-			retval.add("Error getting {{{propertyName}}} for {{{className}}}: "+e.getMessage());
-		}
-		{{/anyLicenseInfoProperties}}
-		{{#enumerationProperties}}
-		try {
-			{{#nonOptional}}
-			{{{type}}} {{{propertyName}}} = {{{getter}}}();
-			{{#required}}
-			if (Objects.isNull({{{propertyName}}})) {
-				retval.add("Missing {{{propertyName}}} in {{{className}}}");
-			}
-			{{/required}}
-			{{/nonOptional}}
-			{{^nonOptional}}
-			Optional<{{{type}}}> {{{propertyName}}} = {{{getter}}}();
-			{{#required}}
-			if (!{{{propertyName}}}.isPresent()) {
-				retval.add("Missing {{{propertyName}}} in {{{className}}}");
-			}
-			{{/required}}
-			{{/nonOptional}}
-		} catch (InvalidSPDXAnalysisException e) {
-			retval.add("Error getting {{{propertyName}}} for {{{className}}}: "+e.getMessage());
-		}
-		{{/enumerationProperties}}
-		{{#booleanProperties}}
-		try {
-			{{#nonOptional}}
-			{{{type}}} {{{propertyName}}} = {{{getter}}}();
-			{{#required}}
-			if (Objects.isNull({{{propertyName}}})) {
-				retval.add("Missing {{{propertyName}}} in {{{className}}}");
-			}
-			{{/required}}
-			{{/nonOptional}}
-			{{^nonOptional}}
-			Optional<{{{type}}}> {{{propertyName}}} = {{{getter}}}();
-			{{#required}}
-			if (!{{{propertyName}}}.isPresent()) {
-				retval.add("Missing {{{propertyName}}} in {{{className}}}");
-			}
-			{{/required}}
-			{{/nonOptional}}
-		} catch (InvalidSPDXAnalysisException e) {
-			retval.add("Error getting {{{propertyName}}} for {{{className}}}: "+e.getMessage());
-		}
-		{{/booleanProperties}}
-		{{#integerProperties}}
-		try {
-			{{#nonOptional}}
-			{{{type}}} {{{propertyName}}} = {{{getter}}}();
-			{{#required}}
-			if (Objects.isNull({{{propertyName}}})) {
-				retval.add("Missing {{{propertyName}}} in {{{className}}}");
-			}
-			{{/required}}
-			{{#min}}
-			if (Objects.nonNull({{{propertyName}}}) && {{{propertyName}}} < {{{min}}}) {
-				retval.add("{{{propertyName}}} value " + {{{propertyName}}} + " is less than the minimum {{{min}}} in {{{className}}}");
-			}
-			{{/min}}
-			{{#max}}
-			if (Objects.nonNull({{{propertyName}}}) && {{{propertyName}}} > {{{max}}}) {
-				retval.add("{{{propertyName}}} value " + {{{propertyName}}} + " is greater than the maximum {{{max}}} in {{{className}}}");
-			}
-			{{/max}}
-			{{/nonOptional}}
-			{{^nonOptional}}
-			Optional<{{{type}}}> {{{propertyName}}} = {{{getter}}}();
-			{{#required}}
-			if (!{{{propertyName}}}.isPresent()) {
-				retval.add("Missing {{{propertyName}}} in {{{className}}}");
-			}
-			{{/required}}
-			{{#min}}
-			if ({{{propertyName}}}.isPresent() && {{{propertyName}}}.get() < {{{min}}}) {
-				retval.add("{{{propertyName}}} value " + {{{propertyName}}}.get() + " is less than the minimum {{{min}}} in {{{className}}}");
-			}
-			{{/min}}
-			{{#max}}
-			if ({{{propertyName}}}.isPresent() && {{{propertyName}}}.get() > {{{max}}}) {
-				retval.add("{{{propertyName}}} value " + {{{propertyName}}}.get() + " is greater than the maximum {{{max}}} in {{{className}}}");
-			}
-			{{/max}}
-			{{/nonOptional}}
-		} catch (InvalidSPDXAnalysisException e) {
-			retval.add("Error getting {{{propertyName}}} for {{{className}}}: "+e.getMessage());
-		}
-		{{/integerProperties}}
-		{{#stringProperties}}
-		try {
-			{{#nonOptional}}
-			String {{{propertyName}}} = {{{getter}}}();
-			{{#required}}
-			if (Objects.isNull({{{propertyName}}})) {
-				retval.add("Missing {{{propertyName}}} in {{{className}}}");
-			}
-			{{/required}}
-			{{#pattern}}
-			if (Objects.nonNull({{{propertyName}}}) && !Pattern.matches({{{pattern}}}, {{{propertyName}}})) {
-				retval.add("{{{propertyName}}} value '" + {{{propertyName}}} + 
-					"' does not match the pattern '{{{pattern}}}'");
-			{{/pattern}}
-			{{/nonOptional}}
-			{{^nonOptional}}
-			Optional<String> {{{propertyName}}} = {{{getter}}}();
-			{{#required}}
-			if (!{{{propertyName}}}.isPresent()) {
-				retval.add("Missing {{{propertyName}}} in {{{className}}}");
-			}
-			{{/required}}
-			{{#pattern}}
-			if ({{{propertyName}}}.isPresent() && !Pattern.matches({{{pattern}}}, {{{propertyName}}}.get()) {
-				retval.add("{{{propertyName}}} value '" + {{{propertyName}}}.get() + 
-					"' does not match the pattern '{{{pattern}}}'");
-			{{/pattern}}
-			{{/nonOptional}}
-		} catch (InvalidSPDXAnalysisException e) {
-			retval.add("Error getting {{{propertyName}}} for {{{className}}}: "+e.getMessage());
-		}
-		{{/stringProperties}}
-		{{#objectPropertyValueCollection}}
-		for ({{{type}}} {{{propertyName}}}:{{{propertyName}}}s) {
-			retval.addAll({{{propertyName}}}.verify(verifiedIds, specVersion, profiles));
-		}
-		{{#min}}
-		if ({{{propertyName}}}s.size() < {{{min}}}) {
-			retval.add("{{{propertyName}}}s size " + {{{propertyName}}}s.size() + " is less than {{{min}}} in {{{className}}}");
-		}
-		{{/min}}
-		{{#max}}
-		if ({{{propertyName}}}s.size() > {{{max}}}) {
-			retval.add("{{{propertyName}}}s size " + {{{propertyName}}}s.size() + " is greater than {{{max}}} in {{{className}}}");
-		}
-		{{/max}}
-		{{/objectPropertyValueCollection}}
-		{{#enumPropertyValueCollection}}
-		{{#min}}
-		if ({{{propertyName}}}s.size() < {{{min}}}) {
-			retval.add("{{{propertyName}}}s size " + {{{propertyName}}}s.size() + " is less than {{{min}}} in {{{className}}}");
-		}
-		{{/min}}
-		{{#max}}
-		if ({{{propertyName}}}s.size() > {{{max}}}) {
-			retval.add("{{{propertyName}}}s size " + {{{propertyName}}}s.size() + " is greater than {{{max}}} in {{{className}}}");
-		}
-		{{/max}}
-		{{/enumPropertyValueCollection}}
-		{{#stringCollection}}
-		{{#pattern}}
-		for (String {{{propertyName}}}:{{{propertyName}}}s) {
-			if (!Pattern.matches({{{pattern}}}, {{{propertyName}}}) {
-				retval.add("{{{propertyName}}} value '" + {{{propertyName}}} + 
-					"' does not match the pattern '{{{pattern}}}'");
-		}
-		{{/pattern}}
-		{{#min}}
-		if ({{{propertyName}}}s.size() < {{{min}}}) {
-			retval.add("{{{propertyName}}}s size " + {{{propertyName}}}s.size() + " is less than {{{min}}} in {{{className}}}");
-		}
-		{{/min}}
-		{{#max}}
-		if ({{{propertyName}}}s.size() > {{{max}}}) {
-			retval.add("{{{propertyName}}}s size " + {{{propertyName}}}s.size() + " is greater than {{{max}}} in {{{className}}}");
-		}
-		{{/max}}
-		{{/stringCollection}}
-		{{#objectPropertyValueSet}}
-		for ({{{type}}} {{{propertyName}}}:{{{propertyName}}}s) {
-			retval.addAll({{{propertyName}}}.verify(verifiedIds, specVersion, profiles));
-		}
-		{{#min}}
-		if ({{{propertyName}}}s.size() < {{{min}}}) {
-			retval.add("{{{propertyName}}}s size " + {{{propertyName}}}s.size() + " is less than {{{min}}} in {{{className}}}");
-		}
-		{{/min}}
-		{{#max}}
-		if ({{{propertyName}}}s.size() > {{{max}}}) {
-			retval.add("{{{propertyName}}}s size " + {{{propertyName}}}s.size() + " is greater than {{{max}}} in {{{className}}}");
-		}
-		{{/max}}
-		{{/objectPropertyValueSet}}
-		return retval;
-	}
 	
 	// Getters and Setters
 	{{#objectPropertyValueCollection}}
@@ -745,5 +476,274 @@ public class {{{className}}} extends {{{superClass}}} {{#compareUsingProperties}
 			return "Error: "+e.getMessage();
 		}
 		{{/usePropertiesForToString}}
+	}
+	
+	/* (non-Javadoc)
+	 * @see org.spdx.library.model.ModelObject#_verify(java.util.List)
+	 */
+	@Override
+	protected List<String> _verify(Set<String> verifiedIds, String specVersion, List<ProfileIdentifierType> profiles) {
+		List<String> retval = new ArrayList<>();
+		{{#verifySuperclass}}
+		retval.addAll(super.verify(verifiedIds, specVersion, profiles));
+		{{/verifySuperclass}}
+		{{#elementProperties}}
+		{{#nonOptional}}
+		Element {{{propertyName}}};
+		try {
+			{{{propertyName}}} = {{{getter}}}();
+			if (Objects.nonNull({{{propertyName}}})) {
+				retval.addAll({{{propertyName}}}.verify(verifiedIds, specVersion, profiles));
+		{{/nonOptional}}
+		{{^nonOptional}}
+		Optional<Element> {{{propertyName}}};
+		try {
+			{{{propertyName}}} = {{{getter}}}();
+			if ({{{propertyName}}}.isPresent()) {
+				retval.addAll({{{propertyName}}}.get().verify(verifiedIds, specVersion, profiles));
+		{{/nonOptional}}
+			{{#required}}
+			} else {
+				if (!Collections.disjoint(profiles, Arrays.asList(new ProfileIdentifierType[] { {{{requiredProfiles}}} }))) {
+					retval.add("Missing {{{propertyName}}} in {{{propertyName}}}");
+				}
+			{{/required}}
+			}
+		} catch (InvalidSPDXAnalysisException e) {
+			retval.add("Error getting {{{propertyName}}} for {{{className}}}: "+e.getMessage());
+		}
+		{{/elementProperties}}
+		{{#objectProperties}}
+		{{#nonOptional}}
+		{{{type}}} {{{propertyName}}};
+		try {
+			{{{propertyName}}} = {{{getter}}}();
+			if (Objects.nonNull({{{propertyName}}})) {
+				retval.addAll({{{propertyName}}}.verify(verifiedIds, specVersion, profiles));
+		{{/nonOptional}}
+		{{^nonOptional}}
+		Optional<{{{type}}}> {{{propertyName}}};
+		try {
+			{{{propertyName}}} = {{{getter}}}();
+			if ({{{propertyName}}}.isPresent()) {
+				retval.addAll({{{propertyName}}}.get().verify(verifiedIds, specVersion, profiles));
+		{{/nonOptional}}
+			{{#required}}
+			else {
+				if (!Collections.disjoint(profiles, Arrays.asList(new ProfileIdentifierType[] { {{{requiredProfiles}}} }))) {
+					retval.add("Missing {{{propertyName}}} in {{{className}}}");
+				}
+			{{/required}}
+			}
+		} catch (InvalidSPDXAnalysisException e) {
+			retval.add("Error getting {{{propertyName}}} for {{{className}}}: "+e.getMessage());
+		}
+		{{/objectProperties}}
+		{{#anyLicenseInfoProperties}}
+		{{#nonOptional}}
+		{{{type}}} {{{propertyName}}};
+		try {
+			{{{propertyName}}} = {{{getter}}}();
+			if (Objects.nonNull({{{propertyName}}})) {
+				retval.addAll({{{propertyName}}}.verify(verifiedIds, specVersion, profiles));
+		{{/nonOptional}}
+		{{^nonOptional}}
+		Optional<{{{type}}}> {{{propertyName}}};
+		try {
+			{{{propertyName}}} = {{{getter}}}();
+			if ({{{propertyName}}}.isPresent()) {
+				retval.addAll({{{propertyName}}}.get().verify(verifiedIds, specVersion, profiles));
+		{{/nonOptional}}
+			{{#required}}
+			else {
+				if (!Collections.disjoint(profiles, Arrays.asList(new ProfileIdentifierType[] { {{{requiredProfiles}}} }))) {
+					retval.add("Missing {{{propertyName}}} in {{{className}}}");
+				}
+			{{/required}}
+			}
+		} catch (InvalidSPDXAnalysisException e) {
+			retval.add("Error getting {{{propertyName}}} for {{{className}}}: "+e.getMessage());
+		}
+		{{/anyLicenseInfoProperties}}
+		{{#enumerationProperties}}
+		try {
+			{{#nonOptional}}
+			{{{type}}} {{{propertyName}}} = {{{getter}}}();
+			{{#required}}
+			if (Objects.isNull({{{propertyName}}})) {
+				retval.add("Missing {{{propertyName}}} in {{{className}}}");
+			}
+			{{/required}}
+			{{/nonOptional}}
+			{{^nonOptional}}
+			Optional<{{{type}}}> {{{propertyName}}} = {{{getter}}}();
+			{{#required}}
+			if (!{{{propertyName}}}.isPresent()) {
+				retval.add("Missing {{{propertyName}}} in {{{className}}}");
+			}
+			{{/required}}
+			{{/nonOptional}}
+		} catch (InvalidSPDXAnalysisException e) {
+			retval.add("Error getting {{{propertyName}}} for {{{className}}}: "+e.getMessage());
+		}
+		{{/enumerationProperties}}
+		{{#booleanProperties}}
+		try {
+			{{#nonOptional}}
+			{{{type}}} {{{propertyName}}} = {{{getter}}}();
+			{{#required}}
+			if (Objects.isNull({{{propertyName}}})) {
+				retval.add("Missing {{{propertyName}}} in {{{className}}}");
+			}
+			{{/required}}
+			{{/nonOptional}}
+			{{^nonOptional}}
+			Optional<{{{type}}}> {{{propertyName}}} = {{{getter}}}();
+			{{#required}}
+			if (!{{{propertyName}}}.isPresent()) {
+				retval.add("Missing {{{propertyName}}} in {{{className}}}");
+			}
+			{{/required}}
+			{{/nonOptional}}
+		} catch (InvalidSPDXAnalysisException e) {
+			retval.add("Error getting {{{propertyName}}} for {{{className}}}: "+e.getMessage());
+		}
+		{{/booleanProperties}}
+		{{#integerProperties}}
+		try {
+			{{#nonOptional}}
+			{{{type}}} {{{propertyName}}} = {{{getter}}}();
+			{{#required}}
+			if (Objects.isNull({{{propertyName}}})) {
+				retval.add("Missing {{{propertyName}}} in {{{className}}}");
+			}
+			{{/required}}
+			{{#min}}
+			if (Objects.nonNull({{{propertyName}}}) && {{{propertyName}}} < {{{min}}}) {
+				retval.add("{{{propertyName}}} value " + {{{propertyName}}} + " is less than the minimum {{{min}}} in {{{className}}}");
+			}
+			{{/min}}
+			{{#max}}
+			if (Objects.nonNull({{{propertyName}}}) && {{{propertyName}}} > {{{max}}}) {
+				retval.add("{{{propertyName}}} value " + {{{propertyName}}} + " is greater than the maximum {{{max}}} in {{{className}}}");
+			}
+			{{/max}}
+			{{/nonOptional}}
+			{{^nonOptional}}
+			Optional<{{{type}}}> {{{propertyName}}} = {{{getter}}}();
+			{{#required}}
+			if (!{{{propertyName}}}.isPresent()) {
+				retval.add("Missing {{{propertyName}}} in {{{className}}}");
+			}
+			{{/required}}
+			{{#min}}
+			if ({{{propertyName}}}.isPresent() && {{{propertyName}}}.get() < {{{min}}}) {
+				retval.add("{{{propertyName}}} value " + {{{propertyName}}}.get() + " is less than the minimum {{{min}}} in {{{className}}}");
+			}
+			{{/min}}
+			{{#max}}
+			if ({{{propertyName}}}.isPresent() && {{{propertyName}}}.get() > {{{max}}}) {
+				retval.add("{{{propertyName}}} value " + {{{propertyName}}}.get() + " is greater than the maximum {{{max}}} in {{{className}}}");
+			}
+			{{/max}}
+			{{/nonOptional}}
+		} catch (InvalidSPDXAnalysisException e) {
+			retval.add("Error getting {{{propertyName}}} for {{{className}}}: "+e.getMessage());
+		}
+		{{/integerProperties}}
+		{{#stringProperties}}
+		try {
+			{{#nonOptional}}
+			String {{{propertyName}}} = {{{getter}}}();
+			{{#required}}
+			if (Objects.isNull({{{propertyName}}})) {
+				retval.add("Missing {{{propertyName}}} in {{{className}}}");
+			}
+			{{/required}}
+			{{#pattern}}
+			if (Objects.nonNull({{{propertyName}}}) && !Pattern.matches({{{pattern}}}, {{{propertyName}}})) {
+				retval.add("{{{propertyName}}} value '" + {{{propertyName}}} + 
+					"' does not match the pattern '{{{pattern}}}'");
+			{{/pattern}}
+			{{/nonOptional}}
+			{{^nonOptional}}
+			Optional<String> {{{propertyName}}} = {{{getter}}}();
+			{{#required}}
+			if (!{{{propertyName}}}.isPresent()) {
+				retval.add("Missing {{{propertyName}}} in {{{className}}}");
+			}
+			{{/required}}
+			{{#pattern}}
+			if ({{{propertyName}}}.isPresent() && !Pattern.matches({{{pattern}}}, {{{propertyName}}}.get()) {
+				retval.add("{{{propertyName}}} value '" + {{{propertyName}}}.get() + 
+					"' does not match the pattern '{{{pattern}}}'");
+			{{/pattern}}
+			{{/nonOptional}}
+		} catch (InvalidSPDXAnalysisException e) {
+			retval.add("Error getting {{{propertyName}}} for {{{className}}}: "+e.getMessage());
+		}
+		{{/stringProperties}}
+		{{#objectPropertyValueCollection}}
+		for ({{{type}}} {{{propertyName}}}:{{{propertyName}}}s) {
+			retval.addAll({{{propertyName}}}.verify(verifiedIds, specVersion, profiles));
+		}
+		{{#min}}
+		if ({{{propertyName}}}s.size() < {{{min}}}) {
+			retval.add("{{{propertyName}}}s size " + {{{propertyName}}}s.size() + " is less than {{{min}}} in {{{className}}}");
+		}
+		{{/min}}
+		{{#max}}
+		if ({{{propertyName}}}s.size() > {{{max}}}) {
+			retval.add("{{{propertyName}}}s size " + {{{propertyName}}}s.size() + " is greater than {{{max}}} in {{{className}}}");
+		}
+		{{/max}}
+		{{/objectPropertyValueCollection}}
+		{{#enumPropertyValueCollection}}
+		{{#min}}
+		if ({{{propertyName}}}s.size() < {{{min}}}) {
+			retval.add("{{{propertyName}}}s size " + {{{propertyName}}}s.size() + " is less than {{{min}}} in {{{className}}}");
+		}
+		{{/min}}
+		{{#max}}
+		if ({{{propertyName}}}s.size() > {{{max}}}) {
+			retval.add("{{{propertyName}}}s size " + {{{propertyName}}}s.size() + " is greater than {{{max}}} in {{{className}}}");
+		}
+		{{/max}}
+		{{/enumPropertyValueCollection}}
+		{{#stringCollection}}
+		{{#pattern}}
+		for (String {{{propertyName}}}:{{{propertyName}}}s) {
+			if (!Pattern.matches({{{pattern}}}, {{{propertyName}}}) {
+				retval.add("{{{propertyName}}} value '" + {{{propertyName}}} + 
+					"' does not match the pattern '{{{pattern}}}'");
+		}
+		{{/pattern}}
+		{{#min}}
+		if ({{{propertyName}}}s.size() < {{{min}}}) {
+			retval.add("{{{propertyName}}}s size " + {{{propertyName}}}s.size() + " is less than {{{min}}} in {{{className}}}");
+		}
+		{{/min}}
+		{{#max}}
+		if ({{{propertyName}}}s.size() > {{{max}}}) {
+			retval.add("{{{propertyName}}}s size " + {{{propertyName}}}s.size() + " is greater than {{{max}}} in {{{className}}}");
+		}
+		{{/max}}
+		{{/stringCollection}}
+		{{#objectPropertyValueSet}}
+		for ({{{type}}} {{{propertyName}}}:{{{propertyName}}}s) {
+			retval.addAll({{{propertyName}}}.verify(verifiedIds, specVersion, profiles));
+		}
+		{{#min}}
+		if ({{{propertyName}}}s.size() < {{{min}}}) {
+			retval.add("{{{propertyName}}}s size " + {{{propertyName}}}s.size() + " is less than {{{min}}} in {{{className}}}");
+		}
+		{{/min}}
+		{{#max}}
+		if ({{{propertyName}}}s.size() > {{{max}}}) {
+			retval.add("{{{propertyName}}}s size " + {{{propertyName}}}s.size() + " is greater than {{{max}}} in {{{className}}}");
+		}
+		{{/max}}
+		{{/objectPropertyValueSet}}
+		return retval;
 	}
 }
