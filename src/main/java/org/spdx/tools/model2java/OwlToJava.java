@@ -321,6 +321,8 @@ public class OwlToJava {
 	private static final String DATE_TIME_TYPE = "https://spdx.org/rdf/Core/DateTime";
 	private static final String ANY_URI_TYPE = "http://www.w3.org/2001/XMLSchema#anyURI";
 	private static final String OWL_THING_URI = "http://www.w3.org/2002/07/owl#Thing";
+	private static final String XSD_POSITIVE_INTEGER = "http://www.w3.org/2001/XMLSchema#positiveInteger";
+	private static final String XSD_NON_NEGATIVE_INTEGER = "http://www.w3.org/2001/XMLSchema#nonNegativeInteger";
 	
 	static final String TEMPLATE_CLASS_PATH = "resources" + "/" + "javaTemplates";
 	static final String TEMPLATE_ROOT_PATH = "resources" + File.separator + "javaTemplates";
@@ -330,9 +332,9 @@ public class OwlToJava {
 	
 	private static Set<String> INTEGER_TYPES = new HashSet<>();
 	static {
-		INTEGER_TYPES.add("http://www.w3.org/2001/XMLSchema#positiveInteger");
+		INTEGER_TYPES.add(XSD_POSITIVE_INTEGER);
 		INTEGER_TYPES.add("http://www.w3.org/2001/XMLSchema#decimal");
-		INTEGER_TYPES.add("http://www.w3.org/2001/XMLSchema#nonNegativeInteger");
+		INTEGER_TYPES.add(XSD_NON_NEGATIVE_INTEGER);
 		//TODO: Add other types - needs research
 	}
 	
@@ -862,7 +864,6 @@ public class OwlToJava {
 		boolean nonOptional = required && nameSpace.equals(classNamespace);
 		if (nonOptional) {
 			requiredImports.add("import java.util.Objects;");
-			requiredImports.add("import javax.annotation.Nullable;");
 		}
 		retval.put("nonOptional", nonOptional);
 		if (Objects.nonNull(pattern)) {
@@ -870,6 +871,10 @@ public class OwlToJava {
 		}
 		if (Objects.nonNull(min)) {
 			retval.put("min", min.toString());
+		} else if (XSD_NON_NEGATIVE_INTEGER.equals(typeUri)) {
+			retval.put("min", "0");
+		} else if (XSD_POSITIVE_INTEGER.equals(typeUri)) {
+			retval.put("min", "1");
 		}
 		if (Objects.nonNull(max)) {
 			retval.put("max", max.toString());
@@ -950,6 +955,8 @@ public class OwlToJava {
 	 */
 	private List<String> buildImports(List<String> localImports) {
 		List<String> retval = new ArrayList<>();
+		retval.add("import javax.annotation.Nullable;");
+		retval.add("");
 		retval.add("import java.util.ArrayList;");
 		retval.add("import java.util.Arrays;");
 		retval.add("import java.util.Collections;");

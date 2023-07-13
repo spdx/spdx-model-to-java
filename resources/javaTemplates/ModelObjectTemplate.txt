@@ -64,7 +64,7 @@ public class {{{className}}} extends {{{superClass}}} {{#compareUsingProperties}
 	 {{#suppressUnchecked}}
 	 @SuppressWarnings("unchecked")
 	 {{/suppressUnchecked}}
-	public {{{className}}}(IModelStore modelStore, String objectUri, ModelCopyManager copyManager,
+	public {{{className}}}(IModelStore modelStore, String objectUri, @Nullable ModelCopyManager copyManager,
 			boolean create)	throws InvalidSPDXAnalysisException {
 		super(modelStore, objectUri, copyManager, create);
 		{{#objectPropertyValueCollection}}
@@ -229,6 +229,16 @@ public class {{{className}}} extends {{{superClass}}} {{#compareUsingProperties}
 				retval.add("Missing {{{propertyName}}} in {{{className}}}");
 			}
 			{{/required}}
+			{{#min}}
+			if (Objects.nonNull({{{propertyName}}}) && {{{propertyName}}} < {{{min}}}) {
+				retval.add("{{{propertyName}}} value " + {{{propertyName}}} + " is less than the minimum {{{min}}} in {{{className}}}");
+			}
+			{{/min}}
+			{{#max}}
+			if (Objects.nonNull({{{propertyName}}}) && {{{propertyName}}} > {{{max}}}) {
+				retval.add("{{{propertyName}}} value " + {{{propertyName}}} + " is greater than the maximum {{{max}}} in {{{className}}}");
+			}
+			{{/max}}
 			{{/nonOptional}}
 			{{^nonOptional}}
 			Optional<{{{type}}}> {{{propertyName}}} = {{{getter}}}();
@@ -237,6 +247,16 @@ public class {{{className}}} extends {{{superClass}}} {{#compareUsingProperties}
 				retval.add("Missing {{{propertyName}}} in {{{className}}}");
 			}
 			{{/required}}
+			{{#min}}
+			if ({{{propertyName}}}.isPresent() && {{{propertyName}}}.get() < {{{min}}}) {
+				retval.add("{{{propertyName}}} value " + {{{propertyName}}}.get() + " is less than the minimum {{{min}}} in {{{className}}}");
+			}
+			{{/min}}
+			{{#max}}
+			if ({{{propertyName}}}.isPresent() && {{{propertyName}}}.get() > {{{max}}}) {
+				retval.add("{{{propertyName}}} value " + {{{propertyName}}}.get() + " is greater than the maximum {{{max}}} in {{{className}}}");
+			}
+			{{/max}}
 			{{/nonOptional}}
 		} catch (InvalidSPDXAnalysisException e) {
 			retval.add("Error getting {{{propertyName}}} for {{{className}}}: "+e.getMessage());
@@ -253,7 +273,7 @@ public class {{{className}}} extends {{{superClass}}} {{#compareUsingProperties}
 			{{/required}}
 			{{#pattern}}
 			if (Objects.nonNull({{{propertyName}}}) && !Pattern.matches({{{pattern}}}, {{{propertyName}}})) {
-				retval.add("{{{propertyName}}} value '" + {{{propertyName}}}.get() + 
+				retval.add("{{{propertyName}}} value '" + {{{propertyName}}} + 
 					"' does not match the pattern '{{{pattern}}}'");
 			{{/pattern}}
 			{{/nonOptional}}
@@ -384,7 +404,12 @@ public class {{{className}}} extends {{{superClass}}} {{#compareUsingProperties}
 	 * @return this to chain setters
 	 * @throws InvalidSPDXAnalysisException 
 	 */
-	public {{{className}}} {{{setter}}}(Element {{{propertyName}}}) throws InvalidSPDXAnalysisException {
+	public {{{className}}} {{{setter}}}(@Nullable Element {{{propertyName}}}) throws InvalidSPDXAnalysisException {
+		{{#required}}
+		if (isStrict() && Objects.isNull({{{propertyName}}})) {
+			throw new InvalidSPDXAnalysisException("{{{propertyName}}} is a required property");
+		}
+		{{/required}}
 		setPropertyValue(SpdxConstants.{{{propertyConstant}}}, {{{propertyName}}});
 		return this;
 	}
@@ -432,7 +457,12 @@ public class {{{className}}} extends {{{superClass}}} {{#compareUsingProperties}
 	 * @return this to chain setters
 	 * @throws InvalidSPDXAnalysisException 
 	 */
-	public {{{className}}} {{{setter}}}({{{type}}} {{{propertyName}}}) throws InvalidSPDXAnalysisException {
+	public {{{className}}} {{{setter}}}(@Nullable {{{type}}} {{{propertyName}}}) throws InvalidSPDXAnalysisException {
+		{{#required}}
+		if (isStrict() && Objects.isNull({{{propertyName}}})) {
+			throw new InvalidSPDXAnalysisException("{{{propertyName}}} is a required property");
+		}
+		{{/required}}
 		setPropertyValue(SpdxConstants.{{{propertyConstant}}}, {{{propertyName}}});
 		return this;
 	}
@@ -462,7 +492,12 @@ public class {{{className}}} extends {{{superClass}}} {{#compareUsingProperties}
 	 * @return this to chain setters
 	 * @throws InvalidSPDXAnalysisException 
 	 */
-	public {{{className}}} {{{setter}}}({{{type}}} {{{propertyName}}}) throws InvalidSPDXAnalysisException {
+	public {{{className}}} {{{setter}}}(@Nullable {{{type}}} {{{propertyName}}}) throws InvalidSPDXAnalysisException {
+		{{#required}}
+		if (isStrict() && Objects.isNull({{{propertyName}}})) {
+			throw new InvalidSPDXAnalysisException("{{{propertyName}}} is a required property");
+		}
+		{{/required}}
 		setPropertyValue(SpdxConstants.{{{propertyConstant}}}, {{{propertyName}}});
 		return this;
 	}
@@ -508,7 +543,12 @@ public class {{{className}}} extends {{{superClass}}} {{#compareUsingProperties}
 	 * @return this to chain setters
 	 * @throws InvalidSPDXAnalysisException 
 	 */
-	public {{{className}}} {{{setter}}}({{{type}}} {{{propertyName}}}) throws InvalidSPDXAnalysisException {
+	public {{{className}}} {{{setter}}}(@Nullable {{{type}}} {{{propertyName}}}) throws InvalidSPDXAnalysisException {
+		{{#required}}
+		if (isStrict() && Objects.isNull({{{propertyName}}})) {
+			throw new InvalidSPDXAnalysisException("{{{propertyName}}} is a required property");
+		}
+		{{/required}}
 		setPropertyValue(SpdxConstants.{{{propertyConstant}}}, {{{propertyName}}});
 		return this;
 	}
@@ -538,7 +578,12 @@ public class {{{className}}} extends {{{superClass}}} {{#compareUsingProperties}
 	 * @return this to chain setters
 	 * @throws InvalidSPDXAnalysisException 
 	 */
-	public {{{className}}} {{{setter}}}({{{type}}} {{{propertyName}}}) throws InvalidSPDXAnalysisException {
+	public {{{className}}} {{{setter}}}(@Nullable {{{type}}} {{{propertyName}}}) throws InvalidSPDXAnalysisException {
+		{{#required}}
+		if (isStrict() && Objects.isNull({{{propertyName}}})) {
+			throw new InvalidSPDXAnalysisException("{{{propertyName}}} is a required property");
+		}
+		{{/required}}
 		setPropertyValue(SpdxConstants.{{{propertyConstant}}}, {{{propertyName}}});
 		return this;
 	}
@@ -568,7 +613,22 @@ public class {{{className}}} extends {{{superClass}}} {{#compareUsingProperties}
 	 * @return this to chain setters
 	 * @throws InvalidSPDXAnalysisException 
 	 */
-	public {{{className}}} {{{setter}}}({{{type}}} {{{propertyName}}}) throws InvalidSPDXAnalysisException {
+	public {{{className}}} {{{setter}}}(@Nullable {{{type}}} {{{propertyName}}}) throws InvalidSPDXAnalysisException {
+		{{#required}}
+		if (isStrict() && Objects.isNull({{{propertyName}}})) {
+			throw new InvalidSPDXAnalysisException("{{{propertyName}}} is a required property");
+		}
+		{{/required}}
+		{{#min}}
+		if (isStrict() && Objects.nonNull({{{propertyName}}}) && {{{propertyName}}} < {{{min}}}) {
+			throw new InvalidSPDXAnalysisException("{{{propertyName}}} value " + {{{propertyName}}} + " is less than the minimum {{{min}}} in {{{className}}}");
+		}
+		{{/min}}
+		{{#max}}
+		if (isStrict() && Objects.nonNull({{{propertyName}}}) && {{{propertyName}}} > {{{max}}}) {
+			throw new InvalidSPDXAnalysisException("{{{propertyName}}} value " + {{{propertyName}}} + " is greater than the maximum {{{max}}} in {{{className}}}");
+		}
+		{{/max}}
 		setPropertyValue(SpdxConstants.{{{propertyConstant}}}, {{{propertyName}}});
 		return this;
 	}
@@ -597,7 +657,17 @@ public class {{{className}}} extends {{{superClass}}} {{#compareUsingProperties}
 	 * @return this to chain setters
 	 * @throws InvalidSPDXAnalysisException 
 	 */
-	public {{{className}}} {{{setter}}}(String {{{propertyName}}}) throws InvalidSPDXAnalysisException {
+	public {{{className}}} {{{setter}}}(@Nullable String {{{propertyName}}}) throws InvalidSPDXAnalysisException {
+		{{#required}}
+		if (isStrict() && Objects.isNull({{{propertyName}}})) {
+			throw new InvalidSPDXAnalysisException("{{{propertyName}}} is a required property");
+		}
+		{{/required}}
+		{{#pattern}}
+		if (Objects.nonNull({{{propertyName}}}) && !Pattern.matches({{{pattern}}}, {{{propertyName}}})) {
+			retval.add("{{{propertyName}}} value '" + {{{propertyName}}} + 
+				"' does not match the pattern '{{{pattern}}}'");
+		{{/pattern}}
 		setPropertyValue(SpdxConstants.{{{propertyConstant}}}, {{{propertyName}}});
 		return this;
 	}
