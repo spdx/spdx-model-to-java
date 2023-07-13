@@ -18,6 +18,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Map.Entry;
 import java.util.Set;
 
@@ -852,9 +853,18 @@ public class OwlToJava {
 			}
 		}
 		retval.put("type", type);
-		retval.put("required", min != null && min > 0);
+		boolean required = min != null && min > 0;
+		retval.put("required", required);
 		//TODO: Add any additional profile restrictions
-		retval.put("requiredProfiles",  namespaceToProfileIdentifierType(nameSpace));
+		String profileIdentifierType = namespaceToProfileIdentifierType(nameSpace);
+		retval.put("requiredProfiles",  profileIdentifierType);
+		String classNamespace = uriToNamespaceUri(classUri);
+		boolean nonOptional = required && nameSpace.equals(classNamespace);
+		if (nonOptional) {
+			requiredImports.add("import java.util.Objects;");
+			requiredImports.add("import javax.annotation.Nullable;");
+		}
+		retval.put("nonOptional", nonOptional);
 		if (Objects.nonNull(pattern)) {
 			retval.put("pattern", pattern);
 		}

@@ -99,11 +99,20 @@ public class {{{className}}} extends {{{superClass}}} {{#compareUsingProperties}
 		retval.addAll(super.verify(verifiedIds, specVersion, profiles));
 		{{/verifySuperclass}}
 		{{#elementProperties}}
+		{{#nonOptional}}
+		Element {{{propertyName}}};
+		try {
+			{{{propertyName}}} = {{{getter}}}();
+			if (Objects.nonNull({{{propertyName}}})) {
+				retval.addAll({{{propertyName}}}.verify(verifiedIds, specVersion, profiles));
+		{{/nonOptional}}
+		{{^nonOptional}}
 		Optional<Element> {{{propertyName}}};
 		try {
 			{{{propertyName}}} = {{{getter}}}();
 			if ({{{propertyName}}}.isPresent()) {
 				retval.addAll({{{propertyName}}}.get().verify(verifiedIds, specVersion, profiles));
+		{{/nonOptional}}
 			{{#required}}
 			} else {
 				if (!Collections.disjoint(profiles, Arrays.asList(new ProfileIdentifierType[] { {{{requiredProfiles}}} }))) {
@@ -116,11 +125,20 @@ public class {{{className}}} extends {{{superClass}}} {{#compareUsingProperties}
 		}
 		{{/elementProperties}}
 		{{#objectProperties}}
+		{{#nonOptional}}
+		{{{type}}} {{{propertyName}}};
+		try {
+			{{{propertyName}}} = {{{getter}}}();
+			if (Objects.nonNull({{{propertyName}}})) {
+				retval.addAll({{{propertyName}}}.verify(verifiedIds, specVersion, profiles));
+		{{/nonOptional}}
+		{{^nonOptional}}
 		Optional<{{{type}}}> {{{propertyName}}};
 		try {
 			{{{propertyName}}} = {{{getter}}}();
 			if ({{{propertyName}}}.isPresent()) {
 				retval.addAll({{{propertyName}}}.get().verify(verifiedIds, specVersion, profiles));
+		{{/nonOptional}}
 			{{#required}}
 			else {
 				if (!Collections.disjoint(profiles, Arrays.asList(new ProfileIdentifierType[] { {{{requiredProfiles}}} }))) {
@@ -133,11 +151,20 @@ public class {{{className}}} extends {{{superClass}}} {{#compareUsingProperties}
 		}
 		{{/objectProperties}}
 		{{#anyLicenseInfoProperties}}
+		{{#nonOptional}}
+		{{{type}}} {{{propertyName}}};
+		try {
+			{{{propertyName}}} = {{{getter}}}();
+			if (Objects.nonNull({{{propertyName}}})) {
+				retval.addAll({{{propertyName}}}.verify(verifiedIds, specVersion, profiles));
+		{{/nonOptional}}
+		{{^nonOptional}}
 		Optional<{{{type}}}> {{{propertyName}}};
 		try {
 			{{{propertyName}}} = {{{getter}}}();
 			if ({{{propertyName}}}.isPresent()) {
 				retval.addAll({{{propertyName}}}.get().verify(verifiedIds, specVersion, profiles));
+		{{/nonOptional}}
 			{{#required}}
 			else {
 				if (!Collections.disjoint(profiles, Arrays.asList(new ProfileIdentifierType[] { {{{requiredProfiles}}} }))) {
@@ -151,42 +178,86 @@ public class {{{className}}} extends {{{superClass}}} {{#compareUsingProperties}
 		{{/anyLicenseInfoProperties}}
 		{{#enumerationProperties}}
 		try {
+			{{#nonOptional}}
+			{{{type}}} {{{propertyName}}} = {{{getter}}}();
+			{{#required}}
+			if (Objects.isNull({{{propertyName}}})) {
+				retval.add("Missing {{{propertyName}}} in {{{className}}}");
+			}
+			{{/required}}
+			{{/nonOptional}}
+			{{^nonOptional}}
 			Optional<{{{type}}}> {{{propertyName}}} = {{{getter}}}();
 			{{#required}}
 			if (!{{{propertyName}}}.isPresent()) {
 				retval.add("Missing {{{propertyName}}} in {{{className}}}");
 			}
 			{{/required}}
+			{{/nonOptional}}
 		} catch (InvalidSPDXAnalysisException e) {
 			retval.add("Error getting {{{propertyName}}} for {{{className}}}: "+e.getMessage());
 		}
 		{{/enumerationProperties}}
 		{{#booleanProperties}}
 		try {
+			{{#nonOptional}}
+			{{{type}}} {{{propertyName}}} = {{{getter}}}();
+			{{#required}}
+			if (Objects.isNull({{{propertyName}}})) {
+				retval.add("Missing {{{propertyName}}} in {{{className}}}");
+			}
+			{{/required}}
+			{{/nonOptional}}
+			{{^nonOptional}}
 			Optional<{{{type}}}> {{{propertyName}}} = {{{getter}}}();
 			{{#required}}
 			if (!{{{propertyName}}}.isPresent()) {
 				retval.add("Missing {{{propertyName}}} in {{{className}}}");
 			}
 			{{/required}}
+			{{/nonOptional}}
 		} catch (InvalidSPDXAnalysisException e) {
 			retval.add("Error getting {{{propertyName}}} for {{{className}}}: "+e.getMessage());
 		}
 		{{/booleanProperties}}
 		{{#integerProperties}}
 		try {
+			{{#nonOptional}}
+			{{{type}}} {{{propertyName}}} = {{{getter}}}();
+			{{#required}}
+			if (Objects.isNull({{{propertyName}}})) {
+				retval.add("Missing {{{propertyName}}} in {{{className}}}");
+			}
+			{{/required}}
+			{{/nonOptional}}
+			{{^nonOptional}}
 			Optional<{{{type}}}> {{{propertyName}}} = {{{getter}}}();
 			{{#required}}
 			if (!{{{propertyName}}}.isPresent()) {
 				retval.add("Missing {{{propertyName}}} in {{{className}}}");
 			}
 			{{/required}}
+			{{/nonOptional}}
 		} catch (InvalidSPDXAnalysisException e) {
 			retval.add("Error getting {{{propertyName}}} for {{{className}}}: "+e.getMessage());
 		}
 		{{/integerProperties}}
 		{{#stringProperties}}
 		try {
+			{{#nonOptional}}
+			String {{{propertyName}}} = {{{getter}}}();
+			{{#required}}
+			if (Objects.isNull({{{propertyName}}})) {
+				retval.add("Missing {{{propertyName}}} in {{{className}}}");
+			}
+			{{/required}}
+			{{#pattern}}
+			if (Objects.nonNull({{{propertyName}}}) && !Pattern.matches({{{pattern}}}, {{{propertyName}}})) {
+				retval.add("{{{propertyName}}} value '" + {{{propertyName}}}.get() + 
+					"' does not match the pattern '{{{pattern}}}'");
+			{{/pattern}}
+			{{/nonOptional}}
+			{{^nonOptional}}
 			Optional<String> {{{propertyName}}} = {{{getter}}}();
 			{{#required}}
 			if (!{{{propertyName}}}.isPresent()) {
@@ -194,10 +265,11 @@ public class {{{className}}} extends {{{superClass}}} {{#compareUsingProperties}
 			}
 			{{/required}}
 			{{#pattern}}
-			if (!Pattern.matches({{{pattern}}}, {{{propertyName}}}.get()) {
+			if ({{{propertyName}}}.isPresent() && !Pattern.matches({{{pattern}}}, {{{propertyName}}}.get()) {
 				retval.add("{{{propertyName}}} value '" + {{{propertyName}}}.get() + 
 					"' does not match the pattern '{{{pattern}}}'");
 			{{/pattern}}
+			{{/nonOptional}}
 		} catch (InvalidSPDXAnalysisException e) {
 			retval.add("Error getting {{{propertyName}}} for {{{className}}}: "+e.getMessage());
 		}
@@ -289,12 +361,23 @@ public class {{{className}}} extends {{{superClass}}} {{#compareUsingProperties}
 	{{/objectPropertyValueSet}}
 	{{#elementProperties}}
 	
+	{{#nonOptional}}
+	/**
+	 * @return the {{{propertyName}}}
+	 */
+	public @Nullable Element {{{getter}}}() throws InvalidSPDXAnalysisException {
+		Optional<Element> retval = getElementPropertyValue(SpdxConstants.{{{propertyConstant}}});
+		return retval.isPresent() ? retval.get() : null;
+	}
+	{{/nonOptional}}
+	{{^nonOptional}}
 	/**
 	 * @return the {{{propertyName}}}
 	 */
 	public Optional<Element> {{{getter}}}() throws InvalidSPDXAnalysisException {
 		return getElementPropertyValue(SpdxConstants.{{{propertyConstant}}});
 	}
+	{{/nonOptional}}
 	
 	/**
 	 * @param {{{propertyName}}} the {{{propertyName}}} to set
@@ -308,7 +391,25 @@ public class {{{className}}} extends {{{superClass}}} {{#compareUsingProperties}
 	{{/elementProperties}}
 	
 	{{#objectProperties}}
-	
+
+	{{#nonOptional}}
+	/**
+	 * @return the {{{propertyName}}}
+	 */
+	 @SuppressWarnings("unchecked")
+	public @Nullable {{{type}}} {{{getter}}}() throws InvalidSPDXAnalysisException {
+		Optional<Object> retval = getObjectPropertyValue(SpdxConstants.{{{propertyConstant}}});
+		if (retval.isPresent()) {
+			if (!(retval.get() instanceof {{{type}}})) {
+				throw new InvalidSPDXAnalysisException("Incorrect type stored for {{{propertyname}}}");
+			}
+			return ({{{type}}})(retval.get());
+		} else {
+			return null;
+		}
+	}
+	{{/nonOptional}}	
+	{{^nonOptional}}
 	/**
 	 * @return the {{{propertyName}}}
 	 */
@@ -324,6 +425,7 @@ public class {{{className}}} extends {{{superClass}}} {{#compareUsingProperties}
 			return Optional.empty();
 		}
 	}
+	{{/nonOptional}}
 	
 	/**
 	 * @param {{{propertyName}}} the {{{propertyName}}} to set
@@ -337,13 +439,24 @@ public class {{{className}}} extends {{{superClass}}} {{#compareUsingProperties}
 	{{/objectProperties}}
 	{{#anyLicenseInfoProperties}}
 	
+	{{^nonOptional}}
 	/**
 	 * @return the {{{propertyName}}}
 	 */
 	public Optional<{{{type}}}> {{{getter}}}() throws InvalidSPDXAnalysisException {
 		return getAnyLicenseInfoPropertyValue(SpdxConstants.{{{propertyConstant}}});
 	}
-	
+	{{/nonOptional}}
+	{{#nonOptional}}
+	/**
+	 * @return the {{{propertyName}}}
+	 */
+	public @Nullable AnyLicenseInfo {{{getter}}}() throws InvalidSPDXAnalysisException {
+		Optional<AnyLicenseInfo> retval = getAnyLicenseInfoPropertyValue(SpdxConstants.{{{propertyConstant}}});
+		return retval.isPresent() ? retval.get() : null;
+	}
+	{{/nonOptional}}
+		
 	/**
 	 * @param {{{propertyName}}} the {{{propertyName}}} to set
 	 * @return this to chain setters
@@ -356,6 +469,24 @@ public class {{{className}}} extends {{{superClass}}} {{#compareUsingProperties}
 	{{/anyLicenseInfoProperties}}
 	{{#enumerationProperties}}
 	
+	{{#nonOptional}}
+	/**
+	 * @return the {{{propertyName}}}
+	 */
+	 @SuppressWarnings("unchecked")
+	public @Nullable {{{type}}} {{{getter}}}() throws InvalidSPDXAnalysisException {
+		Optional<Enum<?>> retval = getEnumPropertyValue(SpdxConstants.{{{propertyConstant}}});
+		if (retval.isPresent()) {
+			if (!(retval.get() instanceof {{{type}}})) {
+				throw new InvalidSPDXAnalysisException("Incorrect type stored for {{{propertyname}}}");
+			}
+			return ({{{type}}})(retval.get());
+		} else {
+			return null;
+		}
+	}
+	{{/nonOptional}}
+	{{^nonOptional}}
 	/**
 	 * @return the {{{propertyName}}}
 	 */
@@ -371,7 +502,7 @@ public class {{{className}}} extends {{{superClass}}} {{#compareUsingProperties}
 			return Optional.empty();
 		}
 	}
-	
+	{{/nonOptional}}
 	/**
 	 * @param {{{propertyName}}} the {{{propertyName}}} to set
 	 * @return this to chain setters
@@ -383,13 +514,24 @@ public class {{{className}}} extends {{{superClass}}} {{#compareUsingProperties}
 	}
 	{{/enumerationProperties}}
 	{{#booleanProperties}}
-	
+
+	{{#nonOptional}}
+	/**
+	 * @return the {{{propertyName}}}
+	 */
+	public @Nullable Boolean {{{getter}}}() throws InvalidSPDXAnalysisException {
+		Optional<Boolean> retval = getBooleanPropertyValue(SpdxConstants.{{{propertyConstant}}});
+		return retval.isPresent() ? retval.get() : null;
+	}
+	{{/nonOptional}}	
+	{{^nonOptional}}
 	/**
 	 * @return the {{{propertyName}}}
 	 */
 	public Optional<{{{type}}}> {{{getter}}}() throws InvalidSPDXAnalysisException {
 		return getBooleanPropertyValue(SpdxConstants.{{{propertyConstant}}});
 	}
+	{{/nonOptional}}
 	
 	/**
 	 * @param {{{propertyName}}} the {{{propertyName}}} to set
@@ -401,15 +543,25 @@ public class {{{className}}} extends {{{superClass}}} {{#compareUsingProperties}
 		return this;
 	}
 	{{/booleanProperties}}
-
 	{{#integerProperties}}
 	
+	{{#nonOptional}}
+	/**
+	 * @return the {{{propertyName}}}
+	 */
+	public @Nullable Integer {{{getter}}}() throws InvalidSPDXAnalysisException {
+		Optional<Integer> retval = getIntegerPropertyValue(SpdxConstants.{{{propertyConstant}}});
+		return retval.isPresent() ? retval.get() : null;
+	}
+	{{/nonOptional}}
+	{{^nonOptional}}
 	/**
 	 * @return the {{{propertyName}}}
 	 */
 	public Optional<{{{type}}}> {{{getter}}}() throws InvalidSPDXAnalysisException {
 		return getIntegerPropertyValue(SpdxConstants.{{{propertyConstant}}});
 	}
+	{{/nonOptional}}
 	
 	/**
 	 * @param {{{propertyName}}} the {{{propertyName}}} to set
@@ -422,14 +574,24 @@ public class {{{className}}} extends {{{superClass}}} {{#compareUsingProperties}
 	}
 	{{/integerProperties}}
 	{{#stringProperties}}
-	
+
+	{{#nonOptional}}
+	/**
+	 * @return the {{{propertyName}}}
+	 */
+	public @Nullable String {{{getter}}}() throws InvalidSPDXAnalysisException {
+		Optional<String> retval = getStringPropertyValue(SpdxConstants.{{{propertyConstant}}});
+		return retval.isPresent() ? retval.get() : null;
+	}
+	{{/nonOptional}}	
+	{{^nonOptional}}
 	/**
 	 * @return the {{{propertyName}}}
 	 */
 	public Optional<String> {{{getter}}}() throws InvalidSPDXAnalysisException {
 		return getStringPropertyValue(SpdxConstants.{{{propertyConstant}}});
 	}
-	
+	{{/nonOptional}}
 	/**
 	 * @param {{{propertyName}}} the {{{propertyName}}} to set
 	 * @return this to chain setters
@@ -449,9 +611,28 @@ public class {{{className}}} extends {{{superClass}}} {{#compareUsingProperties}
 	public int compareTo({{{className}}} o) {
 		int retval = 0;
 		{{#compareProperties}}
-		Optional<{{{compareWithProperties.type}}}> my{{{compareWithProperties.name}}} = {{{compareWithProperties.getter}}};
-		Optional<{{{compareWithProperties.type}}}> compare{{{compareWithProperties.name}}} = o.{{{compareWithProperties.getter}}};
-		retval = compareOptional(my{{{compareWithProperties.name}}}, compare{{{compareWithProperties.name}}});
+		{{#nonOptional}}
+		{{{type}}} my{{{name}}} = {{{getter}}}();
+		{{{type}}} compare{{{.name}}} = o.{{{getter}}}();
+		if (Objects.isNull(my{{{name}}}) && Objects.nonNull(compare{{{.name}}}) {
+			return 1;
+		else if (Objects.nonNull(my{{{name}}}) && Objects.isNull(compare{{{.name}}}) {
+			return -1;
+		else {
+			retval = {{{getter}}}().compareTo(o.{{{getter}}}());
+		}
+		{{/nonOptional}}
+		{{^nonOptional}}
+		Optional<{{{type}}}> my{{{name}}} = {{{getter}}}();
+		Optional<{{{type}}}> compare{{{.name}}} = o.{{{getter}}}();
+		if (my{{{name}}}.isPresent() && !compare{{{name}}}.isPresent()) {
+			retval = 1;
+		else if (!my{{{name}}}.isPresent() && compare{{{name}}}.isPresent()) {
+			retval = -1;
+		else {
+			retval = my{{{name}}}.get().compareTo(compare{{{name}}}.get());
+		}
+		{{/nonOptional}}
 		if (retval != 0) {
 			return retval;
 		}
@@ -469,12 +650,22 @@ public class {{{className}}} extends {{{superClass}}} {{#compareUsingProperties}
 		try {
 			StringBuilder sb = new StringBuilder();
 			{{#toStringProperties}}
-			Optional<{{{type}}}> {{{name}}} = {{{getter}}};
+			{{#nonOptional}}
+			{{type}}} {{{name}}} = {{{getter}}}();
+			if (Objects.nonNull({{{name}}})) {
+				sb.append({{{name}}}.toString());
+			} else {
+				sb.append("[{{{type}}}-Missing]");
+			}
+			{{/nonOptional}}
+			{{^nonOptional}}
+			Optional<{{{type}}}> {{{name}}} = {{{getter}}}();
 			if ({{{name}}}.isPresent()) {
 				sb.append({{{name}}}.get().toString());
 			} else {
 				sb.append("[{{{type}}}-Missing]");
 			}
+			{{/nonOptional}}
 			sb.append(" ");
 			{{/toStringProperties}}
 			sb.setLenght(sb.length() == 0 ? 0 : sb.length()-1);
