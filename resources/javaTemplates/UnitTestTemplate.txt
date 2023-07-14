@@ -1,0 +1,314 @@
+/**
+ * Copyright (c) {{{year}}} Source Auditor Inc.
+ *
+ * SPDX-License-Identifier: Apache-2.0
+ * 
+ *   Licensed under the Apache License, Version 2.0 (the "License");
+ *   you may not use this file except in compliance with the License.
+ *   You may obtain a copy of the License at
+ *
+ *       http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *   Unless required by applicable law or agreed to in writing, software
+ *   distributed under the License is distributed on an "AS IS" BASIS,
+ *   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *   See the License for the specific language governing permissions and
+ *   limitations under the License.
+ */
+ 
+package {{{pkgName}}};
+
+import javax.annotation.Nullable;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import org.spdx.library.InvalidSPDXAnalysisException;
+import org.spdx.library.ModelCopyManager;
+import org.spdx.library.SpdxConstants.SpdxMajorVersion;
+import {{{pkgName}}}.{{{className}}}.{{{className}}}Builder;
+import org.spdx.storage.IModelStore;
+import org.spdx.storage.simple.InMemSpdxStore;
+import org.spdx.utility.compare.UnitTestHelper;
+
+import junit.framework.TestCase;
+
+public class {{{className}}}Test extends TestCase {
+
+	static final String TEST_OBJECT_URI = "https://test.uri/testuri";
+
+	IModelStore modelStore;
+	ModelCopyManager copyManager;
+
+	protected void setUp() throws Exception {
+		super.setUp();
+		modelStore = new InMemSpdxStore();
+		copyManager = new ModelCopyManager();
+	}
+
+	protected void tearDown() throws Exception {
+		super.tearDown();
+	}
+	
+	public static {{{className}}}Builder builderFor{{{className}}}Tests(
+					IModelStore modelStore, String objectUri, @Nullable ModelCopyManager copyManager) throws InvalidSPDXAnalysisException {
+		{{{className}}}Builder retval = new {{{className}}}Builder(modelStore, objectUri, copyManager);
+		//TODO: Add in test values
+		/********************
+		{{#elementProperties}}
+		.set{{{propertyName}}}(Element testElement)
+		{{/elementProperties}}
+		{{#objectProperties}}
+		.set{{{propertyName}}}(new {{{type}}}())
+		{{/objectProperties}}
+		{{#anyLicenseInfoProperties}}
+		.set{{{propertyName}}}(TEST_ANYLICENSE_INFO)
+		{{/anyLicenseInfoProperties}}
+		{{#enumerationProperties}}
+		.set{{{propertyName}}}({{{type}}}.ENUM)
+		{{/enumerationProperties}}
+		{{#booleanProperties}}
+		.set{{{propertyName}}}(true)
+		{{/booleanProperties}}
+		{{#integerProperties}}
+		.set{{{propertyName}}}(57)
+		{{/integerProperties}}
+		{{#stringProperties}}
+		.set{{{propertyName}}}("A string")
+		{{/stringProperties}}
+		{{#objectPropertyValueCollection}}
+		.get{{{propertyName}}}.add({{{type}}})
+		{{/objectPropertyValueCollection}}
+		{{#stringCollection}}
+		.get{{{propertyName}}}.add("Test string")
+		{{/stringCollection}}
+		{{#objectPropertyValueSet}}
+		.get{{{propertyName}}}.add({{{type}}})
+		{{/objectPropertyValueSet}}
+		{{#enumPropertyValueCollection}}
+		.get{{{propertyName}}}.add({{{type}}}.ENUM)
+		{{/enumPropertyValueCollection}}
+		***************/
+		return retval;
+	}
+	
+	/**
+	 * Test method for {@link {{{pkgName}}}.{{{className}}}#verify()}.
+	 * @throws InvalidSPDXAnalysisException on errors
+	 */
+	public void testVerify() throws InvalidSPDXAnalysisException {
+		{{{className}}} test{{{className}}} = builderFor{{{className}}}Tests(modelStore, TEST_OBJECT_URI, copyManager).build();
+		List<String> result = test{{{className}}}.verify();
+		assertTrue(result.isEmpty());
+		// TODO - add negative tests
+	}
+
+	/**
+	 * Test method for {@link {{{pkgName}}}.{{{className}}}#getType()}.
+	 */
+	public void testGetType() throws InvalidSPDXAnalysisException {
+		{{{className}}} test{{{className}}} = builderFor{{{className}}}Tests(modelStore, TEST_OBJECT_URI, copyManager).build();
+		assertEquals("{{{classProfile}}}.{{{className}}}", test{{{className}}}.getType());
+	}
+
+	/**
+	 * Test method for {@link {{{pkgName}}}.{{{className}}}#toString()}.
+	 */
+	public void testToString() throws InvalidSPDXAnalysisException {
+		{{{className}}} test{{{className}}} = builderFor{{{className}}}Tests(modelStore, TEST_OBJECT_URI, copyManager).build();
+		{{^usePropertiesForToString}}
+		assertEquals("{{{className}}}: "+TEST_OBJECT_URI, test{{{className}}}.toString());
+		{{/usePropertiesForToString}}
+		{{#usePropertiesForToString}}
+		fail("Not yet implemented");
+		{{/usePropertiesForToString}}
+	}
+
+	/**
+	 * Test method for {@link {{{pkgName}}}.{{{className}}}#Element({{{pkgName}}}.{{{className}}}.{{{className}}}Builder)}.
+	 */
+	public void test{{{className}}}{{{className}}}Builder() throws InvalidSPDXAnalysisException {
+		{{{className}}} test{{{className}}} = builderFor{{{className}}}Tests(modelStore, TEST_OBJECT_URI, copyManager).build();
+	}
+	
+	public void testEquivalent() throws InvalidSPDXAnalysisException {
+		{{{className}}} test{{{className}}} = builderFor{{{className}}}Tests(modelStore, TEST_OBJECT_URI, copyManager).build();
+		{{{className}}} test2{{{className}}} = builderFor{{{className}}}Tests(new InMemSpdxStore(), "https://testObject2", copyManager).build();
+		assertTrue(test{{{className}}}.equivalent(test2{{{className}}}));
+		assertTrue(test2{{{className}}}.equivalent(test{{{className}}}));
+		// TODO change some parameters for negative tests
+	}
+	{{#elementProperties}}
+	
+	/**
+	 * Test method for {@link {{{pkgName}}}.{{{className}}}#{{{setter}}}}.
+	 */
+	public void test{{{className}}}{{{setter}}}() throws InvalidSPDXAnalysisException {
+		{{{className}}} test{{{className}}} = builderFor{{{className}}}Tests(modelStore, TEST_OBJECT_URI, copyManager).build();
+//		assertEquals(TEST_VALUE, test{{{className}}}.{{{getter}}}());
+//		test{{{className}}}.{{{setter}}}(NEW_TEST_VALUE);
+//		assertEquals(NEW_TEST_VALUE, test{{{className}}}.{{{getter}}}());
+		fail("Not yet implemented");
+	}
+	{{/elementProperties}}
+	{{#objectProperties}}
+	
+	/**
+	 * Test method for {@link {{{pkgName}}}.{{{className}}}#{{{setter}}}}.
+	 */
+	public void test{{{className}}}{{{setter}}}() throws InvalidSPDXAnalysisException {
+		{{{className}}} test{{{className}}} = builderFor{{{className}}}Tests(modelStore, TEST_OBJECT_URI, copyManager).build();
+//		assertEquals(TEST_VALUE, test{{{className}}}.{{{getter}}}());
+//		test{{{className}}}.{{{setter}}}(NEW_TEST_VALUE);
+//		assertEquals(NEW_TEST_VALUE, test{{{className}}}.{{{getter}}}());
+		fail("Not yet implemented");
+	}
+	{{/objectProperties}}
+	{{#anyLicenseInfoProperties}}
+	
+	/**
+	 * Test method for {@link {{{pkgName}}}.{{{className}}}#{{{setter}}}}.
+	 */
+	public void test{{{className}}}{{{setter}}}() throws InvalidSPDXAnalysisException {
+		{{{className}}} test{{{className}}} = builderFor{{{className}}}Tests(modelStore, TEST_OBJECT_URI, copyManager).build();
+//		assertEquals(TEST_VALUE, test{{{className}}}.{{{getter}}}());
+//		test{{{className}}}.{{{setter}}}(NEW_TEST_VALUE);
+//		assertEquals(NEW_TEST_VALUE, test{{{className}}}.{{{getter}}}());
+		fail("Not yet implemented");
+	}
+	{{/anyLicenseInfoProperties}}
+	{{#enumerationProperties}}
+	
+	/**
+	 * Test method for {@link {{{pkgName}}}.{{{className}}}#{{{setter}}}}.
+	 */
+	public void test{{{className}}}{{{setter}}}() throws InvalidSPDXAnalysisException {
+		{{{className}}} test{{{className}}} = builderFor{{{className}}}Tests(modelStore, TEST_OBJECT_URI, copyManager).build();
+//		assertEquals(TEST_VALUE, test{{{className}}}.{{{getter}}}());
+//		test{{{className}}}.{{{setter}}}(NEW_TEST_VALUE);
+//		assertEquals(NEW_TEST_VALUE, test{{{className}}}.{{{getter}}}());
+		fail("Not yet implemented");
+	}
+	{{/enumerationProperties}}
+	{{#booleanProperties}}
+	
+	/**
+	 * Test method for {@link {{{pkgName}}}.{{{className}}}#{{{setter}}}}.
+	 */
+	public void test{{{className}}}{{{setter}}}() throws InvalidSPDXAnalysisException {
+		{{{className}}} test{{{className}}} = builderFor{{{className}}}Tests(modelStore, TEST_OBJECT_URI, copyManager).build();
+//		assertEquals(TEST_VALUE, test{{{className}}}.{{{getter}}}());
+//		test{{{className}}}.{{{setter}}}(NEW_TEST_VALUE);
+//		assertEquals(NEW_TEST_VALUE, test{{{className}}}.{{{getter}}}());
+		fail("Not yet implemented");
+	}
+	{{/booleanProperties}}
+	{{#integerProperties}}
+	
+	/**
+	 * Test method for {@link {{{pkgName}}}.{{{className}}}#{{{setter}}}}.
+	 */
+	public void test{{{className}}}{{{setter}}}() throws InvalidSPDXAnalysisException {
+		{{{className}}} test{{{className}}} = builderFor{{{className}}}Tests(modelStore, TEST_OBJECT_URI, copyManager).build();
+//		assertEquals(TEST_VALUE, test{{{className}}}.{{{getter}}}());
+//		test{{{className}}}.{{{setter}}}(NEW_TEST_VALUE);
+//		assertEquals(NEW_TEST_VALUE, test{{{className}}}.{{{getter}}}());
+		fail("Not yet implemented");
+	}
+	{{/integerProperties}}
+	{{#stringProperties}}
+	
+	/**
+	 * Test method for {@link {{{pkgName}}}.{{{className}}}#{{{setter}}}}.
+	 */
+	public void test{{{className}}}{{{setter}}}() throws InvalidSPDXAnalysisException {
+		{{{className}}} test{{{className}}} = builderFor{{{className}}}Tests(modelStore, TEST_OBJECT_URI, copyManager).build();
+//		assertEquals(TEST_VALUE, test{{{className}}}.{{{getter}}}());
+//		test{{{className}}}.{{{setter}}}(NEW_TEST_VALUE);
+//		assertEquals(NEW_TEST_VALUE, test{{{className}}}.{{{getter}}}());
+		fail("Not yet implemented");
+	}
+	{{/stringProperties}}
+	{{#objectPropertyValueCollection}}
+	
+	/**
+	 * Test method for {@link {{{pkgName}}}.{{{className}}}#{{{getter}}}}.
+	 */
+	public void test{{{className}}}{{{setter}}}() throws InvalidSPDXAnalysisException {
+		{{{className}}} test{{{className}}} = builderFor{{{className}}}Tests(modelStore, TEST_OBJECT_URI, copyManager).build();
+//		assertTrue(UnitTestHelper.isListsEquivalent(TEST_VALUE, new ArrayList<>(test{{{className}}}.{{{getter}}}()));
+//		test{{{className}}}.{{{getter}}}().clear();
+//		test{{{className}}}.{{{getter}}}().addAll(NEW_TEST_VALUE);
+//		assertTrue(UnitTestHelper.isListsEquivalent(NEW_TEST_VALUE, new ArrayList<>(test{{{className}}}.{{{getter}}}()));
+		fail("Not yet implemented");
+	}
+	{{/objectPropertyValueCollection}}
+	{{#stringCollection}}
+	
+	/**
+	 * Test method for {@link {{{pkgName}}}.{{{className}}}#{{{getter}}}}.
+	 */
+	public void test{{{className}}}{{{getter}}}() throws InvalidSPDXAnalysisException {
+		{{{className}}} test{{{className}}} = builderFor{{{className}}}Tests(modelStore, TEST_OBJECT_URI, copyManager).build();
+//		assertTrue(UnitTestHelper.isListsEqual(TEST_VALUE, new ArrayList<>(test{{{className}}}.{{{getter}}}()));
+//		test{{{className}}}.{{{getter}}}().clear();
+//		test{{{className}}}.{{{getter}}}().addAll(NEW_TEST_VALUE);
+//		assertTrue(UnitTestHelper.isListsEqual(NEW_TEST_VALUE, new ArrayList<>(test{{{className}}}.{{{getter}}}()));
+		fail("Not yet implemented");
+	}
+	{{/stringCollection}}
+	{{#objectPropertyValueSet}}
+	
+	/**
+	 * Test method for {@link {{{pkgName}}}.{{{className}}}#{{{getter}}}}.
+	 */
+	public void test{{{className}}}{{{setter}}}() throws InvalidSPDXAnalysisException {
+		{{{className}}} test{{{className}}} = builderFor{{{className}}}Tests(modelStore, TEST_OBJECT_URI, copyManager).build();
+//		assertTrue(UnitTestHelper.isListsEquivalent(TEST_VALUE, new ArrayList<>(test{{{className}}}.{{{getter}}}()));
+//		test{{{className}}}.{{{getter}}}().clear();
+//		test{{{className}}}.{{{getter}}}().addAll(NEW_TEST_VALUE);
+//		assertTrue(UnitTestHelper.isListsEquivalent(NEW_TEST_VALUE, new ArrayList<>(test{{{className}}}.{{{getter}}}()));
+		fail("Not yet implemented");
+	}
+	{{/objectPropertyValueSet}}
+	{{#enumPropertyValueCollection}}
+	
+	/**
+	 * Test method for {@link {{{pkgName}}}.{{{className}}}#{{{getter}}}}.
+	 */
+	public void test{{{className}}}{{{getter}}}() throws InvalidSPDXAnalysisException {
+		{{{className}}} test{{{className}}} = builderFor{{{className}}}Tests(modelStore, TEST_OBJECT_URI, copyManager).build();
+//		assertTrue(UnitTestHelper.isListsEqual(TEST_VALUE, new ArrayList<>(test{{{className}}}.{{{getter}}}()));
+//		test{{{className}}}.{{{getter}}}().clear();
+//		test{{{className}}}.{{{getter}}}().addAll(NEW_TEST_VALUE);
+//		assertTrue(UnitTestHelper.isListsEqual(NEW_TEST_VALUE, new ArrayList<>(test{{{className}}}.{{{getter}}}()));
+		fail("Not yet implemented");
+	}
+	{{/enumPropertyValueCollection}}
+
+/*
+	{{#elementProperties}}
+	{{/elementProperties}}
+	{{#objectProperties}}
+	{{/objectProperties}}
+	{{#anyLicenseInfoProperties}}
+	{{/anyLicenseInfoProperties}}
+	{{#enumerationProperties}}
+	{{/enumerationProperties}}
+	{{#booleanProperties}}
+	{{/booleanProperties}}
+	{{#integerProperties}}
+	{{/integerProperties}}
+	{{#stringProperties}}
+	{{/stringProperties}}
+	{{#objectPropertyValueCollection}}
+	{{/objectPropertyValueCollection}}
+	{{#stringCollection}}
+	{{/stringCollection}}
+	{{#objectPropertyValueSet}}
+	{{/objectPropertyValueSet}}
+	{{#enumPropertyValueCollection}}
+	{{/enumPropertyValueCollection}}
+*/
+
+}

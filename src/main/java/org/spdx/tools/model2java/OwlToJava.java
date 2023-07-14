@@ -18,7 +18,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.Map.Entry;
 import java.util.Set;
 
@@ -329,7 +328,7 @@ public class OwlToJava {
 	private static final String JAVA_CLASS_TEMPLATE = "ModelObjectTemplate.txt";
 	private static final String ENUM_CLASS_TEMPLATE = "EnumTemplate.txt";
 	private static final String SPDX_CONSTANTS_TEMPLATE = "SpdxConstantsTemplate.txt";
-	
+	private static final String UNIT_TEST_TEMPLATE = "UnitTestTemplate.txt";
 	private static Set<String> INTEGER_TYPES = new HashSet<>();
 	static {
 		INTEGER_TYPES.add(XSD_POSITIVE_INTEGER);
@@ -417,7 +416,6 @@ public class OwlToJava {
 			List<OntProperty> properties = ontClass.listDeclaredProperties(true).toList();
 			String superClassUri = superClasses.isEmpty() ? null : superClasses.get(0).getURI();
 			try {
-				//TODO: Handle individual classes
 				if (isEnumClass(ontClass)) {
 					generateJavaEnum(dir, classUri, name, allIndividuals, comment);
 				} else if (!stringTypes.contains(classUri)) { // TODO: we may want to handle String subtypes in the future
@@ -695,6 +693,7 @@ public class OwlToJava {
 			@Nullable String superClassUri) throws IOException, OwlToJavaException {
 		String pkgName = uriToPkg(classUri);
 		File sourceFile = createJavaSourceFile(classUri, dir);
+		File unitTestFile = createUnitTestFile(classUri, dir);
 		Set<String> requiredImports = new HashSet<>();
 		Map<String, Object> mustacheMap = new HashMap<>();
 		mustacheMap.put("className", name);
@@ -734,9 +733,8 @@ public class OwlToJava {
 		mustacheMap.put("usePropertiesForToString", false); // use properties to implement toString
 		mustacheMap.put("toStringProperties", new ArrayList<Map<String, Object>>()); // List of property mustache maps to use in compare
 		//TODO: Figure out how to handle version specific verify
-		//TODO: Add builder to template
-		
 		writeMustacheFile(JAVA_CLASS_TEMPLATE, sourceFile, mustacheMap);
+		writeMustacheFile(UNIT_TEST_TEMPLATE, unitTestFile, mustacheMap);
 	}
 	
 
@@ -977,19 +975,6 @@ public class OwlToJava {
 		}
 		return retval;
 	}
-
-	/**
-	 * @param dir Directory to store the source files in
-	 * @param classUri URI for the class
-	 * @param name local name for the class
-	 * @param properties properties for the class
-	 * @param comment Description of the class
-	 * @throws IOException 
-	 */
-	private void generateUnitTest(File dir, String classUri, String name,
-			List<OntProperty> properties, String comment) throws IOException {
-		//TODO: Implement
-	}
 	
 
 	/**
@@ -1108,6 +1093,27 @@ public class OwlToJava {
 		writer.println(" * SPDX-License-Identifier: Apache-2.0");
 		writer.println("");
 		writer.println(" */");
+	}
+
+	/**
+	 * @param classUri URI for the class under test
+	 * @param dir directory to hold the file
+	 * @return the created file
+	 * @throws IOException 
+	 */
+	private File createUnitTestFile(String classUri, File dir) throws IOException {		
+		Path path = dir.toPath().resolve("src").resolve("test").resolve("java").resolve("org")
+				.resolve("spdx").resolve("library").resolve("model");
+		String[] parts = classUri.substring(SPDX_URI_PREFIX.length()).split("/");
+		for (int i = 0; i < parts.length-1; i++) {
+			path = path.resolve(parts[i].toLowerCase());
+		}
+		Files.createDirectories(path);
+		String fileName = (RESERVED_JAVA_WORDS.containsKey(parts[parts.length-1]) ? 
+				RESERVED_JAVA_WORDS.get(parts[parts.length-1]) : parts[parts.length-1]) + "Test";
+		File retval = path.resolve(fileName + ".java").toFile();
+		retval.createNewFile();
+		return retval;
 	}
 
 	/**
