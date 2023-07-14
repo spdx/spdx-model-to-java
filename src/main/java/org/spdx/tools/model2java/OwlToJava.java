@@ -862,9 +862,6 @@ public class OwlToJava {
 		retval.put("requiredProfiles",  profileIdentifierType);
 		String classNamespace = uriToNamespaceUri(classUri);
 		boolean nonOptional = required && nameSpace.equals(classNamespace);
-		if (nonOptional) {
-			requiredImports.add("import java.util.Objects;");
-		}
 		retval.put("nonOptional", nonOptional);
 		if (Objects.nonNull(pattern)) {
 			retval.put("pattern", pattern);
@@ -961,6 +958,7 @@ public class OwlToJava {
 		retval.add("import java.util.Arrays;");
 		retval.add("import java.util.Collections;");
 		retval.add("import java.util.List;");
+		retval.add("import java.util.Objects;");
 		retval.add("import java.util.Optional;");
 		retval.add("import java.util.Set;");
 		retval.add("");
@@ -971,6 +969,7 @@ public class OwlToJava {
 		retval.add("import org.spdx.library.model.ModelObject;");
 		retval.add("import org.spdx.storage.IModelStore;");
 		retval.add("import org.spdx.storage.IModelStore.IdType;");
+		retval.add("import org.spdx.storage.IModelStore.IModelStoreLock;");
 		retval.add("");
 		Collections.sort(localImports);
 		for (String localImport:localImports) {

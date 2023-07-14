@@ -81,6 +81,48 @@ public class {{{className}}} extends {{{superClass}}} {{#compareUsingProperties}
 		{{/objectPropertyValueSet}}
 	}
 
+	/**
+	 * Create the {{{className}}} from the builder - used in the builder class
+	 * @param builder Builder to create the {{{className}}} from
+	 * @throws InvalidSPDXAnalysisException when unable to create the {{{className}}}
+	 */
+	protected {{{className}}}({{{className}}}Builder builder) throws InvalidSPDXAnalysisException {
+		super(builder);
+		{{#objectPropertyValueCollection}}
+		{{{getter}}}s().addAll(builder.{{{propertyName}}}s);
+		{{/objectPropertyValueCollection}}
+		{{#enumPropertyValueCollection}}
+		{{{getter}}}s().addAll(builder.{{{propertyName}}}s);
+		{{/enumPropertyValueCollection}}
+		{{#stringCollection}}
+		{{{getter}}}s().addAll(builder.{{{propertyName}}}s);
+		{{/stringCollection}}
+		{{#objectPropertyValueSet}}
+		{{{getter}}}s().addAll(builder.{{{propertyName}}}s);
+		{{/objectPropertyValueSet}}
+		{{#elementProperties}}
+		{{{setter}}}(builder.{{{propertyName}}});
+		{{/elementProperties}}
+		{{#objectProperties}}
+		{{{setter}}}(builder.{{{propertyName}}});
+		{{/objectProperties}}
+		{{#anyLicenseInfoProperties}}
+		{{{setter}}}(builder.{{{propertyName}}});
+		{{/anyLicenseInfoProperties}}
+		{{#enumerationProperties}}
+		{{{setter}}}(builder.{{{propertyName}}});
+		{{/enumerationProperties}}
+		{{#booleanProperties}}
+		{{{setter}}}(builder.{{{propertyName}}});
+		{{/booleanProperties}}
+		{{#integerProperties}}
+		{{{setter}}}(builder.{{{propertyName}}});
+		{{/integerProperties}}
+		{{#stringProperties}}
+		{{{setter}}}(builder.{{{propertyName}}});
+		{{/stringProperties}}
+	}
+
 	/* (non-Javadoc)
 	 * @see org.spdx.library.model.ModelObject#getType()
 	 */
@@ -745,5 +787,249 @@ public class {{{className}}} extends {{{superClass}}} {{#compareUsingProperties}
 		{{/max}}
 		{{/objectPropertyValueSet}}
 		return retval;
+	}
+	
+	public static class {{{className}}}Builder extends {{{superClass}}}Builder {
+	
+		public {{{className}}}Builder(IModelStore modelStore, String objectUri, @Nullable ModelCopyManager copyManager) {
+			super(modelStore, objectUri, copyManager);
+		}
+		
+		{{#objectPropertyValueCollection}}
+		Collection<{{{type}}}> {{{propertyName}}}s = new ArrayList<>();
+		{{/objectPropertyValueCollection}}
+		{{#enumPropertyValueCollection}}
+		Collection<{{{type}}}> {{{propertyName}}}s = new ArrayList<>();
+		{{/enumPropertyValueCollection}}
+		{{#stringCollection}}
+		Collection<String> {{{propertyName}}}s = new ArrayList<>();
+		{{/stringCollection}}
+		{{#objectPropertyValueSet}}
+		Collection<{{{type}}}> {{{propertyName}}}s = new ArrayList<>();
+		{{/objectPropertyValueSet}}
+		{{#elementProperties}}
+		{{{type}}} {{{propertyName}}} = null;
+		{{/elementProperties}}
+		{{#objectProperties}}
+		{{{type}}} {{{propertyName}}} = null;
+		{{/objectProperties}}
+		{{#anyLicenseInfoProperties}}
+		AnyLicenseInfo {{{propertyName}}} = null;
+		{{/anyLicenseInfoProperties}}
+		{{#enumerationProperties}}
+		{{{type}}} {{{propertyName}}} = null;
+		{{/enumerationProperties}}
+		{{#booleanProperties}}
+		Boolean {{{propertyName}}} = null;
+		{{/booleanProperties}}
+		{{#integerProperties}}
+		Integer {{{propertyName}}} = null;
+		{{/integerProperties}}
+		{{#stringProperties}}
+		String {{{propertyName}}} = null;
+		{{/stringProperties}}
+		
+		{{#objectPropertyValueCollection}}
+		
+		/**
+		 * Adds a {{{propertyName}}} to the initial collection
+		 * @parameter {{{propertyName}}} {{{propertyName}}} to add
+		 * @return this for chaining
+		**/
+		{{{className}}}Builder add{{{propertyName}}}({{{type}}} {{{propertyName}}}) {
+			if (Objects.nonNull({{{propertyName}}})) {
+				{{{propertyName}}}s.add({{{propertyName}}});
+			}
+			return this;
+		}
+		
+		/**
+		 * Adds all elements from a collection to the initial {{{propertyName}}} collection
+		 * @parameter {{{propertyName}}}Collection collection to initialize the {{{propertyName}}}
+		 * @return this for chaining
+		**/
+		{{{className}}}Builder addAll{{{propertyName}}}(Collection<{{{type}}}> {{{propertyName}}}Collection) {
+			if (Objects.nonNull({{{propertyName}}}Collection)) {
+				{{{propertyName}}}s.addAll({{{propertyName}}}Collection);
+			}
+			return this;
+		}
+		{{/objectPropertyValueCollection}}
+		{{#enumPropertyValueCollection}}
+		
+		/**
+		 * Adds a {{{propertyName}}} to the initial collection
+		 * @parameter {{{propertyName}}} {{{propertyName}}} to add
+		 * @return this for chaining
+		**/
+		{{{className}}}Builder add{{{propertyName}}}({{{type}}} {{{propertyName}}}) {
+			if (Objects.nonNull({{{propertyName}}})) {
+				{{{propertyName}}}s.add({{{propertyName}}});
+			}
+			return this;
+		}
+		
+		/**
+		 * Adds all elements from a collection to the initial {{{propertyName}}} collection
+		 * @parameter {{{propertyName}}}Collection collection to initialize the {{{propertyName}}}
+		 * @return this for chaining
+		**/
+		{{{className}}}Builder addAll{{{propertyName}}}(Collection<{{{type}}}> {{{propertyName}}}Collection) {
+			if (Objects.nonNull({{{propertyName}}}Collection)) {
+				{{{propertyName}}}s.addAll({{{propertyName}}}Collection);
+			}
+			return this;
+		}
+		{{/enumPropertyValueCollection}}
+		{{#stringCollection}}
+		
+		/**
+		 * Adds a {{{propertyName}}} to the initial collection
+		 * @parameter {{{propertyName}}} {{{propertyName}}} to add
+		 * @return this for chaining
+		**/
+		{{{className}}}Builder add{{{propertyName}}}(String {{{propertyName}}}) {
+			if (Objects.nonNull({{{propertyName}}})) {
+				{{{propertyName}}}s.add({{{propertyName}}});
+			}
+			return this;
+		}
+		
+		/**
+		 * Adds all elements from a collection to the initial {{{propertyName}}} collection
+		 * @parameter {{{propertyName}}}Collection collection to initialize the {{{propertyName}}}
+		 * @return this for chaining
+		**/
+		{{{className}}}Builder addAll{{{propertyName}}}(Collection<String> {{{propertyName}}}Collection) {
+			if (Objects.nonNull({{{propertyName}}}Collection)) {
+				{{{propertyName}}}s.addAll({{{propertyName}}}Collection);
+			}
+			return this;
+		}
+		{{/stringCollection}}
+		{{#objectPropertyValueSet}}
+		
+		/**
+		 * Adds a {{{propertyName}}} to the initial collection
+		 * @parameter {{{propertyName}}} {{{propertyName}}} to add
+		 * @return this for chaining
+		**/
+		{{{className}}}Builder add{{{propertyName}}}({{{type}}} {{{propertyName}}}) {
+			if (Objects.nonNull({{{propertyName}}})) {
+				{{{propertyName}}}s.add({{{propertyName}}});
+			}
+			return this;
+		}
+		
+		/**
+		 * Adds all elements from a collection to the initial {{{propertyName}}} collection
+		 * @parameter {{{propertyName}}}Collection collection to initialize the {{{propertyName}}}
+		 * @return this for chaining
+		**/
+		{{{className}}}Builder addAll{{{propertyName}}}(Collection<{{{type}}}> {{{propertyName}}}Collection) {
+			if (Objects.nonNull({{{propertyName}}}Collection)) {
+				{{{propertyName}}}s.addAll({{{propertyName}}}Collection);
+			}
+			return this;
+		}
+		{{/objectPropertyValueSet}}
+		{{#elementProperties}}
+		
+		/**
+		 * Sets the initial value of {{{propertyName}}}
+		 * @parameter {{{propertyName}}} value to set
+		 * @return this for chaining
+		**/
+		{{{className}}}Builder set{{{propertyName}}}({{{type}}} {{{propertyName}}}) {
+			this.{{{propertyName}}} = {{{propertyName}}};
+			return this;
+		}
+		{{/elementProperties}}
+		{{#objectProperties}}
+		
+		/**
+		 * Sets the initial value of {{{propertyName}}}
+		 * @parameter {{{propertyName}}} value to set
+		 * @return this for chaining
+		**/
+		{{{className}}}Builder set{{{propertyName}}}({{{type}}} {{{propertyName}}}) {
+			this.{{{propertyName}}} = {{{propertyName}}};
+			return this;
+		}
+		{{/objectProperties}}
+		{{#anyLicenseInfoProperties}}
+		
+		/**
+		 * Sets the initial value of {{{propertyName}}}
+		 * @parameter {{{propertyName}}} value to set
+		 * @return this for chaining
+		**/
+		{{{className}}}Builder set{{{propertyName}}}({{{type}}} {{{propertyName}}}) {
+			this.{{{propertyName}}} = {{{propertyName}}};
+			return this;
+		}
+		{{/anyLicenseInfoProperties}}
+		{{#enumerationProperties}}
+		
+		/**
+		 * Sets the initial value of {{{propertyName}}}
+		 * @parameter {{{propertyName}}} value to set
+		 * @return this for chaining
+		**/
+		{{{className}}}Builder set{{{propertyName}}}({{{type}}} {{{propertyName}}}) {
+			this.{{{propertyName}}} = {{{propertyName}}};
+			return this;
+		}
+		{{/enumerationProperties}}
+		{{#booleanProperties}}
+		
+		/**
+		 * Sets the initial value of {{{propertyName}}}
+		 * @parameter {{{propertyName}}} value to set
+		 * @return this for chaining
+		**/
+		{{{className}}}Builder set{{{propertyName}}}({{{type}}} {{{propertyName}}}) {
+			this.{{{propertyName}}} = {{{propertyName}}};
+			return this;
+		}
+		{{/booleanProperties}}
+		{{#integerProperties}}
+		
+		/**
+		 * Sets the initial value of {{{propertyName}}}
+		 * @parameter {{{propertyName}}} value to set
+		 * @return this for chaining
+		**/
+		{{{className}}}Builder set{{{propertyName}}}({{{type}}} {{{propertyName}}}) {
+			this.{{{propertyName}}} = {{{propertyName}}};
+			return this;
+		}
+		{{/integerProperties}}
+		{{#stringProperties}}
+		
+		/**
+		 * Sets the initial value of {{{propertyName}}}
+		 * @parameter {{{propertyName}}} value to set
+		 * @return this for chaining
+		**/
+		{{{className}}}Builder set{{{propertyName}}}(String {{{propertyName}}}) {
+			this.{{{propertyName}}} = {{{propertyName}}};
+			return this;
+		}
+		{{/stringProperties}}
+	
+		
+		/**
+		 * @return the {{{className}}}
+		 * @throws InvalidSPDXAnalysisException on any errors during build
+		 */
+		public {{{className}}} build() throws InvalidSPDXAnalysisException {
+			IModelStoreLock lock = modelStore.enterCriticalSection(false);
+			try {
+				return new {{{className}}}(this);
+			} finally {
+				modelStore.leaveCriticalSection(lock);
+			}
+		}
 	}
 }
