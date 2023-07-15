@@ -89,6 +89,18 @@ public class {{{className}}} extends {{{superClass}}} {{#compareUsingProperties}
 	protected {{{className}}}({{{className}}}Builder builder) throws InvalidSPDXAnalysisException {
 		super(builder);
 		{{#objectPropertyValueCollection}}
+		{{{propertyName}}}s = (Collection<{{{type}}}>)(Collection<?>)this.getObjectPropertyValueCollection(SpdxConstants.{{{propertyConstant}}}, {{{type}}}.class);
+		{{/objectPropertyValueCollection}}
+		{{#enumPropertyValueCollection}}
+		{{{propertyName}}}s = (Collection<{{{type}}}>)(Collection<?>)this.getObjectPropertyValueCollection(SpdxConstants.{{{propertyConstant}}}, {{{type}}}.class);
+		{{/enumPropertyValueCollection}}
+		{{#stringCollection}}
+		{{{propertyName}}}s = (Collection<String>)(Collection<?>)this.getObjectPropertyValueCollection(SpdxConstants.{{{propertyConstant}}}, String.class);
+		{{/stringCollection}}
+		{{#objectPropertyValueSet}}
+		{{{propertyName}}}s = (Collection<{{{type}}}>)(Collection<?>)this.getObjectPropertyValueSet(SpdxConstants.{{{propertyConstant}}}, {{{type}}}.class);
+		{{/objectPropertyValueSet}}
+		{{#objectPropertyValueCollection}}
 		{{{getter}}}s().addAll(builder.{{{propertyName}}}s);
 		{{/objectPropertyValueCollection}}
 		{{#enumPropertyValueCollection}}
@@ -527,7 +539,7 @@ public class {{{className}}} extends {{{superClass}}} {{#compareUsingProperties}
 	protected List<String> _verify(Set<String> verifiedIds, String specVersion, List<ProfileIdentifierType> profiles) {
 		List<String> retval = new ArrayList<>();
 		{{#verifySuperclass}}
-		retval.addAll(super.verify(verifiedIds, specVersion, profiles));
+		retval.addAll(super._verify(verifiedIds, specVersion, profiles));
 		{{/verifySuperclass}}
 		{{#elementProperties}}
 		{{#nonOptional}}

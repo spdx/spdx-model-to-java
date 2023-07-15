@@ -35,15 +35,21 @@ public class SpdxConstants {
 			return VERSION_3;
 		}
 	}
-	
 	{{#namespaces}}
+	
 	/**
 	 * {{{namespaceName}}} namespace
 	 */
 	public static final String {{{namespaceConstantName}}} = "{{{namespaceUri}}}";
-	
 	{{#propertyDescriptors}}
 	public static final PropertyDescriptor {{{propertyConstantName}}} = new PropertyDescriptor("{{{propertyConstantValue}}}", {{{namespaceConstantName}}});
 	{{/propertyDescriptors}}
 	{{/namespaces}}
+	
+	// class types
+	{{#classConstantDefinitions}}
+	{{{.}}}
+	{{/classConstantDefinitions}}
+	
+	{{{allClassConstants}}}
 }

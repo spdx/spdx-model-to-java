@@ -395,9 +395,11 @@ public class OwlToJava {
 		List<Individual> allIndividuals = model.listIndividuals().toList();
 		List<OntClass> allClasses = model.listClasses().toList();
 		collectTypeInformation(allClasses, allIndividuals);
+		List<String> classUris = new ArrayList<>();
 		allClasses.forEach(ontClass -> {
 			String comment = ontClass.getComment(null);
 			String classUri = ontClass.getURI();
+			classUris.add(classUri);
 			String name = ontClass.getLocalName();
 			if (RESERVED_JAVA_WORDS.containsKey(name)) {
 				name = RESERVED_JAVA_WORDS.get(name);
@@ -429,7 +431,7 @@ public class OwlToJava {
 				warnings.add("I/O Error generating Java class for "+name+":" + e.getMessage());
 			}
 		});
-		generateSpdxConstants(dir);
+		generateSpdxConstants(dir, classUris);
 		return warnings;
 	}
 
@@ -438,7 +440,7 @@ public class OwlToJava {
 	 * @param dir source directory for the constants file
 	 * @throws IOException thrown if any IO errors occurs
 	 */
-	private void generateSpdxConstants(File dir) throws IOException {
+	private void generateSpdxConstants(File dir, List<String> classUris) throws IOException {
 		Map<String, Set<String>> namespaceToPropUri = new HashMap<>();
 		for (String propUri:propertyUrisForConstants) {
 			String nameSpaceUri = this.uriToNamespaceUri(propUri);
@@ -475,6 +477,33 @@ public class OwlToJava {
 			namespaceMustacheList.add(namespaceMustacheMap);
 		}
 		mustacheMap.put("namespaces", namespaceMustacheList);
+		List<String> classConstantDefinitions = new ArrayList<>();
+		List<String> classConstants = new ArrayList<>();
+		for (String classUri:classUris) {
+			String className = uriToName(classUri);
+			String profile = uriToProfile(classUri);
+			String constName = camelCaseToConstCase(profile) + "_" + camelCaseToConstCase(className);
+			classConstantDefinitions.add("static final String " + constName + " = \"" + profile + "." + className + "\";");
+			classConstants.add(constName);
+		}
+		StringBuilder classConstantString = new StringBuilder("static final String[] ALL_SPDX_CLASSES = {");
+		int lineLen = classConstantString.length();
+		if (classConstants.size() > 0) {
+			classConstantString.append(classConstants.get(0));
+			for (int i = 1; i < classConstants.size(); i++) {
+				classConstantString.append(", ");
+				lineLen = lineLen + 2;
+				if (lineLen > 70) {
+					classConstantString.append("\n\t\t\t");
+					lineLen = 0;
+				}
+				classConstantString.append(classConstants.get(i));
+				lineLen = lineLen + classConstants.get(i).length();
+			}
+		}
+		classConstantString.append("};");
+		mustacheMap.put("classConstantDefinitions", classConstantDefinitions);
+		mustacheMap.put("allClassConstants", classConstantString.toString());
 		Path path = dir.toPath().resolve("src").resolve("main").resolve("java").resolve("org")
 				.resolve("spdx").resolve("library");
 		Files.createDirectories(path);
