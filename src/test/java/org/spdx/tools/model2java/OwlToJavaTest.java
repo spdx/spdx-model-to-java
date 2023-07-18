@@ -46,7 +46,7 @@ public class OwlToJavaTest extends TestCase {
 				otj = new OwlToJava(model);
 				List<String> warnings = otj.generate(tempDir);
 				assertTrue(warnings.isEmpty());
-				Path aIPath = tempDir.toPath().resolve("src")
+				Path aIPath = tempDir.toPath().resolve("generated").resolve("src")
 					.resolve("main")
 					.resolve("java")
 					.resolve("org")

@@ -8,17 +8,17 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
-import java.io.PrintWriter;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Map.Entry;
 import java.util.Set;
 
 import javax.annotation.Nullable;
@@ -320,6 +320,7 @@ public class OwlToJava {
 	private static final String DATE_TIME_TYPE = "https://spdx.org/rdf/Core/DateTime";
 	private static final String ANY_URI_TYPE = "http://www.w3.org/2001/XMLSchema#anyURI";
 	private static final String OWL_THING_URI = "http://www.w3.org/2002/07/owl#Thing";
+	private static final String XSD_INTEGER = "http://www.w3.org/2001/XMLSchema#integer";
 	private static final String XSD_POSITIVE_INTEGER = "http://www.w3.org/2001/XMLSchema#positiveInteger";
 	private static final String XSD_NON_NEGATIVE_INTEGER = "http://www.w3.org/2001/XMLSchema#nonNegativeInteger";
 	
@@ -332,9 +333,19 @@ public class OwlToJava {
 	private static Set<String> INTEGER_TYPES = new HashSet<>();
 	static {
 		INTEGER_TYPES.add(XSD_POSITIVE_INTEGER);
-		INTEGER_TYPES.add("http://www.w3.org/2001/XMLSchema#decimal");
 		INTEGER_TYPES.add(XSD_NON_NEGATIVE_INTEGER);
-		//TODO: Add other types - needs research
+		INTEGER_TYPES.add(XSD_INTEGER);
+		INTEGER_TYPES.add("http://www.w3.org/2001/XMLSchema#byte");
+		INTEGER_TYPES.add("http://www.w3.org/2001/XMLSchema#int");
+		INTEGER_TYPES.add("http://www.w3.org/2001/XMLSchema#long");
+		INTEGER_TYPES.add("http://www.w3.org/2001/XMLSchema#negativeInteger");
+		INTEGER_TYPES.add("http://www.w3.org/2001/XMLSchema#nonPositiveInteger");
+		INTEGER_TYPES.add("http://www.w3.org/2001/XMLSchema#positiveInteger");
+		INTEGER_TYPES.add("http://www.w3.org/2001/XMLSchema#short");
+		INTEGER_TYPES.add("http://www.w3.org/2001/XMLSchema#unsignedLong");
+		INTEGER_TYPES.add("http://www.w3.org/2001/XMLSchema#unsignedInt");
+		INTEGER_TYPES.add("http://www.w3.org/2001/XMLSchema#unsignedShort");
+		INTEGER_TYPES.add("http://www.w3.org/2001/XMLSchema#unsignedByte");
 	}
 	
 	private static Map<String, String> RESERVED_JAVA_WORDS = new HashMap<>();
@@ -347,7 +358,7 @@ public class OwlToJava {
 	
 	private static Set<String> SET_TYPE_URIS = new HashSet<>(); // set of URI's for types should be treated as sets
 	static {
-		//TODO: Add any SET_TYPE_URIS here
+		// Currently, there are no sets - all are treated as collections
 	}
 	OntModel model = null;
 	Shapes shapes = null;
@@ -373,7 +384,15 @@ public class OwlToJava {
 		OBJECT_SET, ENUM_COLLECTION
 	}
 
-
+	static String YEAR;
+	
+	static {
+		Date date = new Date();
+		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy");
+		YEAR = dateFormat.format(date);
+	}
+	
+	
 	/**
 	 * @param model model to use to generate the java files
 	 */
@@ -504,7 +523,7 @@ public class OwlToJava {
 		classConstantString.append("};");
 		mustacheMap.put("classConstantDefinitions", classConstantDefinitions);
 		mustacheMap.put("allClassConstants", classConstantString.toString());
-		Path path = dir.toPath().resolve("src").resolve("main").resolve("java").resolve("org")
+		Path path = dir.toPath().resolve("generated").resolve("src").resolve("main").resolve("java").resolve("org")
 				.resolve("spdx").resolve("library");
 		Files.createDirectories(path);
 		File constantsFile = path.resolve("SpdxConstants.java").toFile();
@@ -603,7 +622,6 @@ public class OwlToJava {
 			return PropertyType.BOOLEAN;
 		} else if  (INTEGER_TYPES.contains(typeUri)) {
 			return PropertyType.INTEGER;
-			//TODO: Add in specific types and type checking for DATE_TIME_TYPE and ANY_URI_TYPE
 		} else if  (STRING_TYPE.equals(typeUri) || DATE_TIME_TYPE.equals(typeUri) ||
 				ANY_URI_TYPE.equals(typeUri) || stringTypes.contains(typeUri)) {
 			if (Objects.isNull(maxRestriction) || maxRestriction > 1) {
@@ -702,6 +720,7 @@ public class OwlToJava {
 			return true;
 		}
 		//TODO: Switch to enums to remove this hack
+		@SuppressWarnings("unused")
 		List<OntProperty> properties = ontClass.listDeclaredProperties().toList();
 		return this.enumClassUris.contains(ontClass.getURI());
 	}
@@ -743,7 +762,7 @@ public class OwlToJava {
 		mustacheMap.put("suppressUnchecked", !(propertyMap.get(PropertyType.OBJECT_COLLECTION).isEmpty() &&
 				propertyMap.get(PropertyType.OBJECT_SET).isEmpty() &&
 				propertyMap.get(PropertyType.STRING_COLLECTION).isEmpty()));
-		mustacheMap.put("year", "2023"); // TODO - use actual year
+		mustacheMap.put("year", YEAR);
 		mustacheMap.put("pkgName", pkgName);
 		
 		mustacheMap.put("classComments", toClassComment(comment));
@@ -816,9 +835,12 @@ public class OwlToJava {
 			name = RESERVED_JAVA_WORDS.get(name);
 		}
 		retval.put("propertyName", name);
+		retval.put("propertyNameUpper", camelCaseToConstCase(name));
 		String getSetName = name.substring(0, 1).toUpperCase() + name.substring(1);
 		retval.put("getter", "get" + getSetName);
 		retval.put("setter", "set" + getSetName);
+		retval.put("adder", "add" + getSetName);
+		retval.put("addAller", "addAll" + getSetName);
 		
 		Integer min = null;
 		Integer max = null;
@@ -884,7 +906,6 @@ public class OwlToJava {
 		retval.put("type", type);
 		boolean required = min != null && min > 0;
 		retval.put("required", required);
-		//TODO: Add any additional profile restrictions
 		String profileIdentifierType = namespaceToProfileIdentifierType(nameSpace);
 		retval.put("requiredProfiles",  profileIdentifierType);
 		String classNamespace = uriToNamespaceUri(classUri);
@@ -1017,7 +1038,7 @@ public class OwlToJava {
 	private void generateJavaEnum(File dir, String classUri, String name,
 			List<Individual> allIndividuals, String comment) throws IOException {
 		Map<String, Object> mustacheMap = new HashMap<>();
-		mustacheMap.put("year", "2023"); // TODO: Implement the actual year
+		mustacheMap.put("year", YEAR);
 		mustacheMap.put("pkgName", uriToPkg(classUri));
 		mustacheMap.put("classComment", toClassComment(comment));
 		mustacheMap.put("name", name);
@@ -1102,29 +1123,6 @@ public class OwlToJava {
 	}
 
 	/**
-	 * @param enumToModelName entry mapping an enum value to the model name
-	 * @param writer 
-	 */
-	private void writeEnumEntry(Entry<String, String> enumToModelName, PrintWriter writer) {
-		writer.write(enumToModelName.getKey());
-		writer.write("(\"");
-		writer.write(enumToModelName.getValue());
-		writer.write("\")");
-	}
-
-	/**
-	 * @param writer
-	 */
-	private void writeFileHeader(PrintWriter writer) {
-		writer.println("/**");
-		writer.println(" * Copyright (c) 2019 Source Auditor Inc.");
-		writer.println("");
-		writer.println(" * SPDX-License-Identifier: Apache-2.0");
-		writer.println("");
-		writer.println(" */");
-	}
-
-	/**
 	 * @param classUri URI for the class under test
 	 * @param dir directory to hold the file
 	 * @return the created file
@@ -1152,7 +1150,7 @@ public class OwlToJava {
 	 * @throws IOException 
 	 */
 	private File createJavaSourceFile(String classUri, File dir) throws IOException {		
-		Path path = dir.toPath().resolve("src").resolve("main").resolve("java").resolve("org")
+		Path path = dir.toPath().resolve("generated").resolve("src").resolve("main").resolve("java").resolve("org")
 				.resolve("spdx").resolve("library").resolve("model");
 		String[] parts = classUri.substring(SPDX_URI_PREFIX.length()).split("/");
 		for (int i = 0; i < parts.length-1; i++) {

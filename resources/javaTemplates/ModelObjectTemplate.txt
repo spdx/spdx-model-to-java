@@ -848,7 +848,7 @@ public class {{{className}}} extends {{{superClass}}} {{#compareUsingProperties}
 		 * @parameter {{{propertyName}}} {{{propertyName}}} to add
 		 * @return this for chaining
 		**/
-		{{{className}}}Builder add{{{propertyName}}}({{{type}}} {{{propertyName}}}) {
+		{{{className}}}Builder {{{adder}}}({{{type}}} {{{propertyName}}}) {
 			if (Objects.nonNull({{{propertyName}}})) {
 				{{{propertyName}}}s.add({{{propertyName}}});
 			}
@@ -860,7 +860,7 @@ public class {{{className}}} extends {{{superClass}}} {{#compareUsingProperties}
 		 * @parameter {{{propertyName}}}Collection collection to initialize the {{{propertyName}}}
 		 * @return this for chaining
 		**/
-		{{{className}}}Builder addAll{{{propertyName}}}(Collection<{{{type}}}> {{{propertyName}}}Collection) {
+		{{{className}}}Builder {{{addAller}}}(Collection<{{{type}}}> {{{propertyName}}}Collection) {
 			if (Objects.nonNull({{{propertyName}}}Collection)) {
 				{{{propertyName}}}s.addAll({{{propertyName}}}Collection);
 			}
@@ -874,7 +874,7 @@ public class {{{className}}} extends {{{superClass}}} {{#compareUsingProperties}
 		 * @parameter {{{propertyName}}} {{{propertyName}}} to add
 		 * @return this for chaining
 		**/
-		{{{className}}}Builder add{{{propertyName}}}({{{type}}} {{{propertyName}}}) {
+		{{{className}}}Builder {{{adder}}}({{{type}}} {{{propertyName}}}) {
 			if (Objects.nonNull({{{propertyName}}})) {
 				{{{propertyName}}}s.add({{{propertyName}}});
 			}
@@ -886,7 +886,7 @@ public class {{{className}}} extends {{{superClass}}} {{#compareUsingProperties}
 		 * @parameter {{{propertyName}}}Collection collection to initialize the {{{propertyName}}}
 		 * @return this for chaining
 		**/
-		{{{className}}}Builder addAll{{{propertyName}}}(Collection<{{{type}}}> {{{propertyName}}}Collection) {
+		{{{className}}}Builder {{{addAller}}}(Collection<{{{type}}}> {{{propertyName}}}Collection) {
 			if (Objects.nonNull({{{propertyName}}}Collection)) {
 				{{{propertyName}}}s.addAll({{{propertyName}}}Collection);
 			}
@@ -900,7 +900,7 @@ public class {{{className}}} extends {{{superClass}}} {{#compareUsingProperties}
 		 * @parameter {{{propertyName}}} {{{propertyName}}} to add
 		 * @return this for chaining
 		**/
-		{{{className}}}Builder add{{{propertyName}}}(String {{{propertyName}}}) {
+		{{{className}}}Builder {{{adder}}}(String {{{propertyName}}}) {
 			if (Objects.nonNull({{{propertyName}}})) {
 				{{{propertyName}}}s.add({{{propertyName}}});
 			}
@@ -912,7 +912,7 @@ public class {{{className}}} extends {{{superClass}}} {{#compareUsingProperties}
 		 * @parameter {{{propertyName}}}Collection collection to initialize the {{{propertyName}}}
 		 * @return this for chaining
 		**/
-		{{{className}}}Builder addAll{{{propertyName}}}(Collection<String> {{{propertyName}}}Collection) {
+		{{{className}}}Builder {{{addAller}}}(Collection<String> {{{propertyName}}}Collection) {
 			if (Objects.nonNull({{{propertyName}}}Collection)) {
 				{{{propertyName}}}s.addAll({{{propertyName}}}Collection);
 			}
@@ -926,7 +926,7 @@ public class {{{className}}} extends {{{superClass}}} {{#compareUsingProperties}
 		 * @parameter {{{propertyName}}} {{{propertyName}}} to add
 		 * @return this for chaining
 		**/
-		{{{className}}}Builder add{{{propertyName}}}({{{type}}} {{{propertyName}}}) {
+		{{{className}}}Builder {{{adder}}}({{{type}}} {{{propertyName}}}) {
 			if (Objects.nonNull({{{propertyName}}})) {
 				{{{propertyName}}}s.add({{{propertyName}}});
 			}
@@ -938,7 +938,7 @@ public class {{{className}}} extends {{{superClass}}} {{#compareUsingProperties}
 		 * @parameter {{{propertyName}}}Collection collection to initialize the {{{propertyName}}}
 		 * @return this for chaining
 		**/
-		{{{className}}}Builder addAll{{{propertyName}}}(Collection<{{{type}}}> {{{propertyName}}}Collection) {
+		{{{className}}}Builder {{{addAller}}}(Collection<{{{type}}}> {{{propertyName}}}Collection) {
 			if (Objects.nonNull({{{propertyName}}}Collection)) {
 				{{{propertyName}}}s.addAll({{{propertyName}}}Collection);
 			}
@@ -952,7 +952,7 @@ public class {{{className}}} extends {{{superClass}}} {{#compareUsingProperties}
 		 * @parameter {{{propertyName}}} value to set
 		 * @return this for chaining
 		**/
-		{{{className}}}Builder set{{{propertyName}}}({{{type}}} {{{propertyName}}}) {
+		{{{className}}}Builder {{{setter}}}({{{type}}} {{{propertyName}}}) {
 			this.{{{propertyName}}} = {{{propertyName}}};
 			return this;
 		}
@@ -964,7 +964,7 @@ public class {{{className}}} extends {{{superClass}}} {{#compareUsingProperties}
 		 * @parameter {{{propertyName}}} value to set
 		 * @return this for chaining
 		**/
-		{{{className}}}Builder set{{{propertyName}}}({{{type}}} {{{propertyName}}}) {
+		{{{className}}}Builder {{{setter}}}({{{type}}} {{{propertyName}}}) {
 			this.{{{propertyName}}} = {{{propertyName}}};
 			return this;
 		}
@@ -976,7 +976,7 @@ public class {{{className}}} extends {{{superClass}}} {{#compareUsingProperties}
 		 * @parameter {{{propertyName}}} value to set
 		 * @return this for chaining
 		**/
-		{{{className}}}Builder set{{{propertyName}}}({{{type}}} {{{propertyName}}}) {
+		{{{className}}}Builder {{{setter}}}({{{type}}} {{{propertyName}}}) {
 			this.{{{propertyName}}} = {{{propertyName}}};
 			return this;
 		}
@@ -988,7 +988,7 @@ public class {{{className}}} extends {{{superClass}}} {{#compareUsingProperties}
 		 * @parameter {{{propertyName}}} value to set
 		 * @return this for chaining
 		**/
-		{{{className}}}Builder set{{{propertyName}}}({{{type}}} {{{propertyName}}}) {
+		{{{className}}}Builder {{{setter}}}({{{type}}} {{{propertyName}}}) {
 			this.{{{propertyName}}} = {{{propertyName}}};
 			return this;
 		}
@@ -1000,7 +1000,7 @@ public class {{{className}}} extends {{{superClass}}} {{#compareUsingProperties}
 		 * @parameter {{{propertyName}}} value to set
 		 * @return this for chaining
 		**/
-		{{{className}}}Builder set{{{propertyName}}}({{{type}}} {{{propertyName}}}) {
+		{{{className}}}Builder {{{setter}}}({{{type}}} {{{propertyName}}}) {
 			this.{{{propertyName}}} = {{{propertyName}}};
 			return this;
 		}
@@ -1012,7 +1012,7 @@ public class {{{className}}} extends {{{superClass}}} {{#compareUsingProperties}
 		 * @parameter {{{propertyName}}} value to set
 		 * @return this for chaining
 		**/
-		{{{className}}}Builder set{{{propertyName}}}({{{type}}} {{{propertyName}}}) {
+		{{{className}}}Builder {{{setter}}}({{{type}}} {{{propertyName}}}) {
 			this.{{{propertyName}}} = {{{propertyName}}};
 			return this;
 		}
@@ -1024,7 +1024,7 @@ public class {{{className}}} extends {{{superClass}}} {{#compareUsingProperties}
 		 * @parameter {{{propertyName}}} value to set
 		 * @return this for chaining
 		**/
-		{{{className}}}Builder set{{{propertyName}}}(String {{{propertyName}}}) {
+		{{{className}}}Builder {{{setter}}}(String {{{propertyName}}}) {
 			this.{{{propertyName}}} = {{{propertyName}}};
 			return this;
 		}
