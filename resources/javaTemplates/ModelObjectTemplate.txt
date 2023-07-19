@@ -86,6 +86,9 @@ public class {{{className}}} extends {{{superClass}}} {{#compareUsingProperties}
 	 * @param builder Builder to create the {{{className}}} from
 	 * @throws InvalidSPDXAnalysisException when unable to create the {{{className}}}
 	 */
+	 {{#suppressUnchecked}}
+	 @SuppressWarnings("unchecked")
+	 {{/suppressUnchecked}}
 	protected {{{className}}}({{{className}}}Builder builder) throws InvalidSPDXAnalysisException {
 		super(builder);
 		{{#objectPropertyValueCollection}}
@@ -293,7 +296,6 @@ public class {{{className}}} extends {{{superClass}}} {{#compareUsingProperties}
 	/**
 	 * @return the {{{propertyName}}}
 	 */
-	 @SuppressWarnings("unchecked")
 	public @Nullable {{{type}}} {{{getter}}}() throws InvalidSPDXAnalysisException {
 		Optional<Enum<?>> retval = getEnumPropertyValue(SpdxConstants.{{{propertyConstant}}});
 		if (retval.isPresent()) {
@@ -622,6 +624,9 @@ public class {{{className}}} extends {{{superClass}}} {{#compareUsingProperties}
 		{{#enumerationProperties}}
 		try {
 			{{#nonOptional}}
+			{{^hasConstraint}}
+			@SuppressWarnings("unused")
+			{{/hasConstraint}}
 			{{{type}}} {{{propertyName}}} = {{{getter}}}();
 			{{#required}}
 			if (Objects.isNull({{{propertyName}}})) {
@@ -630,6 +635,9 @@ public class {{{className}}} extends {{{superClass}}} {{#compareUsingProperties}
 			{{/required}}
 			{{/nonOptional}}
 			{{^nonOptional}}
+			{{^hasConstraint}}
+			@SuppressWarnings("unused")
+			{{/hasConstraint}}
 			Optional<{{{type}}}> {{{propertyName}}} = {{{getter}}}();
 			{{#required}}
 			if (!{{{propertyName}}}.isPresent()) {
@@ -644,6 +652,9 @@ public class {{{className}}} extends {{{superClass}}} {{#compareUsingProperties}
 		{{#booleanProperties}}
 		try {
 			{{#nonOptional}}
+			{{^hasConstraint}}
+			@SuppressWarnings("unused")
+			{{/hasConstraint}}
 			{{{type}}} {{{propertyName}}} = {{{getter}}}();
 			{{#required}}
 			if (Objects.isNull({{{propertyName}}})) {
@@ -652,6 +663,9 @@ public class {{{className}}} extends {{{superClass}}} {{#compareUsingProperties}
 			{{/required}}
 			{{/nonOptional}}
 			{{^nonOptional}}
+			{{^hasConstraint}}
+			@SuppressWarnings("unused")
+			{{/hasConstraint}}
 			Optional<{{{type}}}> {{{propertyName}}} = {{{getter}}}();
 			{{#required}}
 			if (!{{{propertyName}}}.isPresent()) {
@@ -666,6 +680,9 @@ public class {{{className}}} extends {{{superClass}}} {{#compareUsingProperties}
 		{{#integerProperties}}
 		try {
 			{{#nonOptional}}
+			{{^hasConstraint}}
+			@SuppressWarnings("unused")
+			{{/hasConstraint}}
 			{{{type}}} {{{propertyName}}} = {{{getter}}}();
 			{{#required}}
 			if (Objects.isNull({{{propertyName}}})) {
@@ -684,6 +701,9 @@ public class {{{className}}} extends {{{superClass}}} {{#compareUsingProperties}
 			{{/max}}
 			{{/nonOptional}}
 			{{^nonOptional}}
+			{{^hasConstraint}}
+			@SuppressWarnings("unused")
+			{{/hasConstraint}}
 			Optional<{{{type}}}> {{{propertyName}}} = {{{getter}}}();
 			{{#required}}
 			if (!{{{propertyName}}}.isPresent()) {
@@ -708,6 +728,9 @@ public class {{{className}}} extends {{{superClass}}} {{#compareUsingProperties}
 		{{#stringProperties}}
 		try {
 			{{#nonOptional}}
+			{{^hasConstraint}}
+			@SuppressWarnings("unused")
+			{{/hasConstraint}}
 			String {{{propertyName}}} = {{{getter}}}();
 			{{#required}}
 			if (Objects.isNull({{{propertyName}}})) {
@@ -721,6 +744,9 @@ public class {{{className}}} extends {{{superClass}}} {{#compareUsingProperties}
 			{{/pattern}}
 			{{/nonOptional}}
 			{{^nonOptional}}
+			{{^hasConstraint}}
+			@SuppressWarnings("unused")
+			{{/hasConstraint}}
 			Optional<String> {{{propertyName}}} = {{{getter}}}();
 			{{#required}}
 			if (!{{{propertyName}}}.isPresent()) {
@@ -803,6 +829,32 @@ public class {{{className}}} extends {{{superClass}}} {{#compareUsingProperties}
 	
 	public static class {{{className}}}Builder extends {{{superClass}}}Builder {
 	
+		/**
+		 * Create an {{{className}}}Builder from another model object copying the modelStore and copyManager and using an anonymous ID
+		 * @param from model object to copy the model store and copyManager from
+		 * @throws InvalidSPDXAnalysisException
+		 */
+		public {{{className}}}Builder(ModelObject from) throws InvalidSPDXAnalysisException {
+			this(from, from.getModelStore().getNextId(IdType.Anonymous, null));
+		}
+	
+		/**
+		 * Create an {{{className}}}Builder from another model object copying the modelStore and copyManager
+		 * @param from model object to copy the model store and copyManager from
+		 * @param objectUri URI for the object
+		 * @param objectUri
+		 */
+		public {{{className}}}Builder(ModelObject from, String objectUri) {
+			this(from.getModelStore(), objectUri, from.getCopyManager());
+			setStrict(from.isStrict());
+		}
+		
+		/**
+		 * Creates a {{{className}}}Builder
+		 * @param modelStore model store for the built {{{className}}}
+		 * @param objectUri objectUri for the built {{{className}}}
+		 * @param copyManager optional copyManager for the built {{{className}}}
+		 */
 		public {{{className}}}Builder(IModelStore modelStore, String objectUri, @Nullable ModelCopyManager copyManager) {
 			super(modelStore, objectUri, copyManager);
 		}

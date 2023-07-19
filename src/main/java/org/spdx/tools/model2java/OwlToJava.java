@@ -81,8 +81,8 @@ public class OwlToJava {
 	
 	class ConstraintCollector implements ConstraintVisitor {
 		
-		private Integer min = null;
-		private Integer max = null;
+		private Integer minCardinality = null;
+		private Integer maxCardinality = null;
 		private String pattern = null;
 		private Node dataType = null;
 		private Integer strMinLengh = null;
@@ -107,12 +107,12 @@ public class OwlToJava {
 
 		@Override
 		public void visit(MinCount constraint) {
-			min = constraint.getMinCount();
+			minCardinality = constraint.getMinCount();
 		}
 
 		@Override
 		public void visit(MaxCount constraint) {
-			max = constraint.getMaxCount();
+			maxCardinality = constraint.getMaxCount();
 		}
 
 		@Override
@@ -262,15 +262,15 @@ public class OwlToJava {
 		/**
 		 * @return minimum constraint
 		 */
-		public Integer getMin() {
-			return min;
+		public Integer getMinCardinality() {
+			return minCardinality;
 		}
 
 		/**
-		 * @return the max
+		 * @return the maxCardinality
 		 */
-		public Integer getMax() {
-			return max;
+		public Integer getMaxCardinality() {
+			return maxCardinality;
 		}
 
 		/**
@@ -346,6 +346,7 @@ public class OwlToJava {
 		INTEGER_TYPES.add("http://www.w3.org/2001/XMLSchema#unsignedInt");
 		INTEGER_TYPES.add("http://www.w3.org/2001/XMLSchema#unsignedShort");
 		INTEGER_TYPES.add("http://www.w3.org/2001/XMLSchema#unsignedByte");
+		INTEGER_TYPES.add("http://www.w3.org/2001/XMLSchema#decimal");
 	}
 	
 	private static Map<String, String> RESERVED_JAVA_WORDS = new HashMap<>();
@@ -748,6 +749,10 @@ public class OwlToJava {
 		mustacheMap.put("classProfile", uriToProfile(classUri));
 		Map<PropertyType, List<Map<String, Object>>> propertyMap = findProperties(properties, classShape, 
 				requiredImports, propertyUrisForConstants, classUri);
+		if (!propertyMap.isEmpty()) {
+			requiredImports.add("import org.spdx.library.SpdxConstants;");
+			requiredImports.add("import java.util.Optional;");
+		}
 		mustacheMap.put("elementProperties", propertyMap.get(PropertyType.ELEMENT));
 		mustacheMap.put("objectProperties", propertyMap.get(PropertyType.OBJECT));
 		mustacheMap.put("anyLicenseInfoProperties", propertyMap.get(PropertyType.ANY_LICENSE_INFO));
@@ -842,8 +847,10 @@ public class OwlToJava {
 		retval.put("adder", "add" + getSetName);
 		retval.put("addAller", "addAll" + getSetName);
 		
-		Integer min = null;
-		Integer max = null;
+		Integer minCardinality = null;
+		Integer maxCardinality = null;
+		Integer minStringLength = null;
+		Integer maxStringLength = null;
 		String pattern = null;
 		Node classRestriction = null;
 		Node dataTypeRestriction = null;
@@ -851,36 +858,46 @@ public class OwlToJava {
 		for (Constraint constraint:propertyShape.getConstraints()) {
 			ConstraintCollector collector = new ConstraintCollector();
 			constraint.visit(collector);
-			if (collector.getMin() != null) {
-				if (min == null || min > collector.getMin()) {
-					min = collector.getMin();
+			if (collector.getMinCardinality() != null) {
+				if (minCardinality == null || minCardinality > collector.getMinCardinality()) {
+					minCardinality = collector.getMinCardinality();
 				}
 			}
-			if (collector.getMax() != null) {
-				if (max == null || max > collector.getMax()) {
-					max = collector.getMax();
+			if (collector.getMaxCardinality() != null) {
+				if (maxCardinality == null || maxCardinality > collector.getMaxCardinality()) {
+					maxCardinality = collector.getMaxCardinality();
 				}
 			}
 			if (collector.getPattern() != null) {
 				pattern = collector.getPattern();
 			}
-			
+			if (collector.getStrMinLengh() != null) {
+				if (minStringLength == null || minStringLength > collector.getStrMaxLenght()) {
+					minStringLength = collector.getStrMinLengh();
+				}
+			}
+			if (collector.getStrMaxLenght() != null) {
+				if (maxStringLength == null || maxStringLength < collector.getStrMaxLenght()) {
+					maxStringLength = collector.getStrMaxLenght();
+				}
+			}
 			if (collector.getDataType() != null) {
 				dataTypeRestriction = collector.getDataType();
 			} else if (collector.getExpectedClass() != null) {
 				classRestriction = collector.getExpectedClass();
 			}
 		}
-
 		List<? extends OntResource> ranges = property.listRange().toList();
 		if (ranges.size() != 1) {
 			throw new OwlToJavaException("Ambiguous or missing type for property "+property.getLocalName());
 		}
 		OntResource rangeResource = ranges.get(0);
-		PropertyType propertyType = determinePropertyType(rangeResource, classRestriction, dataTypeRestriction, min, max);
+		PropertyType propertyType = determinePropertyType(rangeResource, classRestriction, dataTypeRestriction, 
+				minCardinality, maxCardinality);
 		if (PropertyType.OBJECT_COLLECTION.equals(propertyType) || PropertyType.STRING_COLLECTION.equals(propertyType) ||
 				PropertyType.ENUM_COLLECTION.equals(propertyType)) {
 			requiredImports.add("import java.util.Collection;");
+			requiredImports.add("import java.util.Objects;");
 		}
  		retval.put("propertyType", propertyType);
 		String typeUri = getTypeUri(rangeResource, classRestriction, dataTypeRestriction);
@@ -903,31 +920,45 @@ public class OwlToJava {
 				requiredImports.add("import "+uriToPkg(typeUri) + "." + uriToName(typeUri) +";");
 			}
 		}
+		
 		retval.put("type", type);
-		boolean required = min != null && min > 0;
+		boolean required = minCardinality != null && minCardinality > 0;
+		if (required) {
+			requiredImports.add("import java.util.Collections;");
+			requiredImports.add("import java.util.Arrays;");
+			requiredImports.add("import java.util.Objects;");
+		}
 		retval.put("required", required);
+		
 		String profileIdentifierType = namespaceToProfileIdentifierType(nameSpace);
 		retval.put("requiredProfiles",  profileIdentifierType);
 		String classNamespace = uriToNamespaceUri(classUri);
 		boolean nonOptional = required && nameSpace.equals(classNamespace);
 		retval.put("nonOptional", nonOptional);
+		boolean hasConstraint = required;
 		if (Objects.nonNull(pattern)) {
 			retval.put("pattern", pattern);
+			hasConstraint = true;
 		}
-		if (Objects.nonNull(min)) {
-			retval.put("min", min.toString());
+		if (Objects.nonNull(minStringLength)) {
+			retval.put("min", minStringLength.toString());
+			hasConstraint = true;
 		} else if (XSD_NON_NEGATIVE_INTEGER.equals(typeUri)) {
 			retval.put("min", "0");
+			hasConstraint = true;
 		} else if (XSD_POSITIVE_INTEGER.equals(typeUri)) {
 			retval.put("min", "1");
+			hasConstraint = true;
 		}
-		if (Objects.nonNull(max)) {
-			retval.put("max", max.toString());
+		if (Objects.nonNull(maxStringLength)) {
+			retval.put("max", maxStringLength.toString());
+			hasConstraint = true;
 		}
 		if (Objects.nonNull(pattern)) {
 			requiredImports.add("import java.util.regex.Pattern;");
 			retval.put("pattern", StringEscapeUtils.escapeJava(pattern));
 		}
+		retval.put("hasConstraint", hasConstraint);
 		retval.put("uri", property.getURI());
 		String propNameSpace = uriToNamespaceUri(property.getURI());
 		propNameSpace = propNameSpace.substring(propNameSpace.lastIndexOf('/')+1);
@@ -1003,17 +1034,12 @@ public class OwlToJava {
 		retval.add("import javax.annotation.Nullable;");
 		retval.add("");
 		retval.add("import java.util.ArrayList;");
-		retval.add("import java.util.Arrays;");
-		retval.add("import java.util.Collections;");
 		retval.add("import java.util.List;");
-		retval.add("import java.util.Objects;");
-		retval.add("import java.util.Optional;");
 		retval.add("import java.util.Set;");
 		retval.add("");
 		retval.add("import org.spdx.library.DefaultModelStore;");
 		retval.add("import org.spdx.library.InvalidSPDXAnalysisException;");
 		retval.add("import org.spdx.library.ModelCopyManager;");
-		retval.add("import org.spdx.library.SpdxConstants;");
 		retval.add("import org.spdx.library.model.ModelObject;");
 		retval.add("import org.spdx.storage.IModelStore;");
 		retval.add("import org.spdx.storage.IModelStore.IdType;");
