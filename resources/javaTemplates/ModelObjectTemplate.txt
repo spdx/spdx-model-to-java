@@ -559,10 +559,8 @@ public class {{{className}}} extends {{{superClass}}} {{#compareUsingProperties}
 				retval.addAll({{{propertyName}}}.get().verify(verifiedIds, specVersion, profiles));
 		{{/nonOptional}}
 			{{#required}}
-			} else {
-				if (!Collections.disjoint(profiles, Arrays.asList(new ProfileIdentifierType[] { {{{requiredProfiles}}} }))) {
+			} else if (!Collections.disjoint(profiles, Arrays.asList(new ProfileIdentifierType[] { {{{requiredProfiles}}} }))) {
 					retval.add("Missing {{{propertyName}}} in {{{propertyName}}}");
-				}
 			{{/required}}
 			}
 		} catch (InvalidSPDXAnalysisException e) {
@@ -585,10 +583,8 @@ public class {{{className}}} extends {{{superClass}}} {{#compareUsingProperties}
 				retval.addAll({{{propertyName}}}.get().verify(verifiedIds, specVersion, profiles));
 		{{/nonOptional}}
 			{{#required}}
-			else {
-				if (!Collections.disjoint(profiles, Arrays.asList(new ProfileIdentifierType[] { {{{requiredProfiles}}} }))) {
+			else if (!Collections.disjoint(profiles, Arrays.asList(new ProfileIdentifierType[] { {{{requiredProfiles}}} }))) {
 					retval.add("Missing {{{propertyName}}} in {{{className}}}");
-				}
 			{{/required}}
 			}
 		} catch (InvalidSPDXAnalysisException e) {
@@ -611,10 +607,8 @@ public class {{{className}}} extends {{{superClass}}} {{#compareUsingProperties}
 				retval.addAll({{{propertyName}}}.get().verify(verifiedIds, specVersion, profiles));
 		{{/nonOptional}}
 			{{#required}}
-			else {
-				if (!Collections.disjoint(profiles, Arrays.asList(new ProfileIdentifierType[] { {{{requiredProfiles}}} }))) {
+			else if (!Collections.disjoint(profiles, Arrays.asList(new ProfileIdentifierType[] { {{{requiredProfiles}}} }))) {
 					retval.add("Missing {{{propertyName}}} in {{{className}}}");
-				}
 			{{/required}}
 			}
 		} catch (InvalidSPDXAnalysisException e) {
@@ -629,7 +623,8 @@ public class {{{className}}} extends {{{superClass}}} {{#compareUsingProperties}
 			{{/hasConstraint}}
 			{{{type}}} {{{propertyName}}} = {{{getter}}}();
 			{{#required}}
-			if (Objects.isNull({{{propertyName}}})) {
+			if (Objects.isNull({{{propertyName}}}) && 
+						Collections.disjoint(profiles, Arrays.asList(new ProfileIdentifierType[] { {{{requiredProfiles}}} }))) {
 				retval.add("Missing {{{propertyName}}} in {{{className}}}");
 			}
 			{{/required}}
@@ -640,7 +635,8 @@ public class {{{className}}} extends {{{superClass}}} {{#compareUsingProperties}
 			{{/hasConstraint}}
 			Optional<{{{type}}}> {{{propertyName}}} = {{{getter}}}();
 			{{#required}}
-			if (!{{{propertyName}}}.isPresent()) {
+			if (!{{{propertyName}}}.isPresent() && 
+					Collections.disjoint(profiles, Arrays.asList(new ProfileIdentifierType[] { {{{requiredProfiles}}} }))) {
 				retval.add("Missing {{{propertyName}}} in {{{className}}}");
 			}
 			{{/required}}
@@ -657,7 +653,8 @@ public class {{{className}}} extends {{{superClass}}} {{#compareUsingProperties}
 			{{/hasConstraint}}
 			{{{type}}} {{{propertyName}}} = {{{getter}}}();
 			{{#required}}
-			if (Objects.isNull({{{propertyName}}})) {
+			if (Objects.isNull({{{propertyName}}}) && 
+					Collections.disjoint(profiles, Arrays.asList(new ProfileIdentifierType[] { {{{requiredProfiles}}} }))) {
 				retval.add("Missing {{{propertyName}}} in {{{className}}}");
 			}
 			{{/required}}
@@ -668,7 +665,8 @@ public class {{{className}}} extends {{{superClass}}} {{#compareUsingProperties}
 			{{/hasConstraint}}
 			Optional<{{{type}}}> {{{propertyName}}} = {{{getter}}}();
 			{{#required}}
-			if (!{{{propertyName}}}.isPresent()) {
+			if (!{{{propertyName}}}.isPresent() &&
+					Collections.disjoint(profiles, Arrays.asList(new ProfileIdentifierType[] { {{{requiredProfiles}}} }))) {
 				retval.add("Missing {{{propertyName}}} in {{{className}}}");
 			}
 			{{/required}}
@@ -685,7 +683,8 @@ public class {{{className}}} extends {{{superClass}}} {{#compareUsingProperties}
 			{{/hasConstraint}}
 			{{{type}}} {{{propertyName}}} = {{{getter}}}();
 			{{#required}}
-			if (Objects.isNull({{{propertyName}}})) {
+			if (Objects.isNull({{{propertyName}}}) &&
+					Collections.disjoint(profiles, Arrays.asList(new ProfileIdentifierType[] { {{{requiredProfiles}}} }))) {
 				retval.add("Missing {{{propertyName}}} in {{{className}}}");
 			}
 			{{/required}}
@@ -706,7 +705,8 @@ public class {{{className}}} extends {{{superClass}}} {{#compareUsingProperties}
 			{{/hasConstraint}}
 			Optional<{{{type}}}> {{{propertyName}}} = {{{getter}}}();
 			{{#required}}
-			if (!{{{propertyName}}}.isPresent()) {
+			if (!{{{propertyName}}}.isPresent() &&
+					Collections.disjoint(profiles, Arrays.asList(new ProfileIdentifierType[] { {{{requiredProfiles}}} }))) {
 				retval.add("Missing {{{propertyName}}} in {{{className}}}");
 			}
 			{{/required}}
@@ -733,7 +733,8 @@ public class {{{className}}} extends {{{superClass}}} {{#compareUsingProperties}
 			{{/hasConstraint}}
 			String {{{propertyName}}} = {{{getter}}}();
 			{{#required}}
-			if (Objects.isNull({{{propertyName}}})) {
+			if (Objects.isNull({{{propertyName}}}) &&
+					Collections.disjoint(profiles, Arrays.asList(new ProfileIdentifierType[] { {{{requiredProfiles}}} }))) {
 				retval.add("Missing {{{propertyName}}} in {{{className}}}");
 			}
 			{{/required}}
@@ -749,7 +750,8 @@ public class {{{className}}} extends {{{superClass}}} {{#compareUsingProperties}
 			{{/hasConstraint}}
 			Optional<String> {{{propertyName}}} = {{{getter}}}();
 			{{#required}}
-			if (!{{{propertyName}}}.isPresent()) {
+			if (!{{{propertyName}}}.isPresent() &&
+					Collections.disjoint(profiles, Arrays.asList(new ProfileIdentifierType[] { {{{requiredProfiles}}} }))) {
 				retval.add("Missing {{{propertyName}}} in {{{className}}}");
 			}
 			{{/required}}

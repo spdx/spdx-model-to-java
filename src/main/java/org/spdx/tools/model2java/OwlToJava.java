@@ -330,6 +330,8 @@ public class OwlToJava {
 	private static final String ENUM_CLASS_TEMPLATE = "EnumTemplate.txt";
 	private static final String SPDX_CONSTANTS_TEMPLATE = "SpdxConstantsTemplate.txt";
 	private static final String UNIT_TEST_TEMPLATE = "UnitTestTemplate.txt";
+	private static final String ENUM_FACTORY_TEMPLATE = "SpdxEnumFactoryTemplate.txt";
+	private static final String INDIVIDUALS_FACTORY_TEMPLATE = "SpdxIndividualFactoryTemplate.txt";
 	private static Set<String> INTEGER_TYPES = new HashSet<>();
 	static {
 		INTEGER_TYPES.add(XSD_POSITIVE_INTEGER);
@@ -416,6 +418,7 @@ public class OwlToJava {
 		List<OntClass> allClasses = model.listClasses().toList();
 		collectTypeInformation(allClasses, allIndividuals);
 		List<String> classUris = new ArrayList<>();
+		List<Map<String, Object>> enumMustacheMaps = new ArrayList<>();
 		allClasses.forEach(ontClass -> {
 			String comment = ontClass.getComment(null);
 			String classUri = ontClass.getURI();
@@ -439,7 +442,7 @@ public class OwlToJava {
 			String superClassUri = superClasses.isEmpty() ? null : superClasses.get(0).getURI();
 			try {
 				if (isEnumClass(ontClass)) {
-					generateJavaEnum(dir, classUri, name, allIndividuals, comment);
+					enumMustacheMaps.add(generateJavaEnum(dir, classUri, name, allIndividuals, comment));
 				} else if (!stringTypes.contains(classUri)) { // TODO: we may want to handle String subtypes in the future
 					try {
 						generateJavaClass(dir, classUri, name, properties, classShape, comment, superClassUri);
@@ -452,7 +455,69 @@ public class OwlToJava {
 			}
 		});
 		generateSpdxConstants(dir, classUris);
+		generateEnumFactory(dir, enumMustacheMaps);
+		//TODO: Implement Individual Maps
+		generateIndividualFactory(dir, new ArrayList<Map<String, Object>>());
 		return warnings;
+	}
+	
+
+	/**
+	 * Generates the Enum Factory file
+	 * @param dir source directory for the factory file
+	 * @param enumMustacheMaps list of mustache maps for the enum classes
+	 * @throws IOException thrown if any IO errors occurs
+	 */
+	private void generateEnumFactory(File dir,
+			List<Map<String, Object>> enumMustacheMaps) throws IOException {
+		Map<String, Object> mustacheMap = new HashMap<>();
+		mustacheMap.put("enumClasses", enumMustacheMaps);
+		Set<String> pkgs = new HashSet<>();
+		for (Map<String, Object> map:enumMustacheMaps) {
+			pkgs.add((String)map.get("pkgName") + "." + (String)map.get("name"));
+		}
+		List<String> imports = new ArrayList<>();
+		for (String pkg:pkgs) {
+			imports.add("import "+pkg+";");
+		}
+		Collections.sort(imports);
+		mustacheMap.put("imports", imports);
+		
+		Path path = dir.toPath().resolve("generated").resolve("src").resolve("main").resolve("java").resolve("org")
+				.resolve("spdx").resolve("library");
+		Files.createDirectories(path);
+		File enumFactoryFile = path.resolve("SpdxEnumFactory.java").toFile();
+		enumFactoryFile.createNewFile();	
+		writeMustacheFile(ENUM_FACTORY_TEMPLATE, enumFactoryFile, mustacheMap);
+	}
+	
+	/**
+	 * Generates the SPDX Individual factory file
+	 * @param dir source directory for the factory file
+	 * @param individualMustacheMaps list of mustache maps for the individual vocabulariess
+	 * @throws IOException thrown if any IO errors occurs
+	 */
+	private void generateIndividualFactory(File dir,
+			List<Map<String, Object>> individualMustacheMaps) throws IOException {
+		Map<String, Object> mustacheMap = new HashMap<>();
+		mustacheMap.put("individuals", individualMustacheMaps);
+		Set<String> pkgs = new HashSet<>();
+		for (Map<String, Object> map:individualMustacheMaps) {
+			pkgs.add((String)map.get("pkgName") + "." + (String)map.get("name"));
+		}
+		List<String> imports = new ArrayList<>();
+		for (String pkg:pkgs) {
+			imports.add("import "+pkg+";");
+		}
+		Collections.sort(imports);
+		mustacheMap.put("imports", imports);
+		
+		Path path = dir.toPath().resolve("generated").resolve("src").resolve("main").resolve("java").resolve("org")
+				.resolve("spdx").resolve("library");
+		Files.createDirectories(path);
+		File individualsFile = path.resolve("SpdxIndividualFactory.java").toFile();
+		individualsFile.createNewFile();	
+		writeMustacheFile(INDIVIDUALS_FACTORY_TEMPLATE, individualsFile, mustacheMap);
 	}
 
 	/**
@@ -749,7 +814,11 @@ public class OwlToJava {
 		mustacheMap.put("classProfile", uriToProfile(classUri));
 		Map<PropertyType, List<Map<String, Object>>> propertyMap = findProperties(properties, classShape, 
 				requiredImports, propertyUrisForConstants, classUri);
-		if (!propertyMap.isEmpty()) {
+		int numProperties = 0;
+		for (List<Map<String, Object>> props:propertyMap.values()) {
+			numProperties += props.size();
+		}
+		if (numProperties > 0) {
 			requiredImports.add("import org.spdx.library.SpdxConstants;");
 			requiredImports.add("import java.util.Optional;");
 		}
@@ -1059,9 +1128,10 @@ public class OwlToJava {
 	 * @param name local name for the enum
 	 * @param allIndividuals individual values from the model
 	 * @param comment Description of the enum
-	 * @throws IOException 
+	 * @return mustacheMap for the java enum properties
+	 * @throws IOException I/O error writing the file
 	 */
-	private void generateJavaEnum(File dir, String classUri, String name,
+	private Map<String, Object> generateJavaEnum(File dir, String classUri, String name,
 			List<Individual> allIndividuals, String comment) throws IOException {
 		Map<String, Object> mustacheMap = new HashMap<>();
 		mustacheMap.put("year", YEAR);
@@ -1086,6 +1156,7 @@ public class OwlToJava {
 		mustacheMap.put("enumValues", enumValues);
 		File sourceFile = createJavaSourceFile(classUri, dir);
 		writeMustacheFile(ENUM_CLASS_TEMPLATE, sourceFile, mustacheMap);
+		return mustacheMap;
 	}
 	
 	/**

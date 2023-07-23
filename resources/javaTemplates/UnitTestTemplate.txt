@@ -23,6 +23,7 @@ import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
 import org.spdx.library.InvalidSPDXAnalysisException;
 import org.spdx.library.ModelCopyManager;
@@ -47,6 +48,10 @@ public class {{{className}}}Test extends TestCase {
 	{{#stringProperties}}
 	static final String {{{propertyNameUpper}}}_TEST_VALUE = "test {{{propertyName}}}";
 	{{/stringProperties}}
+	{{#enumerationProperties}}
+	static final {{{type}}} {{{propertyNameUpper}}}_TEST_VALUE1 = {{{type}}}.values()[0];
+	static final {{{type}}} {{{propertyNameUpper}}}_TEST_VALUE2 = {{{type}}}.values()[1];
+	{{/enumerationProperties}}
 	{{#stringCollection}}
 	static final String {{{propertyNameUpper}}}_TEST_VALUE1 = "test 1 {{{propertyName}}}";
 	static final String {{{propertyNameUpper}}}_TEST_VALUE2 = "test 2 {{{propertyName}}}";
@@ -54,6 +59,12 @@ public class {{{className}}}Test extends TestCase {
 	static final List<String> {{{propertyNameUpper}}}_TEST_LIST1 = Arrays.asList(new String[] { {{{propertyNameUpper}}}_TEST_VALUE1, {{{propertyNameUpper}}}_TEST_VALUE2 });
 	static final List<String> {{{propertyNameUpper}}}_TEST_LIST2 = Arrays.asList(new String[] { {{{propertyNameUpper}}}_TEST_VALUE3 });
 	{{/stringCollection}}
+	{{#enumPropertyValueCollection}}
+	static final {{{type}}} {{{propertyNameUpper}}}_TEST_VALUE1 = {{{type}}}.values()[0];
+	static final {{{type}}} {{{propertyNameUpper}}}_TEST_VALUE2 = {{{type}}}.values()[1];
+	static final List<{{{type}}}> {{{propertyNameUpper}}}_TEST_LIST1 = Arrays.asList(new {{{type}}}[] { {{{propertyNameUpper}}}_TEST_VALUE1, {{{propertyNameUpper}}}_TEST_VALUE2 });
+	static final List<{{{type}}}> {{{propertyNameUpper}}}_TEST_LIST2 = Arrays.asList(new {{{type}}}[] { {{{propertyNameUpper}}}_TEST_VALUE1 });
+	{{/enumPropertyValueCollection}}
 	
 	protected void setUp() throws Exception {
 		super.setUp();
@@ -81,6 +92,13 @@ public class {{{className}}}Test extends TestCase {
 				.{{{adder}}}({{{propertyNameUpper}}}_TEST_VALUE1)
 				.{{{adder}}}({{{propertyNameUpper}}}_TEST_VALUE2)
 				{{/stringCollection}}
+				{{#enumerationProperties}}
+				.{{{setter}}}({{{propertyNameUpper}}}_TEST_VALUE1)
+				{{/enumerationProperties}}
+				{{#enumPropertyValueCollection}}
+				.{{{adder}}}({{{propertyNameUpper}}}_TEST_VALUE1)
+				.{{{adder}}}({{{propertyNameUpper}}}_TEST_VALUE2)
+				{{/enumPropertyValueCollection}}
 				//TODO: Add in test values
 				/********************
 				{{#elementProperties}}
@@ -92,18 +110,12 @@ public class {{{className}}}Test extends TestCase {
 				{{#anyLicenseInfoProperties}}
 				.{{{setter}}}(TEST_ANYLICENSE_INFO)
 				{{/anyLicenseInfoProperties}}
-				{{#enumerationProperties}}
-				.{{{setter}}}({{{type}}}.ENUM)
-				{{/enumerationProperties}}
 				{{#objectPropertyValueCollection}}
 				.{{{adder}}}({{{type}}})
 				{{/objectPropertyValueCollection}}
 				{{#objectPropertyValueSet}}
 				.{{{adder}}}({{{type}}})
 				{{/objectPropertyValueSet}}
-				{{#enumPropertyValueCollection}}
-				.{{{adder}}}({{{type}}}.ENUM)
-				{{/enumPropertyValueCollection}}
 				***************/
 				;
 		return retval;
@@ -162,9 +174,19 @@ public class {{{className}}}Test extends TestCase {
 	 */
 	public void test{{{className}}}{{{setter}}}() throws InvalidSPDXAnalysisException {
 		{{{className}}} test{{{className}}} = builderFor{{{className}}}Tests(modelStore, TEST_OBJECT_URI, copyManager).build();
+		{{#nonOptional}}
 //		assertEquals(TEST_VALUE, test{{{className}}}.{{{getter}}}());
+		{{/nonOptional}}
+		{{^nonOptional}}
+//		assertEquals(Optional.of(TEST_VALUE), test{{{className}}}.{{{getter}}}());
+		{{/nonOptional}}
 //		test{{{className}}}.{{{setter}}}(NEW_TEST_VALUE);
+		{{#nonOptional}}
 //		assertEquals(NEW_TEST_VALUE, test{{{className}}}.{{{getter}}}());
+		{{/nonOptional}}
+		{{^nonOptional}}
+//		assertEquals(Optional.of(NEW_TEST_VALUE), test{{{className}}}.{{{getter}}}());
+		{{/nonOptional}}
 		fail("Not yet implemented");
 	}
 	{{/elementProperties}}
@@ -175,9 +197,19 @@ public class {{{className}}}Test extends TestCase {
 	 */
 	public void test{{{className}}}{{{setter}}}() throws InvalidSPDXAnalysisException {
 		{{{className}}} test{{{className}}} = builderFor{{{className}}}Tests(modelStore, TEST_OBJECT_URI, copyManager).build();
+		{{#nonOptional}}
 //		assertEquals(TEST_VALUE, test{{{className}}}.{{{getter}}}());
+		{{/nonOptional}}
+		{{^nonOptional}}
+//		assertEquals(Optional.of(TEST_VALUE), test{{{className}}}.{{{getter}}}());
+		{{/nonOptional}}
 //		test{{{className}}}.{{{setter}}}(NEW_TEST_VALUE);
+		{{#nonOptional}}
 //		assertEquals(NEW_TEST_VALUE, test{{{className}}}.{{{getter}}}());
+		{{/nonOptional}}
+		{{^nonOptional}}
+//		assertEquals(Optional.of(NEW_TEST_VALUE), test{{{className}}}.{{{getter}}}());
+		{{/nonOptional}}
 		fail("Not yet implemented");
 	}
 	{{/objectProperties}}
@@ -188,9 +220,19 @@ public class {{{className}}}Test extends TestCase {
 	 */
 	public void test{{{className}}}{{{setter}}}() throws InvalidSPDXAnalysisException {
 		{{{className}}} test{{{className}}} = builderFor{{{className}}}Tests(modelStore, TEST_OBJECT_URI, copyManager).build();
+		{{#nonOptional}}
 //		assertEquals(TEST_VALUE, test{{{className}}}.{{{getter}}}());
+		{{/nonOptional}}
+		{{^nonOptional}}
+//		assertEquals(Optional.of(TEST_VALUE), test{{{className}}}.{{{getter}}}());
+		{{/nonOptional}}
 //		test{{{className}}}.{{{setter}}}(NEW_TEST_VALUE);
+		{{#nonOptional}}
 //		assertEquals(NEW_TEST_VALUE, test{{{className}}}.{{{getter}}}());
+		{{/nonOptional}}
+		{{^nonOptional}}
+//		assertEquals(Optional.of(NEW_TEST_VALUE), test{{{className}}}.{{{getter}}}());
+		{{/nonOptional}}
 		fail("Not yet implemented");
 	}
 	{{/anyLicenseInfoProperties}}
@@ -201,10 +243,19 @@ public class {{{className}}}Test extends TestCase {
 	 */
 	public void test{{{className}}}{{{setter}}}() throws InvalidSPDXAnalysisException {
 		{{{className}}} test{{{className}}} = builderFor{{{className}}}Tests(modelStore, TEST_OBJECT_URI, copyManager).build();
-//		assertEquals(TEST_VALUE, test{{{className}}}.{{{getter}}}());
-//		test{{{className}}}.{{{setter}}}(NEW_TEST_VALUE);
-//		assertEquals(NEW_TEST_VALUE, test{{{className}}}.{{{getter}}}());
-		fail("Not yet implemented");
+		{{#nonOptional}}
+		assertEquals({{{propertyNameUpper}}}_TEST_VALUE1, test{{{className}}}.{{{getter}}}());
+		{{/nonOptional}}
+		{{^nonOptional}}
+		assertEquals(Optional.of({{{propertyNameUpper}}}_TEST_VALUE1), test{{{className}}}.{{{getter}}}());
+		{{/nonOptional}}
+		test{{{className}}}.{{{setter}}}({{{propertyNameUpper}}}_TEST_VALUE2);
+		{{#nonOptional}}
+		assertEquals({{{propertyNameUpper}}}_TEST_VALUE2, test{{{className}}}.{{{getter}}}());
+		{{/nonOptional}}
+		{{^nonOptional}}
+		assertEquals(Optional.of({{{propertyNameUpper}}}_TEST_VALUE2), test{{{className}}}.{{{getter}}}());
+		{{/nonOptional}}
 	}
 	{{/enumerationProperties}}
 	{{#booleanProperties}}
@@ -214,9 +265,19 @@ public class {{{className}}}Test extends TestCase {
 	 */
 	public void test{{{className}}}{{{setter}}}() throws InvalidSPDXAnalysisException {
 		{{{className}}} test{{{className}}} = builderFor{{{className}}}Tests(modelStore, TEST_OBJECT_URI, copyManager).build();
+		{{#nonOptional}}
 		assertEquals(new Boolean(true), test{{{className}}}.{{{getter}}}());
+		{{/nonOptional}}
+		{{^nonOptional}}
+		assertEquals(Optional.of(new Boolean(true)), test{{{className}}}.{{{getter}}}());
+		{{/nonOptional}}
 		test{{{className}}}.{{{setter}}}(false);
+		{{#nonOptional}}
 		assertEquals(new Boolean(false), test{{{className}}}.{{{getter}}}());
+		{{/nonOptional}}
+		{{^nonOptional}}
+		assertEquals(Optional.of(new Boolean(false)), test{{{className}}}.{{{getter}}}());
+		{{/nonOptional}}
 	}
 	{{/booleanProperties}}
 	{{#integerProperties}}
@@ -226,9 +287,19 @@ public class {{{className}}}Test extends TestCase {
 	 */
 	public void test{{{className}}}{{{setter}}}() throws InvalidSPDXAnalysisException {
 		{{{className}}} test{{{className}}} = builderFor{{{className}}}Tests(modelStore, TEST_OBJECT_URI, copyManager).build();
+		{{#nonOptional}}
 		assertEquals({{{propertyNameUpper}}}_TEST_VALUE, test{{{className}}}.{{{getter}}}());
+		{{/nonOptional}}
+		{{^nonOptional}}
+		assertEquals(Optional.of({{{propertyNameUpper}}}_TEST_VALUE), test{{{className}}}.{{{getter}}}());
+		{{/nonOptional}}
 		test{{{className}}}.{{{setter}}}(new Integer(653));
+		{{#nonOptional}}
 		assertEquals(new Integer(653), test{{{className}}}.{{{getter}}}());
+		{{/nonOptional}}
+		{{^nonOptional}}
+		assertEquals(Optional.of(new Integer(653)), test{{{className}}}.{{{getter}}}());
+		{{/nonOptional}}
 	}
 	{{/integerProperties}}
 	{{#stringProperties}}
@@ -238,9 +309,19 @@ public class {{{className}}}Test extends TestCase {
 	 */
 	public void test{{{className}}}{{{setter}}}() throws InvalidSPDXAnalysisException {
 		{{{className}}} test{{{className}}} = builderFor{{{className}}}Tests(modelStore, TEST_OBJECT_URI, copyManager).build();
+		{{#nonOptional}}
 		assertEquals({{{propertyNameUpper}}}_TEST_VALUE, test{{{className}}}.{{{getter}}}());
+		{{/nonOptional}}
+		{{^nonOptional}}
+		assertEquals(Optional.of({{{propertyNameUpper}}}_TEST_VALUE), test{{{className}}}.{{{getter}}}());
+		{{/nonOptional}}
 		test{{{className}}}.{{{setter}}}("new {{{propertyName}}} value");
+		{{#nonOptional}}
 		assertEquals("new {{{propertyName}}} value", test{{{className}}}.{{{getter}}}());
+		{{/nonOptional}}
+		{{^nonOptional}}
+		assertEquals(Optional.of("new {{{propertyName}}} value"), test{{{className}}}.{{{getter}}}());
+		{{/nonOptional}}
 	}
 	{{/stringProperties}}
 	{{#objectPropertyValueCollection}}
@@ -268,7 +349,6 @@ public class {{{className}}}Test extends TestCase {
 		test{{{className}}}.{{{getter}}}s().clear();
 		test{{{className}}}.{{{getter}}}s().addAll({{{propertyNameUpper}}}_TEST_LIST2);
 		assertTrue(UnitTestHelper.isListsEqual({{{propertyNameUpper}}}_TEST_LIST2, new ArrayList<>(test{{{className}}}.{{{getter}}}s())));
-		fail("Not yet implemented");
 	}
 	{{/stringCollection}}
 	{{#objectPropertyValueSet}}
@@ -292,11 +372,10 @@ public class {{{className}}}Test extends TestCase {
 	 */
 	public void test{{{className}}}{{{getter}}}s() throws InvalidSPDXAnalysisException {
 		{{{className}}} test{{{className}}} = builderFor{{{className}}}Tests(modelStore, TEST_OBJECT_URI, copyManager).build();
-//		assertTrue(UnitTestHelper.isListsEqual(TEST_VALUE, new ArrayList<>(test{{{className}}}.{{{getter}}}s())));
-//		test{{{className}}}.{{{getter}}}s().clear();
-//		test{{{className}}}.{{{getter}}}s().addAll(NEW_TEST_VALUE);
-//		assertTrue(UnitTestHelper.isListsEqual(NEW_TEST_VALUE, new ArrayList<>(test{{{className}}}.{{{getter}}}s())));
-		fail("Not yet implemented");
+		assertTrue(UnitTestHelper.isListsEqual({{{propertyNameUpper}}}_TEST_LIST1, new ArrayList<>(test{{{className}}}.{{{getter}}}s())));
+		test{{{className}}}.{{{getter}}}s().clear();
+		test{{{className}}}.{{{getter}}}s().addAll({{{propertyNameUpper}}}_TEST_LIST2);
+		assertTrue(UnitTestHelper.isListsEqual({{{propertyNameUpper}}}_TEST_LIST2, new ArrayList<>(test{{{className}}}.{{{getter}}}s())));
 	}
 	{{/enumPropertyValueCollection}}
 	{{#elementProperties}}
