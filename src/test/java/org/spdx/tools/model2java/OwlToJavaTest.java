@@ -53,6 +53,7 @@ public class OwlToJavaTest extends TestCase {
 					.resolve("spdx")
 					.resolve("library")
 					.resolve("model")
+					.resolve("v3")
 					.resolve("AI");
 				File classFile = aIPath.resolve("AIPackage.java").toFile();
 				File enumFile = aIPath.resolve("PresenceType.java").toFile();

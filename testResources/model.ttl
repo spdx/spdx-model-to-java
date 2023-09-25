@@ -1,281 +1,17 @@
-@prefix ai: <https://spdx.org/rdf/AI/> .
-@prefix build: <https://spdx.org/rdf/Build/> .
-@prefix core: <https://spdx.org/rdf/Core/> .
-@prefix dataset: <https://spdx.org/rdf/Dataset/> .
-@prefix expandedlicense: <https://spdx.org/rdf/ExpandedLicense/> .
-@prefix licensing: <https://spdx.org/rdf/Licensing/> .
+@prefix ai: <https://spdx.org/rdf/v3/AI/> .
+@prefix build: <https://spdx.org/rdf/v3/Build/> .
+@prefix core: <https://spdx.org/rdf/v3/Core/> .
+@prefix dataset: <https://spdx.org/rdf/v3/Dataset/> .
+@prefix expandedlicense: <https://spdx.org/rdf/v3/ExpandedLicense/> .
+@prefix licensing: <https://spdx.org/rdf/v3/Licensing/> .
 @prefix ns0: <http://www.w3.org/2003/06/sw-vocab-status/ns#> .
 @prefix owl: <http://www.w3.org/2002/07/owl#> .
 @prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
-@prefix security: <https://spdx.org/rdf/Security/> .
+@prefix security: <https://spdx.org/rdf/v3/Security/> .
 @prefix sh: <http://www.w3.org/ns/shacl#> .
-@prefix software: <https://spdx.org/rdf/Software/> .
+@prefix software: <https://spdx.org/rdf/v3/Software/> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
-
-<https://spdx.org/rdf/AI/PresenceType/no> a owl:NamedIndividual,
-        ai:PresenceType .
-
-<https://spdx.org/rdf/AI/PresenceType/noAssertion> a owl:NamedIndividual,
-        ai:PresenceType .
-
-<https://spdx.org/rdf/AI/PresenceType/yes> a owl:NamedIndividual,
-        ai:PresenceType .
-
-<https://spdx.org/rdf/AI/SafetyRiskAssessmentType/high> a owl:NamedIndividual,
-        ai:SafetyRiskAssessmentType .
-
-<https://spdx.org/rdf/AI/SafetyRiskAssessmentType/low> a owl:NamedIndividual,
-        ai:SafetyRiskAssessmentType .
-
-<https://spdx.org/rdf/AI/SafetyRiskAssessmentType/medium> a owl:NamedIndividual,
-        ai:SafetyRiskAssessmentType .
-
-<https://spdx.org/rdf/AI/SafetyRiskAssessmentType/serious> a owl:NamedIndividual,
-        ai:SafetyRiskAssessmentType .
-
-<https://spdx.org/rdf/Core/AnnotationType/other> a owl:NamedIndividual,
-        core:AnnotationType .
-
-<https://spdx.org/rdf/Core/AnnotationType/review> a owl:NamedIndividual,
-        core:AnnotationType .
-
-<https://spdx.org/rdf/Core/ExternalIdentifierType/cpe22> a owl:NamedIndividual,
-        core:ExternalIdentifierType .
-
-<https://spdx.org/rdf/Core/ExternalIdentifierType/cpe23> a owl:NamedIndividual,
-        core:ExternalIdentifierType .
-
-<https://spdx.org/rdf/Core/ExternalIdentifierType/cve> a owl:NamedIndividual,
-        core:ExternalIdentifierType .
-
-<https://spdx.org/rdf/Core/ExternalIdentifierType/email> a owl:NamedIndividual,
-        core:ExternalIdentifierType .
-
-<https://spdx.org/rdf/Core/ExternalIdentifierType/gitoid> a owl:NamedIndividual,
-        core:ExternalIdentifierType .
-
-<https://spdx.org/rdf/Core/ExternalIdentifierType/other> a owl:NamedIndividual,
-        core:ExternalIdentifierType .
-
-<https://spdx.org/rdf/Core/ExternalIdentifierType/pkgUrl> a owl:NamedIndividual,
-        core:ExternalIdentifierType .
-
-<https://spdx.org/rdf/Core/ExternalIdentifierType/securityOther> a owl:NamedIndividual,
-        core:ExternalIdentifierType .
-
-<https://spdx.org/rdf/Core/ExternalIdentifierType/swhid> a owl:NamedIndividual,
-        core:ExternalIdentifierType .
-
-<https://spdx.org/rdf/Core/ExternalIdentifierType/swid> a owl:NamedIndividual,
-        core:ExternalIdentifierType .
-
-<https://spdx.org/rdf/Core/ExternalIdentifierType/urlScheme> a owl:NamedIndividual,
-        core:ExternalIdentifierType .
-
-<https://spdx.org/rdf/Core/ExternalReferenceType/altDownloadLocation> a owl:NamedIndividual,
-        core:ExternalReferenceType .
-
-<https://spdx.org/rdf/Core/ExternalReferenceType/altWebPage> a owl:NamedIndividual,
-        core:ExternalReferenceType .
-
-<https://spdx.org/rdf/Core/ExternalReferenceType/binaryArtifact> a owl:NamedIndividual,
-        core:ExternalReferenceType .
-
-<https://spdx.org/rdf/Core/ExternalReferenceType/buildMeta> a owl:NamedIndividual,
-        core:ExternalReferenceType .
-
-<https://spdx.org/rdf/Core/ExternalReferenceType/buildSystem> a owl:NamedIndividual,
-        core:ExternalReferenceType .
-
-<https://spdx.org/rdf/Core/ExternalReferenceType/certificationReport> a owl:NamedIndividual,
-        core:ExternalReferenceType .
-
-<https://spdx.org/rdf/Core/ExternalReferenceType/chat> a owl:NamedIndividual,
-        core:ExternalReferenceType .
-
-<https://spdx.org/rdf/Core/ExternalReferenceType/componentAnalysisReport> a owl:NamedIndividual,
-        core:ExternalReferenceType .
-
-<https://spdx.org/rdf/Core/ExternalReferenceType/documentation> a owl:NamedIndividual,
-        core:ExternalReferenceType .
-
-<https://spdx.org/rdf/Core/ExternalReferenceType/dynamicAnalysisReport> a owl:NamedIndividual,
-        core:ExternalReferenceType .
-
-<https://spdx.org/rdf/Core/ExternalReferenceType/eolNotice> a owl:NamedIndividual,
-        core:ExternalReferenceType .
-
-<https://spdx.org/rdf/Core/ExternalReferenceType/funding> a owl:NamedIndividual,
-        core:ExternalReferenceType .
-
-<https://spdx.org/rdf/Core/ExternalReferenceType/issueTracker> a owl:NamedIndividual,
-        core:ExternalReferenceType .
-
-<https://spdx.org/rdf/Core/ExternalReferenceType/license> a owl:NamedIndividual,
-        core:ExternalReferenceType .
-
-<https://spdx.org/rdf/Core/ExternalReferenceType/mailingList> a owl:NamedIndividual,
-        core:ExternalReferenceType .
-
-<https://spdx.org/rdf/Core/ExternalReferenceType/metrics> a owl:NamedIndividual,
-        core:ExternalReferenceType .
-
-<https://spdx.org/rdf/Core/ExternalReferenceType/other> a owl:NamedIndividual,
-        core:ExternalReferenceType .
-
-<https://spdx.org/rdf/Core/ExternalReferenceType/productMetadata> a owl:NamedIndividual,
-        core:ExternalReferenceType .
-
-<https://spdx.org/rdf/Core/ExternalReferenceType/qualityAssessmentReport> a owl:NamedIndividual,
-        core:ExternalReferenceType .
-
-<https://spdx.org/rdf/Core/ExternalReferenceType/releaseHistory> a owl:NamedIndividual,
-        core:ExternalReferenceType .
-
-<https://spdx.org/rdf/Core/ExternalReferenceType/releaseNotes> a owl:NamedIndividual,
-        core:ExternalReferenceType .
-
-<https://spdx.org/rdf/Core/ExternalReferenceType/riskAssessment> a owl:NamedIndividual,
-        core:ExternalReferenceType .
-
-<https://spdx.org/rdf/Core/ExternalReferenceType/runtimeAnalysisReport> a owl:NamedIndividual,
-        core:ExternalReferenceType .
-
-<https://spdx.org/rdf/Core/ExternalReferenceType/secureSoftwareAttestation> a owl:NamedIndividual,
-        core:ExternalReferenceType .
-
-<https://spdx.org/rdf/Core/ExternalReferenceType/securityAdversaryModel> a owl:NamedIndividual,
-        core:ExternalReferenceType .
-
-<https://spdx.org/rdf/Core/ExternalReferenceType/securityAdvisory> a owl:NamedIndividual,
-        core:ExternalReferenceType .
-
-<https://spdx.org/rdf/Core/ExternalReferenceType/securityFix> a owl:NamedIndividual,
-        core:ExternalReferenceType .
-
-<https://spdx.org/rdf/Core/ExternalReferenceType/securityOther> a owl:NamedIndividual,
-        core:ExternalReferenceType .
-
-<https://spdx.org/rdf/Core/ExternalReferenceType/securityPenTestReport> a owl:NamedIndividual,
-        core:ExternalReferenceType .
-
-<https://spdx.org/rdf/Core/ExternalReferenceType/securityPolicy> a owl:NamedIndividual,
-        core:ExternalReferenceType .
-
-<https://spdx.org/rdf/Core/ExternalReferenceType/securityThreatModel> a owl:NamedIndividual,
-        core:ExternalReferenceType .
-
-<https://spdx.org/rdf/Core/ExternalReferenceType/socialMedia> a owl:NamedIndividual,
-        core:ExternalReferenceType .
-
-<https://spdx.org/rdf/Core/ExternalReferenceType/sourceArtifact> a owl:NamedIndividual,
-        core:ExternalReferenceType .
-
-<https://spdx.org/rdf/Core/ExternalReferenceType/staticAnalysisReport> a owl:NamedIndividual,
-        core:ExternalReferenceType .
-
-<https://spdx.org/rdf/Core/ExternalReferenceType/support> a owl:NamedIndividual,
-        core:ExternalReferenceType .
-
-<https://spdx.org/rdf/Core/ExternalReferenceType/vcs> a owl:NamedIndividual,
-        core:ExternalReferenceType .
-
-<https://spdx.org/rdf/Core/ExternalReferenceType/vulnerabilityDisclosureReport> a owl:NamedIndividual,
-        core:ExternalReferenceType .
-
-<https://spdx.org/rdf/Core/ExternalReferenceType/vulnerabilityExploitabilityAssessment> a owl:NamedIndividual,
-        core:ExternalReferenceType .
-
-<https://spdx.org/rdf/Core/HashAlgorithm/blake2b256> a owl:NamedIndividual,
-        core:HashAlgorithm .
-
-<https://spdx.org/rdf/Core/HashAlgorithm/blake2b384> a owl:NamedIndividual,
-        core:HashAlgorithm .
-
-<https://spdx.org/rdf/Core/HashAlgorithm/blake2b512> a owl:NamedIndividual,
-        core:HashAlgorithm .
-
-<https://spdx.org/rdf/Core/HashAlgorithm/blake3> a owl:NamedIndividual,
-        core:HashAlgorithm .
-
-<https://spdx.org/rdf/Core/HashAlgorithm/crystalsDilithium> a owl:NamedIndividual,
-        core:HashAlgorithm .
-
-<https://spdx.org/rdf/Core/HashAlgorithm/crystalsKyber> a owl:NamedIndividual,
-        core:HashAlgorithm .
-
-<https://spdx.org/rdf/Core/HashAlgorithm/falcon> a owl:NamedIndividual,
-        core:HashAlgorithm .
-
-<https://spdx.org/rdf/Core/HashAlgorithm/md2> a owl:NamedIndividual,
-        core:HashAlgorithm .
-
-<https://spdx.org/rdf/Core/HashAlgorithm/md4> a owl:NamedIndividual,
-        core:HashAlgorithm .
-
-<https://spdx.org/rdf/Core/HashAlgorithm/md5> a owl:NamedIndividual,
-        core:HashAlgorithm .
-
-<https://spdx.org/rdf/Core/HashAlgorithm/md6> a owl:NamedIndividual,
-        core:HashAlgorithm .
-
-<https://spdx.org/rdf/Core/HashAlgorithm/other> a owl:NamedIndividual,
-        core:HashAlgorithm .
-
-<https://spdx.org/rdf/Core/HashAlgorithm/sha1> a owl:NamedIndividual,
-        core:HashAlgorithm .
-
-<https://spdx.org/rdf/Core/HashAlgorithm/sha224> a owl:NamedIndividual,
-        core:HashAlgorithm .
-
-<https://spdx.org/rdf/Core/HashAlgorithm/sha256> a owl:NamedIndividual,
-        core:HashAlgorithm .
-
-<https://spdx.org/rdf/Core/HashAlgorithm/sha384> a owl:NamedIndividual,
-        core:HashAlgorithm .
-
-<https://spdx.org/rdf/Core/HashAlgorithm/sha3_224> a owl:NamedIndividual,
-        core:HashAlgorithm .
-
-<https://spdx.org/rdf/Core/HashAlgorithm/sha3_256> a owl:NamedIndividual,
-        core:HashAlgorithm .
-
-<https://spdx.org/rdf/Core/HashAlgorithm/sha3_384> a owl:NamedIndividual,
-        core:HashAlgorithm .
-
-<https://spdx.org/rdf/Core/HashAlgorithm/sha3_512> a owl:NamedIndividual,
-        core:HashAlgorithm .
-
-<https://spdx.org/rdf/Core/HashAlgorithm/sha512> a owl:NamedIndividual,
-        core:HashAlgorithm .
-
-<https://spdx.org/rdf/Core/HashAlgorithm/spdxPvcSha1> a owl:NamedIndividual,
-        core:HashAlgorithm .
-
-<https://spdx.org/rdf/Core/HashAlgorithm/spdxPvcSha256> a owl:NamedIndividual,
-        core:HashAlgorithm .
-
-<https://spdx.org/rdf/Core/HashAlgorithm/sphincsPlus> a owl:NamedIndividual,
-        core:HashAlgorithm .
-
-<https://spdx.org/rdf/Core/LifecycleScopeType/build> a owl:NamedIndividual,
-        core:LifecycleScopeType .
-
-<https://spdx.org/rdf/Core/LifecycleScopeType/design> a owl:NamedIndividual,
-        core:LifecycleScopeType .
-
-<https://spdx.org/rdf/Core/LifecycleScopeType/development> a owl:NamedIndividual,
-        core:LifecycleScopeType .
-
-<https://spdx.org/rdf/Core/LifecycleScopeType/other> a owl:NamedIndividual,
-        core:LifecycleScopeType .
-
-<https://spdx.org/rdf/Core/LifecycleScopeType/runtime> a owl:NamedIndividual,
-        core:LifecycleScopeType .
-
-<https://spdx.org/rdf/Core/LifecycleScopeType/test> a owl:NamedIndividual,
-        core:LifecycleScopeType .
 
 core:Organization a owl:Class,
         sh:NodeShape ;
@@ -289,304 +25,18 @@ core:Person a owl:Class,
     rdfs:subClassOf core:Agent ;
     ns0:term_status "Stable" .
 
-<https://spdx.org/rdf/Core/ProfileIdentifierType/ai> a owl:NamedIndividual,
-        core:ProfileIdentifierType .
-
-<https://spdx.org/rdf/Core/ProfileIdentifierType/build> a owl:NamedIndividual,
-        core:ProfileIdentifierType .
-
-<https://spdx.org/rdf/Core/ProfileIdentifierType/core> a owl:NamedIndividual,
-        core:ProfileIdentifierType .
-
-<https://spdx.org/rdf/Core/ProfileIdentifierType/dataset> a owl:NamedIndividual,
-        core:ProfileIdentifierType .
-
-<https://spdx.org/rdf/Core/ProfileIdentifierType/extension> a owl:NamedIndividual,
-        core:ProfileIdentifierType .
-
-<https://spdx.org/rdf/Core/ProfileIdentifierType/licensing> a owl:NamedIndividual,
-        core:ProfileIdentifierType .
-
-<https://spdx.org/rdf/Core/ProfileIdentifierType/security> a owl:NamedIndividual,
-        core:ProfileIdentifierType .
-
-<https://spdx.org/rdf/Core/ProfileIdentifierType/software> a owl:NamedIndividual,
-        core:ProfileIdentifierType .
-
-<https://spdx.org/rdf/Core/ProfileIdentifierType/usage> a owl:NamedIndividual,
-        core:ProfileIdentifierType .
-
-<https://spdx.org/rdf/Core/RelationshipCompleteness/complete> a owl:NamedIndividual,
-        core:RelationshipCompleteness .
-
-<https://spdx.org/rdf/Core/RelationshipCompleteness/incomplete> a owl:NamedIndividual,
-        core:RelationshipCompleteness .
-
-<https://spdx.org/rdf/Core/RelationshipCompleteness/noAssertion> a owl:NamedIndividual,
-        core:RelationshipCompleteness .
-
-<https://spdx.org/rdf/Core/RelationshipType/affects> a owl:NamedIndividual,
-        core:RelationshipType .
-
-<https://spdx.org/rdf/Core/RelationshipType/amends> a owl:NamedIndividual,
-        core:RelationshipType .
-
-<https://spdx.org/rdf/Core/RelationshipType/ancestor> a owl:NamedIndividual,
-        core:RelationshipType .
-
-<https://spdx.org/rdf/Core/RelationshipType/availableFrom> a owl:NamedIndividual,
-        core:RelationshipType .
-
-<https://spdx.org/rdf/Core/RelationshipType/buildDependency> a owl:NamedIndividual,
-        core:RelationshipType .
-
-<https://spdx.org/rdf/Core/RelationshipType/buildTool> a owl:NamedIndividual,
-        core:RelationshipType .
-
-<https://spdx.org/rdf/Core/RelationshipType/configOf> a owl:NamedIndividual,
-        core:RelationshipType .
-
-<https://spdx.org/rdf/Core/RelationshipType/contains> a owl:NamedIndividual,
-        core:RelationshipType .
-
-<https://spdx.org/rdf/Core/RelationshipType/coordinatedBy> a owl:NamedIndividual,
-        core:RelationshipType .
-
-<https://spdx.org/rdf/Core/RelationshipType/copy> a owl:NamedIndividual,
-        core:RelationshipType .
-
-<https://spdx.org/rdf/Core/RelationshipType/dataFile> a owl:NamedIndividual,
-        core:RelationshipType .
-
-<https://spdx.org/rdf/Core/RelationshipType/dependencyManifest> a owl:NamedIndividual,
-        core:RelationshipType .
-
-<https://spdx.org/rdf/Core/RelationshipType/dependsOn> a owl:NamedIndividual,
-        core:RelationshipType .
-
-<https://spdx.org/rdf/Core/RelationshipType/descendant> a owl:NamedIndividual,
-        core:RelationshipType .
-
-<https://spdx.org/rdf/Core/RelationshipType/describes> a owl:NamedIndividual,
-        core:RelationshipType .
-
-<https://spdx.org/rdf/Core/RelationshipType/devDependency> a owl:NamedIndividual,
-        core:RelationshipType .
-
-<https://spdx.org/rdf/Core/RelationshipType/devTool> a owl:NamedIndividual,
-        core:RelationshipType .
-
-<https://spdx.org/rdf/Core/RelationshipType/distributionArtifact> a owl:NamedIndividual,
-        core:RelationshipType .
-
-<https://spdx.org/rdf/Core/RelationshipType/documentation> a owl:NamedIndividual,
-        core:RelationshipType .
-
-<https://spdx.org/rdf/Core/RelationshipType/doesNotAffect> a owl:NamedIndividual,
-        core:RelationshipType .
-
-<https://spdx.org/rdf/Core/RelationshipType/dynamicLink> a owl:NamedIndividual,
-        core:RelationshipType .
-
-<https://spdx.org/rdf/Core/RelationshipType/evidenceFor> a owl:NamedIndividual,
-        core:RelationshipType .
-
-<https://spdx.org/rdf/Core/RelationshipType/example> a owl:NamedIndividual,
-        core:RelationshipType .
-
-<https://spdx.org/rdf/Core/RelationshipType/expandedFromArchive> a owl:NamedIndividual,
-        core:RelationshipType .
-
-<https://spdx.org/rdf/Core/RelationshipType/exploitCreatedBy> a owl:NamedIndividual,
-        core:RelationshipType .
-
-<https://spdx.org/rdf/Core/RelationshipType/fileAdded> a owl:NamedIndividual,
-        core:RelationshipType .
-
-<https://spdx.org/rdf/Core/RelationshipType/fileDeleted> a owl:NamedIndividual,
-        core:RelationshipType .
-
-<https://spdx.org/rdf/Core/RelationshipType/fileModified> a owl:NamedIndividual,
-        core:RelationshipType .
-
-<https://spdx.org/rdf/Core/RelationshipType/fixedBy> a owl:NamedIndividual,
-        core:RelationshipType .
-
-<https://spdx.org/rdf/Core/RelationshipType/fixedIn> a owl:NamedIndividual,
-        core:RelationshipType .
-
-<https://spdx.org/rdf/Core/RelationshipType/foundBy> a owl:NamedIndividual,
-        core:RelationshipType .
-
-<https://spdx.org/rdf/Core/RelationshipType/generates> a owl:NamedIndividual,
-        core:RelationshipType .
-
-<https://spdx.org/rdf/Core/RelationshipType/hasAssessmentFor> a owl:NamedIndividual,
-        core:RelationshipType .
-
-<https://spdx.org/rdf/Core/RelationshipType/hasAssociatedVulnerability> a owl:NamedIndividual,
-        core:RelationshipType .
-
-<https://spdx.org/rdf/Core/RelationshipType/hostOf> a owl:NamedIndividual,
-        core:RelationshipType .
-
-<https://spdx.org/rdf/Core/RelationshipType/inputOf> a owl:NamedIndividual,
-        core:RelationshipType .
-
-<https://spdx.org/rdf/Core/RelationshipType/invokedBy> a owl:NamedIndividual,
-        core:RelationshipType .
-
-<https://spdx.org/rdf/Core/RelationshipType/metafile> a owl:NamedIndividual,
-        core:RelationshipType .
-
-<https://spdx.org/rdf/Core/RelationshipType/onBehalfOf> a owl:NamedIndividual,
-        core:RelationshipType .
-
-<https://spdx.org/rdf/Core/RelationshipType/optionalComponent> a owl:NamedIndividual,
-        core:RelationshipType .
-
-<https://spdx.org/rdf/Core/RelationshipType/optionalDependency> a owl:NamedIndividual,
-        core:RelationshipType .
-
-<https://spdx.org/rdf/Core/RelationshipType/other> a owl:NamedIndividual,
-        core:RelationshipType .
-
-<https://spdx.org/rdf/Core/RelationshipType/outputOf> a owl:NamedIndividual,
-        core:RelationshipType .
-
-<https://spdx.org/rdf/Core/RelationshipType/packages> a owl:NamedIndividual,
-        core:RelationshipType .
-
-<https://spdx.org/rdf/Core/RelationshipType/patch> a owl:NamedIndividual,
-        core:RelationshipType .
-
-<https://spdx.org/rdf/Core/RelationshipType/prerequisite> a owl:NamedIndividual,
-        core:RelationshipType .
-
-<https://spdx.org/rdf/Core/RelationshipType/providedDependency> a owl:NamedIndividual,
-        core:RelationshipType .
-
-<https://spdx.org/rdf/Core/RelationshipType/publishedBy> a owl:NamedIndividual,
-        core:RelationshipType .
-
-<https://spdx.org/rdf/Core/RelationshipType/reportedBy> a owl:NamedIndividual,
-        core:RelationshipType .
-
-<https://spdx.org/rdf/Core/RelationshipType/republishedBy> a owl:NamedIndividual,
-        core:RelationshipType .
-
-<https://spdx.org/rdf/Core/RelationshipType/requirementFor> a owl:NamedIndividual,
-        core:RelationshipType .
-
-<https://spdx.org/rdf/Core/RelationshipType/runtimeDependency> a owl:NamedIndividual,
-        core:RelationshipType .
-
-<https://spdx.org/rdf/Core/RelationshipType/specificationFor> a owl:NamedIndividual,
-        core:RelationshipType .
-
-<https://spdx.org/rdf/Core/RelationshipType/staticLink> a owl:NamedIndividual,
-        core:RelationshipType .
-
-<https://spdx.org/rdf/Core/RelationshipType/test> a owl:NamedIndividual,
-        core:RelationshipType .
-
-<https://spdx.org/rdf/Core/RelationshipType/testCase> a owl:NamedIndividual,
-        core:RelationshipType .
-
-<https://spdx.org/rdf/Core/RelationshipType/testDependency> a owl:NamedIndividual,
-        core:RelationshipType .
-
-<https://spdx.org/rdf/Core/RelationshipType/testTool> a owl:NamedIndividual,
-        core:RelationshipType .
-
-<https://spdx.org/rdf/Core/RelationshipType/testedOn> a owl:NamedIndividual,
-        core:RelationshipType .
-
-<https://spdx.org/rdf/Core/RelationshipType/trainedOn> a owl:NamedIndividual,
-        core:RelationshipType .
-
-<https://spdx.org/rdf/Core/RelationshipType/underInvestigationFor> a owl:NamedIndividual,
-        core:RelationshipType .
-
-<https://spdx.org/rdf/Core/RelationshipType/variant> a owl:NamedIndividual,
-        core:RelationshipType .
-
 core:SoftwareAgent a owl:Class,
         sh:NodeShape ;
     rdfs:comment "A SoftwareAgent is a software program that is given the authority (similar to a user's authority) to act on a system." ;
     rdfs:subClassOf core:Agent ;
     ns0:term_status "Stable" .
 
-<https://spdx.org/rdf/Dataset/ConfidentialityLevelType/Amber> a owl:NamedIndividual,
-        dataset:ConfidentialityLevelType .
+core:prefix a owl:DatatypeProperty ;
+    rdfs:comment "A prefix is a substitute for a URI." ;
+    rdfs:range xsd:string ;
+    ns0:term_status "Stable" .
 
-<https://spdx.org/rdf/Dataset/ConfidentialityLevelType/Clear> a owl:NamedIndividual,
-        dataset:ConfidentialityLevelType .
-
-<https://spdx.org/rdf/Dataset/ConfidentialityLevelType/Green> a owl:NamedIndividual,
-        dataset:ConfidentialityLevelType .
-
-<https://spdx.org/rdf/Dataset/ConfidentialityLevelType/Red> a owl:NamedIndividual,
-        dataset:ConfidentialityLevelType .
-
-<https://spdx.org/rdf/Dataset/DatasetAvailabilityType/Clickthrough> a owl:NamedIndividual,
-        dataset:DatasetAvailabilityType .
-
-<https://spdx.org/rdf/Dataset/DatasetAvailabilityType/Direct-Download> a owl:NamedIndividual,
-        dataset:DatasetAvailabilityType .
-
-<https://spdx.org/rdf/Dataset/DatasetAvailabilityType/Query> a owl:NamedIndividual,
-        dataset:DatasetAvailabilityType .
-
-<https://spdx.org/rdf/Dataset/DatasetAvailabilityType/Registration> a owl:NamedIndividual,
-        dataset:DatasetAvailabilityType .
-
-<https://spdx.org/rdf/Dataset/DatasetAvailabilityType/Scraping-Script> a owl:NamedIndividual,
-        dataset:DatasetAvailabilityType .
-
-<https://spdx.org/rdf/Dataset/DatasetType/audio> a owl:NamedIndividual,
-        dataset:DatasetType .
-
-<https://spdx.org/rdf/Dataset/DatasetType/categorical> a owl:NamedIndividual,
-        dataset:DatasetType .
-
-<https://spdx.org/rdf/Dataset/DatasetType/graph> a owl:NamedIndividual,
-        dataset:DatasetType .
-
-<https://spdx.org/rdf/Dataset/DatasetType/image> a owl:NamedIndividual,
-        dataset:DatasetType .
-
-<https://spdx.org/rdf/Dataset/DatasetType/noAssertion> a owl:NamedIndividual,
-        dataset:DatasetType .
-
-<https://spdx.org/rdf/Dataset/DatasetType/numeric> a owl:NamedIndividual,
-        dataset:DatasetType .
-
-<https://spdx.org/rdf/Dataset/DatasetType/other> a owl:NamedIndividual,
-        dataset:DatasetType .
-
-<https://spdx.org/rdf/Dataset/DatasetType/sensor> a owl:NamedIndividual,
-        dataset:DatasetType .
-
-<https://spdx.org/rdf/Dataset/DatasetType/structured> a owl:NamedIndividual,
-        dataset:DatasetType .
-
-<https://spdx.org/rdf/Dataset/DatasetType/syntactic> a owl:NamedIndividual,
-        dataset:DatasetType .
-
-<https://spdx.org/rdf/Dataset/DatasetType/text> a owl:NamedIndividual,
-        dataset:DatasetType .
-
-<https://spdx.org/rdf/Dataset/DatasetType/timeseries> a owl:NamedIndividual,
-        dataset:DatasetType .
-
-<https://spdx.org/rdf/Dataset/DatasetType/timestamp> a owl:NamedIndividual,
-        dataset:DatasetType .
-
-<https://spdx.org/rdf/Dataset/DatasetType/video> a owl:NamedIndividual,
-        dataset:DatasetType .
-
-expandedlicense:ExtendableLicense a owl:Class,
+licensing:ExtendableLicense a owl:Class,
         sh:NodeShape ;
     rdfs:comment "The WithAdditionOperator can have a License or an OrLaterOperator as the license property value.  This class is used for the value." ;
     rdfs:subClassOf licensing:AnyLicenseInfo ;
@@ -635,7 +85,7 @@ It is context-dependent, and unspecified by SPDX, as to what constitutes a
 or may not have clearly-defined ordering for versions. The consumer of SPDX
 data will need to determine for themselves what meaning to attribute to a
 "later version" operator for a particular License.""" ;
-    rdfs:subClassOf expandedlicense:ExtendableLicense ;
+    rdfs:subClassOf licensing:ExtendableLicense ;
     ns0:term_status "Stable" ;
     sh:property [ sh:class licensing:License ;
             sh:maxCount 1 ;
@@ -652,16 +102,16 @@ Exceptions List (ListedLicenseException) or may be other additional text
 Syntax by the `WITH` operator.""" ;
     rdfs:subClassOf licensing:AnyLicenseInfo ;
     ns0:term_status "Stable" ;
-    sh:property [ sh:class licensing:LicenseAddition ;
-            sh:maxCount 1 ;
-            sh:minCount 1 ;
-            sh:name "subjectAddition" ;
-            sh:path licensing:subjectAddition ],
-        [ sh:datatype expandedlicense:ExtendableLicense ;
+    sh:property [ sh:datatype licensing:ExtendableLicense ;
             sh:maxCount 1 ;
             sh:minCount 1 ;
             sh:name "subjectLicense" ;
-            sh:path licensing:subjectLicense ] .
+            sh:path licensing:subjectLicense ],
+        [ sh:class licensing:LicenseAddition ;
+            sh:maxCount 1 ;
+            sh:minCount 1 ;
+            sh:name "subjectAddition" ;
+            sh:path licensing:subjectAddition ] .
 
 licensing:additionComment a owl:DatatypeProperty ;
     rdfs:comment """An additionComment for a LicenseAddition describes general factual information
@@ -777,24 +227,6 @@ where multiple, equivalent official translations exist.""" ;
     rdfs:range xsd:anyURI ;
     ns0:term_status "Stable" .
 
-<https://spdx.org/rdf/Security/ExploitCatalogType/kev> a owl:NamedIndividual,
-        security:ExploitCatalogType .
-
-<https://spdx.org/rdf/Security/ExploitCatalogType/other> a owl:NamedIndividual,
-        security:ExploitCatalogType .
-
-<https://spdx.org/rdf/Security/SsvcDecisionType/act> a owl:NamedIndividual,
-        security:SsvcDecisionType .
-
-<https://spdx.org/rdf/Security/SsvcDecisionType/attend> a owl:NamedIndividual,
-        security:SsvcDecisionType .
-
-<https://spdx.org/rdf/Security/SsvcDecisionType/track> a owl:NamedIndividual,
-        security:SsvcDecisionType .
-
-<https://spdx.org/rdf/Security/SsvcDecisionType/trackStar> a owl:NamedIndividual,
-        security:SsvcDecisionType .
-
 security:VexFixedVulnAssessmentRelationship a owl:Class,
         sh:NodeShape ;
     rdfs:comment """VexFixedVulnAssessmentRelationship links a vulnerability to a number of elements
@@ -827,21 +259,6 @@ element.
 ```""" ;
     rdfs:subClassOf security:VexVulnAssessmentRelationship ;
     ns0:term_status "Stable" .
-
-<https://spdx.org/rdf/Security/VexJustificationType/componentNotPresent> a owl:NamedIndividual,
-        security:VexJustificationType .
-
-<https://spdx.org/rdf/Security/VexJustificationType/inlineMitigationsAlreadyExist> a owl:NamedIndividual,
-        security:VexJustificationType .
-
-<https://spdx.org/rdf/Security/VexJustificationType/vulnerableCodeCannotBeControlledByAdversary> a owl:NamedIndividual,
-        security:VexJustificationType .
-
-<https://spdx.org/rdf/Security/VexJustificationType/vulnerableCodeNotInExecutePath> a owl:NamedIndividual,
-        security:VexJustificationType .
-
-<https://spdx.org/rdf/Security/VexJustificationType/vulnerableCodeNotPresent> a owl:NamedIndividual,
-        security:VexJustificationType .
 
 security:VexUnderInvestigationVulnAssessmentRelationship a owl:Class,
         sh:NodeShape ;
@@ -876,127 +293,28 @@ element.
     rdfs:subClassOf security:VexVulnAssessmentRelationship ;
     ns0:term_status "Stable" .
 
-<https://spdx.org/rdf/Software/DependencyConditionalityType/optional> a owl:NamedIndividual,
-        software:DependencyConditionalityType .
+<https://spdx.org/rdf/v3/AI/PresenceType/no> a owl:NamedIndividual,
+        ai:PresenceType .
 
-<https://spdx.org/rdf/Software/DependencyConditionalityType/other> a owl:NamedIndividual,
-        software:DependencyConditionalityType .
+<https://spdx.org/rdf/v3/AI/PresenceType/noAssertion> a owl:NamedIndividual,
+        ai:PresenceType .
 
-<https://spdx.org/rdf/Software/DependencyConditionalityType/prerequisite> a owl:NamedIndividual,
-        software:DependencyConditionalityType .
+<https://spdx.org/rdf/v3/AI/PresenceType/yes> a owl:NamedIndividual,
+        ai:PresenceType .
 
-<https://spdx.org/rdf/Software/DependencyConditionalityType/provided> a owl:NamedIndividual,
-        software:DependencyConditionalityType .
+<https://spdx.org/rdf/v3/AI/SafetyRiskAssessmentType/high> a owl:NamedIndividual,
+        ai:SafetyRiskAssessmentType .
 
-<https://spdx.org/rdf/Software/DependencyConditionalityType/required> a owl:NamedIndividual,
-        software:DependencyConditionalityType .
+<https://spdx.org/rdf/v3/AI/SafetyRiskAssessmentType/low> a owl:NamedIndividual,
+        ai:SafetyRiskAssessmentType .
 
-<https://spdx.org/rdf/Software/SBOMType/analyzed> a owl:NamedIndividual,
-        software:SBOMType .
+<https://spdx.org/rdf/v3/AI/SafetyRiskAssessmentType/medium> a owl:NamedIndividual,
+        ai:SafetyRiskAssessmentType .
 
-<https://spdx.org/rdf/Software/SBOMType/build> a owl:NamedIndividual,
-        software:SBOMType .
+<https://spdx.org/rdf/v3/AI/SafetyRiskAssessmentType/serious> a owl:NamedIndividual,
+        ai:SafetyRiskAssessmentType .
 
-<https://spdx.org/rdf/Software/SBOMType/deployed> a owl:NamedIndividual,
-        software:SBOMType .
-
-<https://spdx.org/rdf/Software/SBOMType/design> a owl:NamedIndividual,
-        software:SBOMType .
-
-<https://spdx.org/rdf/Software/SBOMType/runtime> a owl:NamedIndividual,
-        software:SBOMType .
-
-<https://spdx.org/rdf/Software/SBOMType/source> a owl:NamedIndividual,
-        software:SBOMType .
-
-<https://spdx.org/rdf/Software/SoftwareDependencyLinkType/dynamic> a owl:NamedIndividual,
-        software:SoftwareDependencyLinkType .
-
-<https://spdx.org/rdf/Software/SoftwareDependencyLinkType/other> a owl:NamedIndividual,
-        software:SoftwareDependencyLinkType .
-
-<https://spdx.org/rdf/Software/SoftwareDependencyLinkType/static> a owl:NamedIndividual,
-        software:SoftwareDependencyLinkType .
-
-<https://spdx.org/rdf/Software/SoftwareDependencyLinkType/tool> a owl:NamedIndividual,
-        software:SoftwareDependencyLinkType .
-
-<https://spdx.org/rdf/Software/SoftwarePurpose/application> a owl:NamedIndividual,
-        software:SoftwarePurpose .
-
-<https://spdx.org/rdf/Software/SoftwarePurpose/archive> a owl:NamedIndividual,
-        software:SoftwarePurpose .
-
-<https://spdx.org/rdf/Software/SoftwarePurpose/bom> a owl:NamedIndividual,
-        software:SoftwarePurpose .
-
-<https://spdx.org/rdf/Software/SoftwarePurpose/configuration> a owl:NamedIndividual,
-        software:SoftwarePurpose .
-
-<https://spdx.org/rdf/Software/SoftwarePurpose/container> a owl:NamedIndividual,
-        software:SoftwarePurpose .
-
-<https://spdx.org/rdf/Software/SoftwarePurpose/data> a owl:NamedIndividual,
-        software:SoftwarePurpose .
-
-<https://spdx.org/rdf/Software/SoftwarePurpose/device> a owl:NamedIndividual,
-        software:SoftwarePurpose .
-
-<https://spdx.org/rdf/Software/SoftwarePurpose/documentation> a owl:NamedIndividual,
-        software:SoftwarePurpose .
-
-<https://spdx.org/rdf/Software/SoftwarePurpose/evidence> a owl:NamedIndividual,
-        software:SoftwarePurpose .
-
-<https://spdx.org/rdf/Software/SoftwarePurpose/executable> a owl:NamedIndividual,
-        software:SoftwarePurpose .
-
-<https://spdx.org/rdf/Software/SoftwarePurpose/file> a owl:NamedIndividual,
-        software:SoftwarePurpose .
-
-<https://spdx.org/rdf/Software/SoftwarePurpose/firmware> a owl:NamedIndividual,
-        software:SoftwarePurpose .
-
-<https://spdx.org/rdf/Software/SoftwarePurpose/framework> a owl:NamedIndividual,
-        software:SoftwarePurpose .
-
-<https://spdx.org/rdf/Software/SoftwarePurpose/install> a owl:NamedIndividual,
-        software:SoftwarePurpose .
-
-<https://spdx.org/rdf/Software/SoftwarePurpose/library> a owl:NamedIndividual,
-        software:SoftwarePurpose .
-
-<https://spdx.org/rdf/Software/SoftwarePurpose/manifest> a owl:NamedIndividual,
-        software:SoftwarePurpose .
-
-<https://spdx.org/rdf/Software/SoftwarePurpose/model> a owl:NamedIndividual,
-        software:SoftwarePurpose .
-
-<https://spdx.org/rdf/Software/SoftwarePurpose/module> a owl:NamedIndividual,
-        software:SoftwarePurpose .
-
-<https://spdx.org/rdf/Software/SoftwarePurpose/operatingSystem> a owl:NamedIndividual,
-        software:SoftwarePurpose .
-
-<https://spdx.org/rdf/Software/SoftwarePurpose/other> a owl:NamedIndividual,
-        software:SoftwarePurpose .
-
-<https://spdx.org/rdf/Software/SoftwarePurpose/patch> a owl:NamedIndividual,
-        software:SoftwarePurpose .
-
-<https://spdx.org/rdf/Software/SoftwarePurpose/requirement> a owl:NamedIndividual,
-        software:SoftwarePurpose .
-
-<https://spdx.org/rdf/Software/SoftwarePurpose/source> a owl:NamedIndividual,
-        software:SoftwarePurpose .
-
-<https://spdx.org/rdf/Software/SoftwarePurpose/specification> a owl:NamedIndividual,
-        software:SoftwarePurpose .
-
-<https://spdx.org/rdf/Software/SoftwarePurpose/test> a owl:NamedIndividual,
-        software:SoftwarePurpose .
-
-ai:autonomyType a owl:DatatypeProperty ;
+ai:autonomyType a owl:ObjectProperty ;
     rdfs:comment """AutonomyType indicates if a human is involved in any of the decisions of the AI software
 or if that software is fully automatic.""" ;
     rdfs:domain ai:AIPackage ;
@@ -1017,7 +335,7 @@ This value is also known as training energy consumption or inference energy cons
     rdfs:range xsd:string ;
     ns0:term_status "Stable" .
 
-ai:hyperparameter a owl:DatatypeProperty ;
+ai:hyperparameter a owl:ObjectProperty ;
     rdfs:comment """This field records a hyperparameter value.
 Hyperparameters are parameters of the machine learning model that are used to control the learning process,
 for example the optimization and learning rate used during the training of the model.""" ;
@@ -1048,7 +366,7 @@ For instance, a limitation might be that the AI package cannot be used on datase
     rdfs:range xsd:string ;
     ns0:term_status "Stable" .
 
-ai:metric a owl:DatatypeProperty ;
+ai:metric a owl:ObjectProperty ;
     rdfs:comment """Metric records the measurement with which the AI model was evaluated. 
 This makes statements about the prediction quality including uncertainty,
 accuracy, characteristics of the tested population, quality, fairness, explainability, robustness etc.""" ;
@@ -1056,7 +374,7 @@ accuracy, characteristics of the tested population, quality, fairness, explainab
     rdfs:range core:DictionaryEntry ;
     ns0:term_status "Stable" .
 
-ai:metricDecisionThreshold a owl:DatatypeProperty ;
+ai:metricDecisionThreshold a owl:ObjectProperty ;
     rdfs:comment """Each metric might be computed based on a decision threshold. 
 For instance, precision or recall is typically computed by checking
 if the probability of the outcome is larger than 0.5.
@@ -1079,14 +397,14 @@ ai:modelExplainability a owl:DatatypeProperty ;
     rdfs:range xsd:string ;
     ns0:term_status "Stable" .
 
-ai:safetyRiskAssessment a owl:DatatypeProperty ;
+ai:safetyRiskAssessment a owl:ObjectProperty ;
     rdfs:comment """SafetyRiskAssessment categorizes the safety risk impact of the AI software
 in accordance with Article 20 of [EC Regulation No 765/2008](https://ec.europa.eu/docsroom/documents/17107/attachments/1/translations/en/renditions/pdf).""" ;
     rdfs:domain ai:AIPackage ;
     rdfs:range ai:SafetyRiskAssessmentType ;
     ns0:term_status "Stable" .
 
-ai:sensitivePersonalInformation a owl:DatatypeProperty ;
+ai:sensitivePersonalInformation a owl:ObjectProperty ;
     rdfs:comment """SensitivePersonalInformation notes if sensitive personal information
 is used in the training or inference of the AI models.
 This might include biometric data, addresses or other data that can be used to infer a person's identity.""" ;
@@ -1133,7 +451,7 @@ build:buildType a owl:DatatypeProperty ;
     rdfs:range xsd:anyURI ;
     ns0:term_status "Stable" .
 
-build:configSourceDigest a owl:DatatypeProperty ;
+build:configSourceDigest a owl:ObjectProperty ;
     rdfs:comment "configSourceDigest is the checksum of the build configuration file used by a builder to execute a build. This Property uses the Core model's [Hash](../../Core/Classes/Hash.md) class." ;
     rdfs:domain build:Build ;
     rdfs:range core:Hash ;
@@ -1168,17 +486,23 @@ m""" ;
     rdfs:range xsd:anyURI ;
     ns0:term_status "Stable" .
 
-build:environment a owl:DatatypeProperty ;
+build:environment a owl:ObjectProperty ;
     rdfs:comment "environment is a map of environment variables and values that are set during a build session. This is different from the [parameters](parameters.md) property in that it describes the environment variables set before a build is invoked rather than the variables provided to the builder." ;
     rdfs:domain build:Build ;
     rdfs:range core:DictionaryEntry ;
     ns0:term_status "Stable" .
 
-build:parameters a owl:DatatypeProperty ;
+build:parameters a owl:ObjectProperty ;
     rdfs:comment "parameters is a key-value map of all build parameters and their values that were provided to the builder for a build instance. This is different from the [environment](environment.md) property in that the keys and values are provided as command line arguments or a configuration file to the builder." ;
     rdfs:domain build:Build ;
     rdfs:range core:DictionaryEntry ;
     ns0:term_status "Stable" .
+
+<https://spdx.org/rdf/v3/Core/AnnotationType/other> a owl:NamedIndividual,
+        core:AnnotationType .
+
+<https://spdx.org/rdf/v3/Core/AnnotationType/review> a owl:NamedIndividual,
+        core:AnnotationType .
 
 core:Bom a owl:Class,
         sh:NodeShape ;
@@ -1189,6 +513,474 @@ provenence details of the product and/or
 its composition, licensing information, known quality or security issues, etc.""" ;
     rdfs:subClassOf core:Bundle ;
     ns0:term_status "Stable" .
+
+<https://spdx.org/rdf/v3/Core/ExternalIdentifierType/cpe22> a owl:NamedIndividual,
+        core:ExternalIdentifierType .
+
+<https://spdx.org/rdf/v3/Core/ExternalIdentifierType/cpe23> a owl:NamedIndividual,
+        core:ExternalIdentifierType .
+
+<https://spdx.org/rdf/v3/Core/ExternalIdentifierType/cve> a owl:NamedIndividual,
+        core:ExternalIdentifierType .
+
+<https://spdx.org/rdf/v3/Core/ExternalIdentifierType/email> a owl:NamedIndividual,
+        core:ExternalIdentifierType .
+
+<https://spdx.org/rdf/v3/Core/ExternalIdentifierType/gitoid> a owl:NamedIndividual,
+        core:ExternalIdentifierType .
+
+<https://spdx.org/rdf/v3/Core/ExternalIdentifierType/other> a owl:NamedIndividual,
+        core:ExternalIdentifierType .
+
+<https://spdx.org/rdf/v3/Core/ExternalIdentifierType/pkgUrl> a owl:NamedIndividual,
+        core:ExternalIdentifierType .
+
+<https://spdx.org/rdf/v3/Core/ExternalIdentifierType/securityOther> a owl:NamedIndividual,
+        core:ExternalIdentifierType .
+
+<https://spdx.org/rdf/v3/Core/ExternalIdentifierType/swhid> a owl:NamedIndividual,
+        core:ExternalIdentifierType .
+
+<https://spdx.org/rdf/v3/Core/ExternalIdentifierType/swid> a owl:NamedIndividual,
+        core:ExternalIdentifierType .
+
+<https://spdx.org/rdf/v3/Core/ExternalIdentifierType/urlScheme> a owl:NamedIndividual,
+        core:ExternalIdentifierType .
+
+<https://spdx.org/rdf/v3/Core/ExternalReferenceType/altDownloadLocation> a owl:NamedIndividual,
+        core:ExternalReferenceType .
+
+<https://spdx.org/rdf/v3/Core/ExternalReferenceType/altWebPage> a owl:NamedIndividual,
+        core:ExternalReferenceType .
+
+<https://spdx.org/rdf/v3/Core/ExternalReferenceType/binaryArtifact> a owl:NamedIndividual,
+        core:ExternalReferenceType .
+
+<https://spdx.org/rdf/v3/Core/ExternalReferenceType/buildMeta> a owl:NamedIndividual,
+        core:ExternalReferenceType .
+
+<https://spdx.org/rdf/v3/Core/ExternalReferenceType/buildSystem> a owl:NamedIndividual,
+        core:ExternalReferenceType .
+
+<https://spdx.org/rdf/v3/Core/ExternalReferenceType/certificationReport> a owl:NamedIndividual,
+        core:ExternalReferenceType .
+
+<https://spdx.org/rdf/v3/Core/ExternalReferenceType/chat> a owl:NamedIndividual,
+        core:ExternalReferenceType .
+
+<https://spdx.org/rdf/v3/Core/ExternalReferenceType/componentAnalysisReport> a owl:NamedIndividual,
+        core:ExternalReferenceType .
+
+<https://spdx.org/rdf/v3/Core/ExternalReferenceType/documentation> a owl:NamedIndividual,
+        core:ExternalReferenceType .
+
+<https://spdx.org/rdf/v3/Core/ExternalReferenceType/dynamicAnalysisReport> a owl:NamedIndividual,
+        core:ExternalReferenceType .
+
+<https://spdx.org/rdf/v3/Core/ExternalReferenceType/eolNotice> a owl:NamedIndividual,
+        core:ExternalReferenceType .
+
+<https://spdx.org/rdf/v3/Core/ExternalReferenceType/exportControlAssessment> a owl:NamedIndividual,
+        core:ExternalReferenceType .
+
+<https://spdx.org/rdf/v3/Core/ExternalReferenceType/funding> a owl:NamedIndividual,
+        core:ExternalReferenceType .
+
+<https://spdx.org/rdf/v3/Core/ExternalReferenceType/issueTracker> a owl:NamedIndividual,
+        core:ExternalReferenceType .
+
+<https://spdx.org/rdf/v3/Core/ExternalReferenceType/license> a owl:NamedIndividual,
+        core:ExternalReferenceType .
+
+<https://spdx.org/rdf/v3/Core/ExternalReferenceType/mailingList> a owl:NamedIndividual,
+        core:ExternalReferenceType .
+
+<https://spdx.org/rdf/v3/Core/ExternalReferenceType/metrics> a owl:NamedIndividual,
+        core:ExternalReferenceType .
+
+<https://spdx.org/rdf/v3/Core/ExternalReferenceType/other> a owl:NamedIndividual,
+        core:ExternalReferenceType .
+
+<https://spdx.org/rdf/v3/Core/ExternalReferenceType/privacyAssessment> a owl:NamedIndividual,
+        core:ExternalReferenceType .
+
+<https://spdx.org/rdf/v3/Core/ExternalReferenceType/productMetadata> a owl:NamedIndividual,
+        core:ExternalReferenceType .
+
+<https://spdx.org/rdf/v3/Core/ExternalReferenceType/purchaseOrder> a owl:NamedIndividual,
+        core:ExternalReferenceType .
+
+<https://spdx.org/rdf/v3/Core/ExternalReferenceType/qualityAssessmentReport> a owl:NamedIndividual,
+        core:ExternalReferenceType .
+
+<https://spdx.org/rdf/v3/Core/ExternalReferenceType/releaseHistory> a owl:NamedIndividual,
+        core:ExternalReferenceType .
+
+<https://spdx.org/rdf/v3/Core/ExternalReferenceType/releaseNotes> a owl:NamedIndividual,
+        core:ExternalReferenceType .
+
+<https://spdx.org/rdf/v3/Core/ExternalReferenceType/riskAssessment> a owl:NamedIndividual,
+        core:ExternalReferenceType .
+
+<https://spdx.org/rdf/v3/Core/ExternalReferenceType/runtimeAnalysisReport> a owl:NamedIndividual,
+        core:ExternalReferenceType .
+
+<https://spdx.org/rdf/v3/Core/ExternalReferenceType/secureSoftwareAttestation> a owl:NamedIndividual,
+        core:ExternalReferenceType .
+
+<https://spdx.org/rdf/v3/Core/ExternalReferenceType/securityAdversaryModel> a owl:NamedIndividual,
+        core:ExternalReferenceType .
+
+<https://spdx.org/rdf/v3/Core/ExternalReferenceType/securityAdvisory> a owl:NamedIndividual,
+        core:ExternalReferenceType .
+
+<https://spdx.org/rdf/v3/Core/ExternalReferenceType/securityFix> a owl:NamedIndividual,
+        core:ExternalReferenceType .
+
+<https://spdx.org/rdf/v3/Core/ExternalReferenceType/securityOther> a owl:NamedIndividual,
+        core:ExternalReferenceType .
+
+<https://spdx.org/rdf/v3/Core/ExternalReferenceType/securityPenTestReport> a owl:NamedIndividual,
+        core:ExternalReferenceType .
+
+<https://spdx.org/rdf/v3/Core/ExternalReferenceType/securityPolicy> a owl:NamedIndividual,
+        core:ExternalReferenceType .
+
+<https://spdx.org/rdf/v3/Core/ExternalReferenceType/securityThreatModel> a owl:NamedIndividual,
+        core:ExternalReferenceType .
+
+<https://spdx.org/rdf/v3/Core/ExternalReferenceType/socialMedia> a owl:NamedIndividual,
+        core:ExternalReferenceType .
+
+<https://spdx.org/rdf/v3/Core/ExternalReferenceType/sourceArtifact> a owl:NamedIndividual,
+        core:ExternalReferenceType .
+
+<https://spdx.org/rdf/v3/Core/ExternalReferenceType/staticAnalysisReport> a owl:NamedIndividual,
+        core:ExternalReferenceType .
+
+<https://spdx.org/rdf/v3/Core/ExternalReferenceType/support> a owl:NamedIndividual,
+        core:ExternalReferenceType .
+
+<https://spdx.org/rdf/v3/Core/ExternalReferenceType/vcs> a owl:NamedIndividual,
+        core:ExternalReferenceType .
+
+<https://spdx.org/rdf/v3/Core/ExternalReferenceType/vulnerabilityDisclosureReport> a owl:NamedIndividual,
+        core:ExternalReferenceType .
+
+<https://spdx.org/rdf/v3/Core/ExternalReferenceType/vulnerabilityExploitabilityAssessment> a owl:NamedIndividual,
+        core:ExternalReferenceType .
+
+<https://spdx.org/rdf/v3/Core/HashAlgorithm/blake2b256> a owl:NamedIndividual,
+        core:HashAlgorithm .
+
+<https://spdx.org/rdf/v3/Core/HashAlgorithm/blake2b384> a owl:NamedIndividual,
+        core:HashAlgorithm .
+
+<https://spdx.org/rdf/v3/Core/HashAlgorithm/blake2b512> a owl:NamedIndividual,
+        core:HashAlgorithm .
+
+<https://spdx.org/rdf/v3/Core/HashAlgorithm/blake3> a owl:NamedIndividual,
+        core:HashAlgorithm .
+
+<https://spdx.org/rdf/v3/Core/HashAlgorithm/crystalsDilithium> a owl:NamedIndividual,
+        core:HashAlgorithm .
+
+<https://spdx.org/rdf/v3/Core/HashAlgorithm/crystalsKyber> a owl:NamedIndividual,
+        core:HashAlgorithm .
+
+<https://spdx.org/rdf/v3/Core/HashAlgorithm/falcon> a owl:NamedIndividual,
+        core:HashAlgorithm .
+
+<https://spdx.org/rdf/v3/Core/HashAlgorithm/md2> a owl:NamedIndividual,
+        core:HashAlgorithm .
+
+<https://spdx.org/rdf/v3/Core/HashAlgorithm/md4> a owl:NamedIndividual,
+        core:HashAlgorithm .
+
+<https://spdx.org/rdf/v3/Core/HashAlgorithm/md5> a owl:NamedIndividual,
+        core:HashAlgorithm .
+
+<https://spdx.org/rdf/v3/Core/HashAlgorithm/md6> a owl:NamedIndividual,
+        core:HashAlgorithm .
+
+<https://spdx.org/rdf/v3/Core/HashAlgorithm/other> a owl:NamedIndividual,
+        core:HashAlgorithm .
+
+<https://spdx.org/rdf/v3/Core/HashAlgorithm/sha1> a owl:NamedIndividual,
+        core:HashAlgorithm .
+
+<https://spdx.org/rdf/v3/Core/HashAlgorithm/sha224> a owl:NamedIndividual,
+        core:HashAlgorithm .
+
+<https://spdx.org/rdf/v3/Core/HashAlgorithm/sha256> a owl:NamedIndividual,
+        core:HashAlgorithm .
+
+<https://spdx.org/rdf/v3/Core/HashAlgorithm/sha384> a owl:NamedIndividual,
+        core:HashAlgorithm .
+
+<https://spdx.org/rdf/v3/Core/HashAlgorithm/sha3_224> a owl:NamedIndividual,
+        core:HashAlgorithm .
+
+<https://spdx.org/rdf/v3/Core/HashAlgorithm/sha3_256> a owl:NamedIndividual,
+        core:HashAlgorithm .
+
+<https://spdx.org/rdf/v3/Core/HashAlgorithm/sha3_384> a owl:NamedIndividual,
+        core:HashAlgorithm .
+
+<https://spdx.org/rdf/v3/Core/HashAlgorithm/sha3_512> a owl:NamedIndividual,
+        core:HashAlgorithm .
+
+<https://spdx.org/rdf/v3/Core/HashAlgorithm/sha512> a owl:NamedIndividual,
+        core:HashAlgorithm .
+
+<https://spdx.org/rdf/v3/Core/HashAlgorithm/spdxPvcSha1> a owl:NamedIndividual,
+        core:HashAlgorithm .
+
+<https://spdx.org/rdf/v3/Core/HashAlgorithm/spdxPvcSha256> a owl:NamedIndividual,
+        core:HashAlgorithm .
+
+<https://spdx.org/rdf/v3/Core/HashAlgorithm/sphincsPlus> a owl:NamedIndividual,
+        core:HashAlgorithm .
+
+<https://spdx.org/rdf/v3/Core/LifecycleScopeType/build> a owl:NamedIndividual,
+        core:LifecycleScopeType .
+
+<https://spdx.org/rdf/v3/Core/LifecycleScopeType/design> a owl:NamedIndividual,
+        core:LifecycleScopeType .
+
+<https://spdx.org/rdf/v3/Core/LifecycleScopeType/development> a owl:NamedIndividual,
+        core:LifecycleScopeType .
+
+<https://spdx.org/rdf/v3/Core/LifecycleScopeType/other> a owl:NamedIndividual,
+        core:LifecycleScopeType .
+
+<https://spdx.org/rdf/v3/Core/LifecycleScopeType/runtime> a owl:NamedIndividual,
+        core:LifecycleScopeType .
+
+<https://spdx.org/rdf/v3/Core/LifecycleScopeType/test> a owl:NamedIndividual,
+        core:LifecycleScopeType .
+
+<https://spdx.org/rdf/v3/Core/ProfileIdentifierType/ai> a owl:NamedIndividual,
+        core:ProfileIdentifierType .
+
+<https://spdx.org/rdf/v3/Core/ProfileIdentifierType/build> a owl:NamedIndividual,
+        core:ProfileIdentifierType .
+
+<https://spdx.org/rdf/v3/Core/ProfileIdentifierType/core> a owl:NamedIndividual,
+        core:ProfileIdentifierType .
+
+<https://spdx.org/rdf/v3/Core/ProfileIdentifierType/dataset> a owl:NamedIndividual,
+        core:ProfileIdentifierType .
+
+<https://spdx.org/rdf/v3/Core/ProfileIdentifierType/extension> a owl:NamedIndividual,
+        core:ProfileIdentifierType .
+
+<https://spdx.org/rdf/v3/Core/ProfileIdentifierType/licensing> a owl:NamedIndividual,
+        core:ProfileIdentifierType .
+
+<https://spdx.org/rdf/v3/Core/ProfileIdentifierType/security> a owl:NamedIndividual,
+        core:ProfileIdentifierType .
+
+<https://spdx.org/rdf/v3/Core/ProfileIdentifierType/software> a owl:NamedIndividual,
+        core:ProfileIdentifierType .
+
+<https://spdx.org/rdf/v3/Core/ProfileIdentifierType/usage> a owl:NamedIndividual,
+        core:ProfileIdentifierType .
+
+<https://spdx.org/rdf/v3/Core/RelationshipCompleteness/complete> a owl:NamedIndividual,
+        core:RelationshipCompleteness .
+
+<https://spdx.org/rdf/v3/Core/RelationshipCompleteness/incomplete> a owl:NamedIndividual,
+        core:RelationshipCompleteness .
+
+<https://spdx.org/rdf/v3/Core/RelationshipCompleteness/noAssertion> a owl:NamedIndividual,
+        core:RelationshipCompleteness .
+
+<https://spdx.org/rdf/v3/Core/RelationshipType/affects> a owl:NamedIndividual,
+        core:RelationshipType .
+
+<https://spdx.org/rdf/v3/Core/RelationshipType/amends> a owl:NamedIndividual,
+        core:RelationshipType .
+
+<https://spdx.org/rdf/v3/Core/RelationshipType/ancestor> a owl:NamedIndividual,
+        core:RelationshipType .
+
+<https://spdx.org/rdf/v3/Core/RelationshipType/availableFrom> a owl:NamedIndividual,
+        core:RelationshipType .
+
+<https://spdx.org/rdf/v3/Core/RelationshipType/buildDependency> a owl:NamedIndividual,
+        core:RelationshipType .
+
+<https://spdx.org/rdf/v3/Core/RelationshipType/buildTool> a owl:NamedIndividual,
+        core:RelationshipType .
+
+<https://spdx.org/rdf/v3/Core/RelationshipType/configOf> a owl:NamedIndividual,
+        core:RelationshipType .
+
+<https://spdx.org/rdf/v3/Core/RelationshipType/contains> a owl:NamedIndividual,
+        core:RelationshipType .
+
+<https://spdx.org/rdf/v3/Core/RelationshipType/coordinatedBy> a owl:NamedIndividual,
+        core:RelationshipType .
+
+<https://spdx.org/rdf/v3/Core/RelationshipType/copy> a owl:NamedIndividual,
+        core:RelationshipType .
+
+<https://spdx.org/rdf/v3/Core/RelationshipType/dataFile> a owl:NamedIndividual,
+        core:RelationshipType .
+
+<https://spdx.org/rdf/v3/Core/RelationshipType/dependencyManifest> a owl:NamedIndividual,
+        core:RelationshipType .
+
+<https://spdx.org/rdf/v3/Core/RelationshipType/dependsOn> a owl:NamedIndividual,
+        core:RelationshipType .
+
+<https://spdx.org/rdf/v3/Core/RelationshipType/descendant> a owl:NamedIndividual,
+        core:RelationshipType .
+
+<https://spdx.org/rdf/v3/Core/RelationshipType/describes> a owl:NamedIndividual,
+        core:RelationshipType .
+
+<https://spdx.org/rdf/v3/Core/RelationshipType/devDependency> a owl:NamedIndividual,
+        core:RelationshipType .
+
+<https://spdx.org/rdf/v3/Core/RelationshipType/devTool> a owl:NamedIndividual,
+        core:RelationshipType .
+
+<https://spdx.org/rdf/v3/Core/RelationshipType/distributionArtifact> a owl:NamedIndividual,
+        core:RelationshipType .
+
+<https://spdx.org/rdf/v3/Core/RelationshipType/documentation> a owl:NamedIndividual,
+        core:RelationshipType .
+
+<https://spdx.org/rdf/v3/Core/RelationshipType/doesNotAffect> a owl:NamedIndividual,
+        core:RelationshipType .
+
+<https://spdx.org/rdf/v3/Core/RelationshipType/dynamicLink> a owl:NamedIndividual,
+        core:RelationshipType .
+
+<https://spdx.org/rdf/v3/Core/RelationshipType/evidenceFor> a owl:NamedIndividual,
+        core:RelationshipType .
+
+<https://spdx.org/rdf/v3/Core/RelationshipType/example> a owl:NamedIndividual,
+        core:RelationshipType .
+
+<https://spdx.org/rdf/v3/Core/RelationshipType/expandedFromArchive> a owl:NamedIndividual,
+        core:RelationshipType .
+
+<https://spdx.org/rdf/v3/Core/RelationshipType/exploitCreatedBy> a owl:NamedIndividual,
+        core:RelationshipType .
+
+<https://spdx.org/rdf/v3/Core/RelationshipType/fileAdded> a owl:NamedIndividual,
+        core:RelationshipType .
+
+<https://spdx.org/rdf/v3/Core/RelationshipType/fileDeleted> a owl:NamedIndividual,
+        core:RelationshipType .
+
+<https://spdx.org/rdf/v3/Core/RelationshipType/fileModified> a owl:NamedIndividual,
+        core:RelationshipType .
+
+<https://spdx.org/rdf/v3/Core/RelationshipType/fixedBy> a owl:NamedIndividual,
+        core:RelationshipType .
+
+<https://spdx.org/rdf/v3/Core/RelationshipType/fixedIn> a owl:NamedIndividual,
+        core:RelationshipType .
+
+<https://spdx.org/rdf/v3/Core/RelationshipType/foundBy> a owl:NamedIndividual,
+        core:RelationshipType .
+
+<https://spdx.org/rdf/v3/Core/RelationshipType/generates> a owl:NamedIndividual,
+        core:RelationshipType .
+
+<https://spdx.org/rdf/v3/Core/RelationshipType/hasAssessmentFor> a owl:NamedIndividual,
+        core:RelationshipType .
+
+<https://spdx.org/rdf/v3/Core/RelationshipType/hasAssociatedVulnerability> a owl:NamedIndividual,
+        core:RelationshipType .
+
+<https://spdx.org/rdf/v3/Core/RelationshipType/hostOf> a owl:NamedIndividual,
+        core:RelationshipType .
+
+<https://spdx.org/rdf/v3/Core/RelationshipType/inputOf> a owl:NamedIndividual,
+        core:RelationshipType .
+
+<https://spdx.org/rdf/v3/Core/RelationshipType/invokedBy> a owl:NamedIndividual,
+        core:RelationshipType .
+
+<https://spdx.org/rdf/v3/Core/RelationshipType/metafile> a owl:NamedIndividual,
+        core:RelationshipType .
+
+<https://spdx.org/rdf/v3/Core/RelationshipType/onBehalfOf> a owl:NamedIndividual,
+        core:RelationshipType .
+
+<https://spdx.org/rdf/v3/Core/RelationshipType/optionalComponent> a owl:NamedIndividual,
+        core:RelationshipType .
+
+<https://spdx.org/rdf/v3/Core/RelationshipType/optionalDependency> a owl:NamedIndividual,
+        core:RelationshipType .
+
+<https://spdx.org/rdf/v3/Core/RelationshipType/other> a owl:NamedIndividual,
+        core:RelationshipType .
+
+<https://spdx.org/rdf/v3/Core/RelationshipType/outputOf> a owl:NamedIndividual,
+        core:RelationshipType .
+
+<https://spdx.org/rdf/v3/Core/RelationshipType/packages> a owl:NamedIndividual,
+        core:RelationshipType .
+
+<https://spdx.org/rdf/v3/Core/RelationshipType/patch> a owl:NamedIndividual,
+        core:RelationshipType .
+
+<https://spdx.org/rdf/v3/Core/RelationshipType/prerequisite> a owl:NamedIndividual,
+        core:RelationshipType .
+
+<https://spdx.org/rdf/v3/Core/RelationshipType/providedDependency> a owl:NamedIndividual,
+        core:RelationshipType .
+
+<https://spdx.org/rdf/v3/Core/RelationshipType/publishedBy> a owl:NamedIndividual,
+        core:RelationshipType .
+
+<https://spdx.org/rdf/v3/Core/RelationshipType/reportedBy> a owl:NamedIndividual,
+        core:RelationshipType .
+
+<https://spdx.org/rdf/v3/Core/RelationshipType/republishedBy> a owl:NamedIndividual,
+        core:RelationshipType .
+
+<https://spdx.org/rdf/v3/Core/RelationshipType/requirementFor> a owl:NamedIndividual,
+        core:RelationshipType .
+
+<https://spdx.org/rdf/v3/Core/RelationshipType/runtimeDependency> a owl:NamedIndividual,
+        core:RelationshipType .
+
+<https://spdx.org/rdf/v3/Core/RelationshipType/specificationFor> a owl:NamedIndividual,
+        core:RelationshipType .
+
+<https://spdx.org/rdf/v3/Core/RelationshipType/staticLink> a owl:NamedIndividual,
+        core:RelationshipType .
+
+<https://spdx.org/rdf/v3/Core/RelationshipType/test> a owl:NamedIndividual,
+        core:RelationshipType .
+
+<https://spdx.org/rdf/v3/Core/RelationshipType/testCase> a owl:NamedIndividual,
+        core:RelationshipType .
+
+<https://spdx.org/rdf/v3/Core/RelationshipType/testDependency> a owl:NamedIndividual,
+        core:RelationshipType .
+
+<https://spdx.org/rdf/v3/Core/RelationshipType/testTool> a owl:NamedIndividual,
+        core:RelationshipType .
+
+<https://spdx.org/rdf/v3/Core/RelationshipType/testedOn> a owl:NamedIndividual,
+        core:RelationshipType .
+
+<https://spdx.org/rdf/v3/Core/RelationshipType/trainedOn> a owl:NamedIndividual,
+        core:RelationshipType .
+
+<https://spdx.org/rdf/v3/Core/RelationshipType/underInvestigationFor> a owl:NamedIndividual,
+        core:RelationshipType .
+
+<https://spdx.org/rdf/v3/Core/RelationshipType/variant> a owl:NamedIndividual,
+        core:RelationshipType .
 
 core:SpdxDocument a owl:Class,
         sh:NodeShape ;
@@ -1203,13 +995,13 @@ External property restriction on /Core/Element/name: minCount: 1""" ;
             sh:name "name" ;
             sh:path core:name ] .
 
-core:algorithm a owl:DatatypeProperty ;
+core:algorithm a owl:ObjectProperty ;
     rdfs:comment "An algorithm specifies the algorithm that was used for calculating the hash value." ;
     rdfs:domain core:Hash ;
     rdfs:range core:HashAlgorithm ;
     ns0:term_status "Stable" .
 
-core:annotationType a owl:DatatypeProperty ;
+core:annotationType a owl:ObjectProperty ;
     rdfs:comment "An annotationType describes the type of an annotation." ;
     rdfs:domain core:Annotation ;
     rdfs:range core:AnnotationType ;
@@ -1227,7 +1019,7 @@ core:builtTime a owl:DatatypeProperty ;
     rdfs:range core:DateTime ;
     ns0:term_status "Stable" .
 
-core:completeness a owl:DatatypeProperty ;
+core:completeness a owl:ObjectProperty ;
     rdfs:comment """Completeness gives information about whether the provided relationships are
 complete, known to be incomplete or if no assertion is made either way.""" ;
     rdfs:domain core:Relationship ;
@@ -1262,6 +1054,12 @@ The generation method will assist the recipient of the Element in assessing
 the general reliability/accuracy of the analysis information.""" ;
     rdfs:domain core:CreationInfo ;
     rdfs:range core:Tool ;
+    ns0:term_status "Stable" .
+
+core:creationInfo a owl:ObjectProperty ;
+    rdfs:comment "CreationInfo provides information about the creation of the Element." ;
+    rdfs:domain core:Element ;
+    rdfs:range core:CreationInfo ;
     ns0:term_status "Stable" .
 
 core:dataLicense a owl:DatatypeProperty ;
@@ -1327,10 +1125,6 @@ core:endTime a owl:DatatypeProperty ;
     rdfs:range core:DateTime ;
     ns0:term_status "Stable" .
 
-core:extension rdfs:comment "TODO" ;
-    rdfs:domain core:Element ;
-    ns0:term_status "Stable" .
-
 core:externalId a owl:DatatypeProperty ;
     rdfs:comment "ExternalId identifies an external Element used within a Document but defined external to that Document." ;
     rdfs:domain core:ExternalMap ;
@@ -1344,7 +1138,7 @@ that uniquely identifies an Element.""" ;
     rdfs:range core:ExternalIdentifier ;
     ns0:term_status "Stable" .
 
-core:externalIdentifierType a owl:DatatypeProperty ;
+core:externalIdentifierType a owl:ObjectProperty ;
     rdfs:comment "An externalIdentifierType specifies the type of the external identifier." ;
     rdfs:domain core:ExternalIdentifier ;
     rdfs:range core:ExternalIdentifierType ;
@@ -1357,7 +1151,7 @@ that provides additional characteristics of an Element.""" ;
     rdfs:range core:ExternalReference ;
     ns0:term_status "Stable" .
 
-core:externalReferenceType a owl:DatatypeProperty ;
+core:externalReferenceType a owl:ObjectProperty ;
     rdfs:comment "An externalReferenceType specifies the type of the external reference." ;
     rdfs:domain core:ExternalReference ;
     rdfs:range core:ExternalReferenceType ;
@@ -1387,6 +1181,13 @@ core:identifierLocator a owl:DatatypeProperty ;
     rdfs:range xsd:anyURI ;
     ns0:term_status "Stable" .
 
+core:imports a owl:ObjectProperty ;
+    rdfs:comment """Imports provides an ExternalMap of Element identifiers that are used within a document
+but defined external to that document.""" ;
+    rdfs:domain core:ElementCollection ;
+    rdfs:range core:ExternalMap ;
+    ns0:term_status "Stable" .
+
 core:issuingAuthority a owl:DatatypeProperty ;
     rdfs:comment "A issuingAuthority is TODO" ;
     rdfs:domain core:ExternalIdentifier ;
@@ -1412,31 +1213,19 @@ core:locator a owl:DatatypeProperty ;
     rdfs:range xsd:anyURI ;
     ns0:term_status "Stable" .
 
-core:namespace a owl:DatatypeProperty ;
-    rdfs:comment "A namespace provides an unambiguous mechanism for other documents to reference Elements within this document." ;
-    rdfs:domain core:NamespaceMap ;
-    rdfs:range xsd:anyURI ;
-    ns0:term_status "Stable" .
-
 core:originatedBy a owl:ObjectProperty ;
     rdfs:comment "OriginatedBy identifies from where or whom the Element originally came." ;
     rdfs:domain core:Artifact ;
     rdfs:range core:Agent ;
     ns0:term_status "Stable" .
 
-core:prefix a owl:DatatypeProperty ;
-    rdfs:comment "A prefix is a substitute for a URI." ;
-    rdfs:domain core:NamespaceMap ;
-    rdfs:range xsd:string ;
-    ns0:term_status "Stable" .
-
-core:profile a owl:DatatypeProperty ;
+core:profile a owl:ObjectProperty ;
     rdfs:comment "This field provides information about which profiles the Element belongs to." ;
     rdfs:domain core:CreationInfo ;
     rdfs:range core:ProfileIdentifierType ;
     ns0:term_status "Stable" .
 
-core:relationshipType a owl:DatatypeProperty ;
+core:relationshipType a owl:ObjectProperty ;
     rdfs:comment """This field provides information about the relationship between two Elements.
 For example, you can represent a relationship between two different Files,
 between a Package and a File, between two Packages, or between one SPDXDocument and another SPDXDocument.""" ;
@@ -1456,7 +1245,7 @@ core:rootElement a owl:ObjectProperty ;
     rdfs:range core:Element ;
     ns0:term_status "Stable" .
 
-core:scope a owl:DatatypeProperty ;
+core:scope a owl:ObjectProperty ;
     rdfs:comment "A scope is TODO" ;
     rdfs:domain core:LifecycleScopedRelationship ;
     rdfs:range core:LifecycleScopeType ;
@@ -1532,13 +1321,82 @@ A key-value pair can be used to implement a dictionary which associates a key wi
     rdfs:range xsd:string ;
     ns0:term_status "Stable" .
 
+<https://spdx.org/rdf/v3/Dataset/ConfidentialityLevelType/Amber> a owl:NamedIndividual,
+        dataset:ConfidentialityLevelType .
+
+<https://spdx.org/rdf/v3/Dataset/ConfidentialityLevelType/Clear> a owl:NamedIndividual,
+        dataset:ConfidentialityLevelType .
+
+<https://spdx.org/rdf/v3/Dataset/ConfidentialityLevelType/Green> a owl:NamedIndividual,
+        dataset:ConfidentialityLevelType .
+
+<https://spdx.org/rdf/v3/Dataset/ConfidentialityLevelType/Red> a owl:NamedIndividual,
+        dataset:ConfidentialityLevelType .
+
+<https://spdx.org/rdf/v3/Dataset/DatasetAvailabilityType/Clickthrough> a owl:NamedIndividual,
+        dataset:DatasetAvailabilityType .
+
+<https://spdx.org/rdf/v3/Dataset/DatasetAvailabilityType/Direct-Download> a owl:NamedIndividual,
+        dataset:DatasetAvailabilityType .
+
+<https://spdx.org/rdf/v3/Dataset/DatasetAvailabilityType/Query> a owl:NamedIndividual,
+        dataset:DatasetAvailabilityType .
+
+<https://spdx.org/rdf/v3/Dataset/DatasetAvailabilityType/Registration> a owl:NamedIndividual,
+        dataset:DatasetAvailabilityType .
+
+<https://spdx.org/rdf/v3/Dataset/DatasetAvailabilityType/Scraping-Script> a owl:NamedIndividual,
+        dataset:DatasetAvailabilityType .
+
+<https://spdx.org/rdf/v3/Dataset/DatasetType/audio> a owl:NamedIndividual,
+        dataset:DatasetType .
+
+<https://spdx.org/rdf/v3/Dataset/DatasetType/categorical> a owl:NamedIndividual,
+        dataset:DatasetType .
+
+<https://spdx.org/rdf/v3/Dataset/DatasetType/graph> a owl:NamedIndividual,
+        dataset:DatasetType .
+
+<https://spdx.org/rdf/v3/Dataset/DatasetType/image> a owl:NamedIndividual,
+        dataset:DatasetType .
+
+<https://spdx.org/rdf/v3/Dataset/DatasetType/noAssertion> a owl:NamedIndividual,
+        dataset:DatasetType .
+
+<https://spdx.org/rdf/v3/Dataset/DatasetType/numeric> a owl:NamedIndividual,
+        dataset:DatasetType .
+
+<https://spdx.org/rdf/v3/Dataset/DatasetType/other> a owl:NamedIndividual,
+        dataset:DatasetType .
+
+<https://spdx.org/rdf/v3/Dataset/DatasetType/sensor> a owl:NamedIndividual,
+        dataset:DatasetType .
+
+<https://spdx.org/rdf/v3/Dataset/DatasetType/structured> a owl:NamedIndividual,
+        dataset:DatasetType .
+
+<https://spdx.org/rdf/v3/Dataset/DatasetType/syntactic> a owl:NamedIndividual,
+        dataset:DatasetType .
+
+<https://spdx.org/rdf/v3/Dataset/DatasetType/text> a owl:NamedIndividual,
+        dataset:DatasetType .
+
+<https://spdx.org/rdf/v3/Dataset/DatasetType/timeseries> a owl:NamedIndividual,
+        dataset:DatasetType .
+
+<https://spdx.org/rdf/v3/Dataset/DatasetType/timestamp> a owl:NamedIndividual,
+        dataset:DatasetType .
+
+<https://spdx.org/rdf/v3/Dataset/DatasetType/video> a owl:NamedIndividual,
+        dataset:DatasetType .
+
 dataset:anonymizationMethodUsed a owl:DatatypeProperty ;
     rdfs:comment "AnonymizationMethodUsed describes the methods used to anonymize the dataset (of fields in the dataset)." ;
     rdfs:domain dataset:Dataset ;
     rdfs:range xsd:string ;
     ns0:term_status "Stable" .
 
-dataset:confidentialityLevel a owl:DatatypeProperty ;
+dataset:confidentialityLevel a owl:ObjectProperty ;
     rdfs:comment "ConfidentialityLevel describes the levels of confidentiality of the data points contained in the dataset." ;
     rdfs:domain dataset:Dataset ;
     rdfs:range dataset:ConfidentialityLevelType ;
@@ -1610,14 +1468,14 @@ dataset:knownBias a owl:DatatypeProperty ;
     rdfs:range xsd:string ;
     ns0:term_status "Stable" .
 
-dataset:sensitivePersonalInformation a owl:DatatypeProperty ;
+dataset:sensitivePersonalInformation a owl:ObjectProperty ;
     rdfs:comment """SensitivePersonalInformation indicates the presence of sensitive personal data
 or information that allows drawing conclusions about a person's identity.""" ;
     rdfs:domain dataset:Dataset ;
     rdfs:range dataset:PresenceType ;
     ns0:term_status "Stable" .
 
-dataset:sensor a owl:DatatypeProperty ;
+dataset:sensor a owl:ObjectProperty ;
     rdfs:comment """Sensor describes a sensor that was used for collecting the data
 and its calibration value as a key-value pair.""" ;
     rdfs:domain dataset:Dataset ;
@@ -1798,6 +1656,24 @@ format section of the SPDX specification for format information.""" ;
     rdfs:range xsd:string ;
     ns0:term_status "Stable" .
 
+<https://spdx.org/rdf/v3/Security/ExploitCatalogType/kev> a owl:NamedIndividual,
+        security:ExploitCatalogType .
+
+<https://spdx.org/rdf/v3/Security/ExploitCatalogType/other> a owl:NamedIndividual,
+        security:ExploitCatalogType .
+
+<https://spdx.org/rdf/v3/Security/SsvcDecisionType/act> a owl:NamedIndividual,
+        security:SsvcDecisionType .
+
+<https://spdx.org/rdf/v3/Security/SsvcDecisionType/attend> a owl:NamedIndividual,
+        security:SsvcDecisionType .
+
+<https://spdx.org/rdf/v3/Security/SsvcDecisionType/track> a owl:NamedIndividual,
+        security:SsvcDecisionType .
+
+<https://spdx.org/rdf/v3/Security/SsvcDecisionType/trackStar> a owl:NamedIndividual,
+        security:SsvcDecisionType .
+
 security:SsvcVulnAssessmentRelationship a owl:Class,
         sh:NodeShape ;
     rdfs:comment """An SsvcVulnAssessmentRelationship describes the decision made using the
@@ -1832,6 +1708,21 @@ It is intended to communicate the results of using the CISA SSVC Calculator.
             sh:name "decisionType" ;
             sh:path security:decisionType ] .
 
+<https://spdx.org/rdf/v3/Security/VexJustificationType/componentNotPresent> a owl:NamedIndividual,
+        security:VexJustificationType .
+
+<https://spdx.org/rdf/v3/Security/VexJustificationType/inlineMitigationsAlreadyExist> a owl:NamedIndividual,
+        security:VexJustificationType .
+
+<https://spdx.org/rdf/v3/Security/VexJustificationType/vulnerableCodeCannotBeControlledByAdversary> a owl:NamedIndividual,
+        security:VexJustificationType .
+
+<https://spdx.org/rdf/v3/Security/VexJustificationType/vulnerableCodeNotInExecutePath> a owl:NamedIndividual,
+        security:VexJustificationType .
+
+<https://spdx.org/rdf/v3/Security/VexJustificationType/vulnerableCodeNotPresent> a owl:NamedIndividual,
+        security:VexJustificationType .
+
 security:actionStatement a owl:DatatypeProperty ;
     rdfs:comment """When an element is referenced with a VexAffectedVulnAssessmentRelationship,
 the relationship MUST include one actionStatement that SHOULD describe actions
@@ -1856,13 +1747,13 @@ to specify the precise location where a vulnerability was found.""" ;
     rdfs:range core:Element ;
     ns0:term_status "Stable" .
 
-security:catalogType a owl:DatatypeProperty ;
+security:catalogType a owl:ObjectProperty ;
     rdfs:comment "A catalogType is a mandatory value and must select one of the two entries in the `ExploitCatalogType.md` vocabulary." ;
     rdfs:domain security:ExploitCatalogVulnAssessmentRelationship ;
     rdfs:range security:ExploitCatalogType ;
     ns0:term_status "Stable" .
 
-security:decisionType a owl:DatatypeProperty ;
+security:decisionType a owl:ObjectProperty ;
     rdfs:comment "A decisionType is a mandatory value and must select one of the four entries in the `SsvcDecisionType.md` vocabulary." ;
     rdfs:domain security:SsvcVulnAssessmentRelationship ;
     rdfs:range security:SsvcDecisionType ;
@@ -1889,7 +1780,7 @@ security:impactStatementTime a owl:DatatypeProperty ;
     rdfs:range core:DateTime ;
     ns0:term_status "Stable" .
 
-security:justificationType a owl:DatatypeProperty ;
+security:justificationType a owl:ObjectProperty ;
     rdfs:comment """When stating that an element is not affected by a vulnerability, the
 VexNotAffectedVulnAssessmentRelationship must include a justification from the
 machine-readable labels catalog informing the reason the element is not impacted.
@@ -1931,6 +1822,21 @@ security:vexVersion a owl:DatatypeProperty ;
     rdfs:range xsd:string ;
     ns0:term_status "Stable" .
 
+<https://spdx.org/rdf/v3/Software/DependencyConditionalityType/optional> a owl:NamedIndividual,
+        software:DependencyConditionalityType .
+
+<https://spdx.org/rdf/v3/Software/DependencyConditionalityType/other> a owl:NamedIndividual,
+        software:DependencyConditionalityType .
+
+<https://spdx.org/rdf/v3/Software/DependencyConditionalityType/prerequisite> a owl:NamedIndividual,
+        software:DependencyConditionalityType .
+
+<https://spdx.org/rdf/v3/Software/DependencyConditionalityType/provided> a owl:NamedIndividual,
+        software:DependencyConditionalityType .
+
+<https://spdx.org/rdf/v3/Software/DependencyConditionalityType/required> a owl:NamedIndividual,
+        software:DependencyConditionalityType .
+
 software:File a owl:Class,
         sh:NodeShape ;
     rdfs:comment """Refers to any object that stores content on a computer.
@@ -1951,11 +1857,116 @@ provenance details of the product and/or
 its composition, licensing information, known quality or security issues, etc.""" ;
     rdfs:subClassOf core:Bom ;
     ns0:term_status "Stable" ;
-    sh:property [ sh:class software:SBOMType ;
+    sh:property [ sh:class software:SbomType ;
             sh:name "sbomType" ;
             sh:path software:sbomType ] .
 
-software:additionalPurpose a owl:DatatypeProperty ;
+<https://spdx.org/rdf/v3/Software/SbomType/analyzed> a owl:NamedIndividual,
+        software:SbomType .
+
+<https://spdx.org/rdf/v3/Software/SbomType/build> a owl:NamedIndividual,
+        software:SbomType .
+
+<https://spdx.org/rdf/v3/Software/SbomType/deployed> a owl:NamedIndividual,
+        software:SbomType .
+
+<https://spdx.org/rdf/v3/Software/SbomType/design> a owl:NamedIndividual,
+        software:SbomType .
+
+<https://spdx.org/rdf/v3/Software/SbomType/runtime> a owl:NamedIndividual,
+        software:SbomType .
+
+<https://spdx.org/rdf/v3/Software/SbomType/source> a owl:NamedIndividual,
+        software:SbomType .
+
+<https://spdx.org/rdf/v3/Software/SoftwareDependencyLinkType/dynamic> a owl:NamedIndividual,
+        software:SoftwareDependencyLinkType .
+
+<https://spdx.org/rdf/v3/Software/SoftwareDependencyLinkType/other> a owl:NamedIndividual,
+        software:SoftwareDependencyLinkType .
+
+<https://spdx.org/rdf/v3/Software/SoftwareDependencyLinkType/static> a owl:NamedIndividual,
+        software:SoftwareDependencyLinkType .
+
+<https://spdx.org/rdf/v3/Software/SoftwareDependencyLinkType/tool> a owl:NamedIndividual,
+        software:SoftwareDependencyLinkType .
+
+<https://spdx.org/rdf/v3/Software/SoftwarePurpose/application> a owl:NamedIndividual,
+        software:SoftwarePurpose .
+
+<https://spdx.org/rdf/v3/Software/SoftwarePurpose/archive> a owl:NamedIndividual,
+        software:SoftwarePurpose .
+
+<https://spdx.org/rdf/v3/Software/SoftwarePurpose/bom> a owl:NamedIndividual,
+        software:SoftwarePurpose .
+
+<https://spdx.org/rdf/v3/Software/SoftwarePurpose/configuration> a owl:NamedIndividual,
+        software:SoftwarePurpose .
+
+<https://spdx.org/rdf/v3/Software/SoftwarePurpose/container> a owl:NamedIndividual,
+        software:SoftwarePurpose .
+
+<https://spdx.org/rdf/v3/Software/SoftwarePurpose/data> a owl:NamedIndividual,
+        software:SoftwarePurpose .
+
+<https://spdx.org/rdf/v3/Software/SoftwarePurpose/device> a owl:NamedIndividual,
+        software:SoftwarePurpose .
+
+<https://spdx.org/rdf/v3/Software/SoftwarePurpose/documentation> a owl:NamedIndividual,
+        software:SoftwarePurpose .
+
+<https://spdx.org/rdf/v3/Software/SoftwarePurpose/evidence> a owl:NamedIndividual,
+        software:SoftwarePurpose .
+
+<https://spdx.org/rdf/v3/Software/SoftwarePurpose/executable> a owl:NamedIndividual,
+        software:SoftwarePurpose .
+
+<https://spdx.org/rdf/v3/Software/SoftwarePurpose/file> a owl:NamedIndividual,
+        software:SoftwarePurpose .
+
+<https://spdx.org/rdf/v3/Software/SoftwarePurpose/firmware> a owl:NamedIndividual,
+        software:SoftwarePurpose .
+
+<https://spdx.org/rdf/v3/Software/SoftwarePurpose/framework> a owl:NamedIndividual,
+        software:SoftwarePurpose .
+
+<https://spdx.org/rdf/v3/Software/SoftwarePurpose/install> a owl:NamedIndividual,
+        software:SoftwarePurpose .
+
+<https://spdx.org/rdf/v3/Software/SoftwarePurpose/library> a owl:NamedIndividual,
+        software:SoftwarePurpose .
+
+<https://spdx.org/rdf/v3/Software/SoftwarePurpose/manifest> a owl:NamedIndividual,
+        software:SoftwarePurpose .
+
+<https://spdx.org/rdf/v3/Software/SoftwarePurpose/model> a owl:NamedIndividual,
+        software:SoftwarePurpose .
+
+<https://spdx.org/rdf/v3/Software/SoftwarePurpose/module> a owl:NamedIndividual,
+        software:SoftwarePurpose .
+
+<https://spdx.org/rdf/v3/Software/SoftwarePurpose/operatingSystem> a owl:NamedIndividual,
+        software:SoftwarePurpose .
+
+<https://spdx.org/rdf/v3/Software/SoftwarePurpose/other> a owl:NamedIndividual,
+        software:SoftwarePurpose .
+
+<https://spdx.org/rdf/v3/Software/SoftwarePurpose/patch> a owl:NamedIndividual,
+        software:SoftwarePurpose .
+
+<https://spdx.org/rdf/v3/Software/SoftwarePurpose/requirement> a owl:NamedIndividual,
+        software:SoftwarePurpose .
+
+<https://spdx.org/rdf/v3/Software/SoftwarePurpose/source> a owl:NamedIndividual,
+        software:SoftwarePurpose .
+
+<https://spdx.org/rdf/v3/Software/SoftwarePurpose/specification> a owl:NamedIndividual,
+        software:SoftwarePurpose .
+
+<https://spdx.org/rdf/v3/Software/SoftwarePurpose/test> a owl:NamedIndividual,
+        software:SoftwarePurpose .
+
+software:additionalPurpose a owl:ObjectProperty ;
     rdfs:comment "Additional purpose provides information about the additional purposes of the software artifact in addition to the primaryPurpose." ;
     rdfs:domain software:SoftwareArtifact ;
     rdfs:range software:SoftwarePurpose ;
@@ -2024,7 +2035,7 @@ retain the license choice or identify which license was chosen.""" ;
     rdfs:range licensing:AnyLicenseInfo ;
     ns0:term_status "Stable" .
 
-software:conditionality a owl:DatatypeProperty ;
+software:conditionality a owl:ObjectProperty ;
     rdfs:comment "A conditionality is TODO" ;
     rdfs:domain software:SoftwareDependencyRelationship ;
     rdfs:range software:DependencyConditionalityType ;
@@ -2053,7 +2064,7 @@ Content type is intrinsic to the Element, independent of how the Element is bein
     rdfs:range core:MediaType ;
     ns0:term_status "Stable" .
 
-software:copyrightText a owl:ObjectProperty ;
+software:copyrightText a owl:DatatypeProperty ;
     rdfs:comment """A copyrightText consists of the text(s) of the copyright notice(s) found
 for a software Package, File or Snippet, if any.
 
@@ -2169,21 +2180,21 @@ software:packageVersion a owl:DatatypeProperty ;
     rdfs:range xsd:string ;
     ns0:term_status "Stable" .
 
-software:primaryPurpose a owl:DatatypeProperty ;
+software:primaryPurpose a owl:ObjectProperty ;
     rdfs:comment "primaryPurpose provides information about the primary purpose of the software artifact." ;
     rdfs:domain software:SoftwareArtifact ;
     rdfs:range software:SoftwarePurpose ;
     ns0:term_status "Stable" .
 
-software:sbomType a owl:DatatypeProperty ;
+software:sbomType a owl:ObjectProperty ;
     rdfs:comment """This field is a reasonable estimation of the type of SBOM created from a creator perspective.
 It is intended to be used to give guidance on the elements that may be contained within it.
 Aligning with the guidance produced in [Types of Software Bill of Material (SBOM) Documents](https://www.cisa.gov/sites/default/files/2023-04/sbom-types-document-508c.pdf).""" ;
     rdfs:domain software:Sbom ;
-    rdfs:range software:SBOMType ;
+    rdfs:range software:SbomType ;
     ns0:term_status "Stable" .
 
-software:softwareLinkage a owl:DatatypeProperty ;
+software:softwareLinkage a owl:ObjectProperty ;
     rdfs:comment "A softwareLinkage is TODO" ;
     rdfs:domain software:SoftwareDependencyRelationship ;
     rdfs:range software:SoftwareDependencyLinkType ;
@@ -2208,14 +2219,6 @@ core:LifecycleScopedRelationship a owl:Class,
             sh:maxCount 1 ;
             sh:name "scope" ;
             sh:path core:scope ] .
-
-core:SemVer a owl:Class,
-        sh:NodeShape ;
-    rdfs:comment """The semantic version is a string
-that is following the specification of [Semantic Versioning 2.0.0](https://semver.org/).
-Format restriction: pattern: ^(0|[1-9]\\d*)\\.(0|[1-9]\\d*)\\.(0|[1-9]\\d*)(?:-((?:0|[1-9]\\d*|\\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\\.(?:0|[1-9]\\d*|\\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\\+([0-9a-zA-Z-]+(?:\\.[0-9a-zA-Z-]+)*))?$""" ;
-    rdfs:subClassOf xsd:string ;
-    ns0:term_status "Stable" .
 
 core:Tool a owl:Class,
         sh:NodeShape ;
@@ -2262,12 +2265,12 @@ at https://spdx.org/licenses.""" ;
     ns0:term_status "Stable" ;
     sh:property [ sh:datatype xsd:string ;
             sh:maxCount 1 ;
-            sh:name "deprecatedVersion" ;
-            sh:path licensing:deprecatedVersion ],
+            sh:name "listVersionAdded" ;
+            sh:path licensing:listVersionAdded ],
         [ sh:datatype xsd:string ;
             sh:maxCount 1 ;
-            sh:name "listVersionAdded" ;
-            sh:path licensing:listVersionAdded ] .
+            sh:name "deprecatedVersion" ;
+            sh:path licensing:deprecatedVersion ] .
 
 licensing:ListedLicenseException a owl:Class,
         sh:NodeShape ;
@@ -2279,12 +2282,12 @@ https://spdx.org/licenses/exceptions-index.html.""" ;
     ns0:term_status "Stable" ;
     sh:property [ sh:datatype xsd:string ;
             sh:maxCount 1 ;
-            sh:name "deprecatedVersion" ;
-            sh:path licensing:deprecatedVersion ],
+            sh:name "listVersionAdded" ;
+            sh:path licensing:listVersionAdded ],
         [ sh:datatype xsd:string ;
             sh:maxCount 1 ;
-            sh:name "listVersionAdded" ;
-            sh:path licensing:listVersionAdded ] .
+            sh:name "deprecatedVersion" ;
+            sh:path licensing:deprecatedVersion ] .
 
 licensing:deprecatedVersion a owl:DatatypeProperty ;
     rdfs:comment """A deprecatedVersion for a ListedLicense or ListedLicenseException on the SPDX
@@ -2461,22 +2464,6 @@ software:SoftwareDependencyRelationship a owl:Class,
             sh:name "softwareLinkage" ;
             sh:path software:softwareLinkage ] .
 
-core:AnonymousPayload a owl:Class,
-        sh:NodeShape ;
-    rdfs:comment "TODO" ;
-    rdfs:subClassOf core:Payload ;
-    ns0:term_status "Stable" ;
-    sh:property [ sh:class core:CreationInfo ;
-            sh:maxCount 1 ;
-            sh:name "creationInfo" ;
-            sh:path core:creationInfo ],
-        [ sh:class core:NamespaceMap ;
-            sh:name "namespaces" ;
-            sh:path core:namespaces ],
-        [ sh:class core:ExternalMap ;
-            sh:name "imports" ;
-            sh:path core:imports ] .
-
 core:Bundle a owl:Class,
         sh:NodeShape ;
     rdfs:comment "A bundle is a collection of Elements that have a shared context." ;
@@ -2486,31 +2473,6 @@ core:Bundle a owl:Class,
             sh:maxCount 1 ;
             sh:name "context" ;
             sh:path core:context ] .
-
-core:creationInfo a owl:DatatypeProperty ;
-    rdfs:comment "CreationInfo provides information about the creation of the Element." ;
-    rdfs:range core:CreationInfo ;
-    ns0:term_status "Stable" ;
-    sh:or ( [ rdfs:domain core:AnonymousPayload,
-                    core:Element,
-                    core:Payload ] ) .
-
-core:imports a owl:DatatypeProperty ;
-    rdfs:comment """Imports provides an ExternalMap of Element identifiers that are used within a document
-but defined external to that document.""" ;
-    rdfs:range core:ExternalMap ;
-    ns0:term_status "Stable" ;
-    sh:or ( [ rdfs:domain core:AnonymousPayload,
-                    core:ElementCollection,
-                    core:Payload ] ) .
-
-core:namespaces a owl:DatatypeProperty ;
-    rdfs:comment "This field provides a NamespaceMap applicable to an ElementCollection." ;
-    rdfs:range core:NamespaceMap ;
-    ns0:term_status "Stable" ;
-    sh:or ( [ rdfs:domain core:AnonymousPayload,
-                    core:ElementCollection,
-                    core:Payload ] ) .
 
 security:CvssV2VulnAssessmentRelationship a owl:Class,
         sh:NodeShape ;
@@ -2639,12 +2601,12 @@ Vulnerability Scoring System (CVSS) as defined on
     ns0:term_status "Stable" ;
     sh:property [ sh:datatype xsd:string ;
             sh:maxCount 1 ;
-            sh:name "vector" ;
-            sh:path security:vector ],
-        [ sh:datatype xsd:string ;
-            sh:maxCount 1 ;
             sh:name "severity" ;
             sh:path security:severity ],
+        [ sh:datatype xsd:string ;
+            sh:maxCount 1 ;
+            sh:name "vector" ;
+            sh:path security:vector ],
         [ sh:datatype xsd:decimal ;
             sh:maxCount 1 ;
             sh:minCount 1 ;
@@ -2685,16 +2647,16 @@ Catalog (KEV)
             sh:minCount 1 ;
             sh:name "locator" ;
             sh:path security:locator ],
-        [ sh:datatype xsd:boolean ;
-            sh:maxCount 1 ;
-            sh:minCount 1 ;
-            sh:name "exploited" ;
-            sh:path security:exploited ],
         [ sh:class security:ExploitCatalogType ;
             sh:maxCount 1 ;
             sh:minCount 1 ;
             sh:name "catalogType" ;
-            sh:path security:catalogType ] .
+            sh:path security:catalogType ],
+        [ sh:datatype xsd:boolean ;
+            sh:maxCount 1 ;
+            sh:minCount 1 ;
+            sh:name "exploited" ;
+            sh:path security:exploited ] .
 
 security:VexNotAffectedVulnAssessmentRelationship a owl:Class,
         sh:NodeShape ;
@@ -2734,18 +2696,18 @@ for VEX.
 ```""" ;
     rdfs:subClassOf security:VexVulnAssessmentRelationship ;
     ns0:term_status "Stable" ;
-    sh:property [ sh:datatype core:DateTime ;
+    sh:property [ sh:datatype xsd:string ;
+            sh:maxCount 1 ;
+            sh:name "impactStatement" ;
+            sh:path security:impactStatement ],
+        [ sh:datatype core:DateTime ;
             sh:maxCount 1 ;
             sh:name "impactStatementTime" ;
             sh:path security:impactStatementTime ],
         [ sh:class security:VexJustificationType ;
             sh:maxCount 1 ;
             sh:name "justificationType" ;
-            sh:path security:justificationType ],
-        [ sh:datatype xsd:string ;
-            sh:maxCount 1 ;
-            sh:name "impactStatement" ;
-            sh:path security:impactStatement ] .
+            sh:path security:justificationType ] .
 
 security:Vulnerability a owl:Class,
         sh:NodeShape ;
@@ -2874,7 +2836,25 @@ core:Annotation a owl:Class,
 
 core:AnnotationType a owl:Class ;
     rdfs:comment "AnnotationType specifies the type of an annotation." ;
+    owl:oneOf ( <https://spdx.org/rdf/v3/Core/AnnotationType/other> <https://spdx.org/rdf/v3/Core/AnnotationType/review> ) ;
     ns0:term_status "Stable" .
+
+core:ElementCollection a owl:Class,
+        sh:NodeShape ;
+    rdfs:comment "An SpdxCollection is a collection of Elements, not necessarily with unifying context." ;
+    rdfs:subClassOf core:Element ;
+    ns0:term_status "Stable" ;
+    sh:property [ sh:class core:Element ;
+            sh:minCount 1 ;
+            sh:name "element" ;
+            sh:path core:element ],
+        [ sh:class core:Element ;
+            sh:minCount 1 ;
+            sh:name "rootElement" ;
+            sh:path core:rootElement ],
+        [ sh:class core:ExternalMap ;
+            sh:name "imports" ;
+            sh:path core:imports ] .
 
 core:Hash a owl:Class,
         sh:NodeShape ;
@@ -2899,27 +2879,8 @@ This is commonly used for integrity checking of data.""" ;
 
 security:ExploitCatalogType a owl:Class ;
     rdfs:comment "ExploitCatalogType specifies the type of exploit catalog that a vulnerability is listed in." ;
+    owl:oneOf ( <https://spdx.org/rdf/v3/Security/ExploitCatalogType/other> <https://spdx.org/rdf/v3/Security/ExploitCatalogType/kev> ) ;
     ns0:term_status "Stable" .
-
-core:ElementCollection a owl:Class,
-        sh:NodeShape ;
-    rdfs:comment "An SpdxCollection is a collection of Elements, not necessarily with unifying context." ;
-    rdfs:subClassOf core:Element ;
-    ns0:term_status "Stable" ;
-    sh:property [ sh:class core:NamespaceMap ;
-            sh:name "namespaces" ;
-            sh:path core:namespaces ],
-        [ sh:class core:Element ;
-            sh:minCount 1 ;
-            sh:name "element" ;
-            sh:path core:element ],
-        [ sh:class core:ExternalMap ;
-            sh:name "imports" ;
-            sh:path core:imports ],
-        [ sh:class core:Element ;
-            sh:minCount 1 ;
-            sh:name "rootElement" ;
-            sh:path core:rootElement ] .
 
 core:IntegrityMethod a owl:Class,
         sh:NodeShape ;
@@ -2933,33 +2894,10 @@ confusion over which version or modification of a specific Element is referenced
             sh:name "comment" ;
             sh:path core:comment ] .
 
-core:MediaType a owl:Class,
-        sh:NodeShape ;
-    rdfs:comment """The MediaType is a String constrained to the RFC 2046 specification. It provides a standardized
-way of indicating the type of content of an Element.
-A list of all possible media types is available at https://www.iana.org/assignments/media-types/media-types.xhtml.""" ;
-    rdfs:subClassOf xsd:string ;
-    ns0:term_status "Stable" .
-
-core:Payload a owl:Class,
-        sh:NodeShape ;
-    rdfs:comment "TODO" ;
-    rdfs:subClassOf owl:Thing ;
-    ns0:term_status "Stable" ;
-    sh:property [ sh:class core:CreationInfo ;
-            sh:maxCount 1 ;
-            sh:name "creationInfo" ;
-            sh:path core:creationInfo ],
-        [ sh:class core:NamespaceMap ;
-            sh:name "namespaces" ;
-            sh:path core:namespaces ],
-        [ sh:class core:ExternalMap ;
-            sh:name "imports" ;
-            sh:path core:imports ] .
-
 core:RelationshipCompleteness a owl:Class ;
     rdfs:comment """RelationshipCompleteness indicates whether a relationship is complete or 
 known to be incomplete or if there is made no assertion either way.""" ;
+    owl:oneOf ( <https://spdx.org/rdf/v3/Core/RelationshipCompleteness/incomplete> <https://spdx.org/rdf/v3/Core/RelationshipCompleteness/noAssertion> <https://spdx.org/rdf/v3/Core/RelationshipCompleteness/complete> ) ;
     ns0:term_status "Stable" .
 
 core:comment a owl:DatatypeProperty ;
@@ -2976,7 +2914,33 @@ to the readers/reviewers of the document.""" ;
 ai:SafetyRiskAssessmentType a owl:Class ;
     rdfs:comment """Lists the different safety risk type values that can be used to describe the safety risk of AI software
 according to [Article 20 of Regulation 765/2008/EC](https://ec.europa.eu/docsroom/documents/17107/attachments/1/translations/en/renditions/pdf).""" ;
+    owl:oneOf ( <https://spdx.org/rdf/v3/AI/SafetyRiskAssessmentType/low> <https://spdx.org/rdf/v3/AI/SafetyRiskAssessmentType/high> <https://spdx.org/rdf/v3/AI/SafetyRiskAssessmentType/medium> <https://spdx.org/rdf/v3/AI/SafetyRiskAssessmentType/serious> ) ;
     ns0:term_status "Stable" .
+
+core:ExternalMap a owl:Class,
+        sh:NodeShape ;
+    rdfs:comment """An External Map is a map of Element identifiers that are used within a Document
+but defined external to that Document.
+The external map provides details about the externally-defined Element
+such as its provenance, where to retrieve it, and how to verify its integrity.""" ;
+    rdfs:subClassOf owl:Thing ;
+    ns0:term_status "Stable" ;
+    sh:property [ sh:datatype xsd:anyURI ;
+            sh:maxCount 1 ;
+            sh:name "locationHint" ;
+            sh:path core:locationHint ],
+        [ sh:datatype xsd:anyURI ;
+            sh:maxCount 1 ;
+            sh:name "definingDocument" ;
+            sh:path core:definingDocument ],
+        [ sh:class core:IntegrityMethod ;
+            sh:name "verifiedUsing" ;
+            sh:path core:verifiedUsing ],
+        [ sh:datatype xsd:anyURI ;
+            sh:maxCount 1 ;
+            sh:minCount 1 ;
+            sh:name "externalId" ;
+            sh:path core:externalId ] .
 
 core:ExternalReference a owl:Class,
         sh:NodeShape ;
@@ -2984,38 +2948,21 @@ core:ExternalReference a owl:Class,
 that provides additional characteristics of an Element.""" ;
     rdfs:subClassOf owl:Thing ;
     ns0:term_status "Stable" ;
-    sh:property [ sh:datatype xsd:string ;
+    sh:property [ sh:class core:ExternalReferenceType ;
             sh:maxCount 1 ;
-            sh:name "comment" ;
-            sh:path core:comment ],
+            sh:name "externalReferenceType" ;
+            sh:path core:externalReferenceType ],
         [ sh:datatype core:MediaType ;
             sh:maxCount 1 ;
             sh:name "contentType" ;
             sh:path core:contentType ],
-        [ sh:class core:ExternalReferenceType ;
+        [ sh:datatype xsd:string ;
             sh:maxCount 1 ;
-            sh:name "externalReferenceType" ;
-            sh:path core:externalReferenceType ],
+            sh:name "comment" ;
+            sh:path core:comment ],
         [ sh:datatype xsd:anyURI ;
             sh:name "locator" ;
             sh:path core:locator ] .
-
-core:NamespaceMap a owl:Class,
-        sh:NodeShape ;
-    rdfs:comment """A namespace map allows the creator of a collection of Elements to use
-shorter identifiers ("prefixes") instead of URIs to provide a more
-human-readable and smaller serialized representation of the Elements.""" ;
-    ns0:term_status "Stable" ;
-    sh:property [ sh:datatype xsd:anyURI ;
-            sh:maxCount 1 ;
-            sh:minCount 1 ;
-            sh:name "namespace" ;
-            sh:path core:namespace ],
-        [ sh:datatype xsd:string ;
-            sh:maxCount 1 ;
-            sh:minCount 1 ;
-            sh:name "prefix" ;
-            sh:path core:prefix ] .
 
 core:PositiveIntegerRange a owl:Class,
         sh:NodeShape ;
@@ -3036,10 +2983,12 @@ core:PositiveIntegerRange a owl:Class,
 
 dataset:ConfidentialityLevelType a owl:Class ;
     rdfs:comment "Describes the different confidentiality levels as given by the [Traffic Light Protocol](https://en.wikipedia.org/wiki/Traffic_Light_Protocol)." ;
+    owl:oneOf ( <https://spdx.org/rdf/v3/Dataset/ConfidentialityLevelType/Clear> <https://spdx.org/rdf/v3/Dataset/ConfidentialityLevelType/Amber> <https://spdx.org/rdf/v3/Dataset/ConfidentialityLevelType/Red> <https://spdx.org/rdf/v3/Dataset/ConfidentialityLevelType/Green> ) ;
     ns0:term_status "Stable" .
 
 security:SsvcDecisionType a owl:Class ;
     rdfs:comment "SsvcDecisionType specifies the type of decision that's been made according to the Stakeholder-Specific Vulnerability Categorization (SSVC)  system [https://www.cisa.gov/stakeholder-specific-vulnerability-categorization-ssvc](https://www.cisa.gov/stakeholder-specific-vulnerability-categorization-ssvc)" ;
+    owl:oneOf ( <https://spdx.org/rdf/v3/Security/SsvcDecisionType/act> <https://spdx.org/rdf/v3/Security/SsvcDecisionType/trackStar> <https://spdx.org/rdf/v3/Security/SsvcDecisionType/track> <https://spdx.org/rdf/v3/Security/SsvcDecisionType/attend> ) ;
     ns0:term_status "Stable" .
 
 security:VexVulnAssessmentRelationship a owl:Class,
@@ -3069,19 +3018,21 @@ the document's date must be considered as authoritative.""" ;
     ns0:term_status "Stable" ;
     sh:property [ sh:datatype xsd:string ;
             sh:maxCount 1 ;
-            sh:name "statusNotes" ;
-            sh:path security:statusNotes ],
+            sh:name "vexVersion" ;
+            sh:path security:vexVersion ],
         [ sh:datatype xsd:string ;
             sh:maxCount 1 ;
-            sh:name "vexVersion" ;
-            sh:path security:vexVersion ] .
+            sh:name "statusNotes" ;
+            sh:path security:statusNotes ] .
 
 software:SoftwareDependencyLinkType a owl:Class ;
     rdfs:comment "TODO" ;
+    owl:oneOf ( <https://spdx.org/rdf/v3/Software/SoftwareDependencyLinkType/tool> <https://spdx.org/rdf/v3/Software/SoftwareDependencyLinkType/static> <https://spdx.org/rdf/v3/Software/SoftwareDependencyLinkType/other> <https://spdx.org/rdf/v3/Software/SoftwareDependencyLinkType/dynamic> ) ;
     ns0:term_status "Stable" .
 
 ai:PresenceType a owl:Class ;
     rdfs:comment "This type is used to indicate if a given field is present or absent or unknown." ;
+    owl:oneOf ( <https://spdx.org/rdf/v3/AI/PresenceType/noAssertion> <https://spdx.org/rdf/v3/AI/PresenceType/no> <https://spdx.org/rdf/v3/AI/PresenceType/yes> ) ;
     ns0:term_status "Stable" .
 
 core:Artifact a owl:Class,
@@ -3090,16 +3041,16 @@ core:Artifact a owl:Class,
 such as an electronic file, a software package, a device or an element of data.""" ;
     rdfs:subClassOf core:Element ;
     ns0:term_status "Stable" ;
-    sh:property [ sh:class core:Agent ;
-            sh:name "originatedBy" ;
-            sh:path core:originatedBy ],
-        [ sh:datatype core:DateTime ;
+    sh:property [ sh:datatype core:DateTime ;
             sh:maxCount 1 ;
             sh:name "builtTime" ;
             sh:path core:builtTime ],
-        [ sh:datatype xsd:string ;
-            sh:name "standard" ;
-            sh:path core:standard ],
+        [ sh:class core:Agent ;
+            sh:name "originatedBy" ;
+            sh:path core:originatedBy ],
+        [ sh:class core:Agent ;
+            sh:name "suppliedBy" ;
+            sh:path core:suppliedBy ],
         [ sh:datatype core:DateTime ;
             sh:maxCount 1 ;
             sh:name "releaseTime" ;
@@ -3108,39 +3059,40 @@ such as an electronic file, a software package, a device or an element of data."
             sh:maxCount 1 ;
             sh:name "validUntilTime" ;
             sh:path core:validUntilTime ],
-        [ sh:class core:Agent ;
-            sh:name "suppliedBy" ;
-            sh:path core:suppliedBy ] .
+        [ sh:datatype xsd:string ;
+            sh:name "standard" ;
+            sh:path core:standard ] .
 
 core:ExternalIdentifier a owl:Class,
         sh:NodeShape ;
     rdfs:comment """An ExternalIdentifier is a reference to a resource outside the scope of SPDX-3.0 content
 that uniquely identifies an Element.""" ;
     ns0:term_status "Stable" ;
-    sh:property [ sh:datatype xsd:string ;
+    sh:property [ sh:datatype xsd:anyURI ;
             sh:maxCount 1 ;
-            sh:minCount 1 ;
-            sh:name "identifier" ;
-            sh:path core:identifier ],
+            sh:name "issuingAuthority" ;
+            sh:path core:issuingAuthority ],
         [ sh:class core:ExternalIdentifierType ;
             sh:maxCount 1 ;
             sh:minCount 1 ;
             sh:name "externalIdentifierType" ;
             sh:path core:externalIdentifierType ],
+        [ sh:datatype xsd:anyURI ;
+            sh:name "identifierLocator" ;
+            sh:path core:identifierLocator ],
+        [ sh:datatype xsd:string ;
+            sh:maxCount 1 ;
+            sh:minCount 1 ;
+            sh:name "identifier" ;
+            sh:path core:identifier ],
         [ sh:datatype xsd:string ;
             sh:maxCount 1 ;
             sh:name "comment" ;
-            sh:path core:comment ],
-        [ sh:datatype xsd:anyURI ;
-            sh:maxCount 1 ;
-            sh:name "issuingAuthority" ;
-            sh:path core:issuingAuthority ],
-        [ sh:datatype xsd:anyURI ;
-            sh:name "identifierLocator" ;
-            sh:path core:identifierLocator ] .
+            sh:path core:comment ] .
 
 dataset:DatasetAvailabilityType a owl:Class ;
     rdfs:comment "Describes the possible types of availability of a dataset, indicating whether the dataset can be directly downloaded, can be assembled using a script for scraping the data, is only available after a clickthrough or a registration form." ;
+    owl:oneOf ( <https://spdx.org/rdf/v3/Dataset/DatasetAvailabilityType/Scraping-Script> <https://spdx.org/rdf/v3/Dataset/DatasetAvailabilityType/Query> <https://spdx.org/rdf/v3/Dataset/DatasetAvailabilityType/Direct-Download> <https://spdx.org/rdf/v3/Dataset/DatasetAvailabilityType/Clickthrough> <https://spdx.org/rdf/v3/Dataset/DatasetAvailabilityType/Registration> ) ;
     ns0:term_status "Stable" .
 
 licensing:LicenseAddition a owl:Class,
@@ -3154,11 +3106,7 @@ It may be an exception which is listed on the SPDX Exceptions List
 or otherwise) which is defined by an SPDX data creator (CustomLicenseAddition).""" ;
     rdfs:subClassOf core:Element ;
     ns0:term_status "Stable" ;
-    sh:property [ sh:datatype xsd:boolean ;
-            sh:maxCount 1 ;
-            sh:name "isDeprecatedAdditionId" ;
-            sh:path licensing:isDeprecatedAdditionId ],
-        [ sh:datatype xsd:string ;
+    sh:property [ sh:datatype xsd:string ;
             sh:maxCount 1 ;
             sh:minCount 1 ;
             sh:name "additionText" ;
@@ -3167,6 +3115,10 @@ or otherwise) which is defined by an SPDX data creator (CustomLicenseAddition)."
             sh:maxCount 1 ;
             sh:name "standardAdditionTemplate" ;
             sh:path licensing:standardAdditionTemplate ],
+        [ sh:datatype xsd:boolean ;
+            sh:maxCount 1 ;
+            sh:name "isDeprecatedAdditionId" ;
+            sh:path licensing:isDeprecatedAdditionId ],
         [ sh:datatype xsd:string ;
             sh:maxCount 1 ;
             sh:name "obsoletedBy" ;
@@ -3174,10 +3126,12 @@ or otherwise) which is defined by an SPDX data creator (CustomLicenseAddition)."
 
 security:VexJustificationType a owl:Class ;
     rdfs:comment "VexJustificationType specifies the type of Vulnerability Exploitability eXchange (VEX) justification." ;
+    owl:oneOf ( <https://spdx.org/rdf/v3/Security/VexJustificationType/componentNotPresent> <https://spdx.org/rdf/v3/Security/VexJustificationType/inlineMitigationsAlreadyExist> <https://spdx.org/rdf/v3/Security/VexJustificationType/vulnerableCodeNotPresent> <https://spdx.org/rdf/v3/Security/VexJustificationType/vulnerableCodeCannotBeControlledByAdversary> <https://spdx.org/rdf/v3/Security/VexJustificationType/vulnerableCodeNotInExecutePath> ) ;
     ns0:term_status "Stable" .
 
 software:DependencyConditionalityType a owl:Class ;
     rdfs:comment "TODO" ;
+    owl:oneOf ( <https://spdx.org/rdf/v3/Software/DependencyConditionalityType/optional> <https://spdx.org/rdf/v3/Software/DependencyConditionalityType/prerequisite> <https://spdx.org/rdf/v3/Software/DependencyConditionalityType/required> <https://spdx.org/rdf/v3/Software/DependencyConditionalityType/other> <https://spdx.org/rdf/v3/Software/DependencyConditionalityType/provided> ) ;
     ns0:term_status "Stable" .
 
 software:Package a owl:Class,
@@ -3199,16 +3153,12 @@ External property restriction on /Core/Element/name: minCount: 1""" ;
     ns0:term_status "Stable" ;
     sh:property [ sh:datatype xsd:anyURI ;
             sh:maxCount 1 ;
-            sh:name "packageUrl" ;
-            sh:path software:packageUrl ],
-        [ sh:datatype xsd:string ;
-            sh:maxCount 1 ;
-            sh:name "sourceInfo" ;
-            sh:path software:sourceInfo ],
-        [ sh:datatype xsd:anyURI ;
-            sh:maxCount 1 ;
             sh:name "downloadLocation" ;
             sh:path software:downloadLocation ],
+        [ sh:datatype xsd:anyURI ;
+            sh:maxCount 1 ;
+            sh:name "packageUrl" ;
+            sh:path software:packageUrl ],
         [ sh:datatype xsd:anyURI ;
             sh:maxCount 1 ;
             sh:name "homePage" ;
@@ -3216,35 +3166,15 @@ External property restriction on /Core/Element/name: minCount: 1""" ;
         [ sh:datatype xsd:string ;
             sh:maxCount 1 ;
             sh:name "packageVersion" ;
-            sh:path software:packageVersion ] .
-
-core:ExternalMap a owl:Class,
-        sh:NodeShape ;
-    rdfs:comment """An External Map is a map of Element identifiers that are used within a Document
-but defined external to that Document.
-The external map provides details about the externally-defined Element
-such as its provenance, where to retrieve it, and how to verify its integrity.""" ;
-    rdfs:subClassOf owl:Thing ;
-    ns0:term_status "Stable" ;
-    sh:property [ sh:datatype xsd:anyURI ;
+            sh:path software:packageVersion ],
+        [ sh:datatype xsd:string ;
             sh:maxCount 1 ;
-            sh:name "locationHint" ;
-            sh:path core:locationHint ],
-        [ sh:datatype xsd:anyURI ;
-            sh:maxCount 1 ;
-            sh:name "definingDocument" ;
-            sh:path core:definingDocument ],
-        [ sh:datatype xsd:anyURI ;
-            sh:maxCount 1 ;
-            sh:minCount 1 ;
-            sh:name "externalId" ;
-            sh:path core:externalId ],
-        [ sh:class core:IntegrityMethod ;
-            sh:name "verifiedUsing" ;
-            sh:path core:verifiedUsing ] .
+            sh:name "sourceInfo" ;
+            sh:path software:sourceInfo ] .
 
 core:LifecycleScopeType a owl:Class ;
     rdfs:comment "TODO" ;
+    owl:oneOf ( <https://spdx.org/rdf/v3/Core/LifecycleScopeType/build> <https://spdx.org/rdf/v3/Core/LifecycleScopeType/runtime> <https://spdx.org/rdf/v3/Core/LifecycleScopeType/test> <https://spdx.org/rdf/v3/Core/LifecycleScopeType/design> <https://spdx.org/rdf/v3/Core/LifecycleScopeType/development> <https://spdx.org/rdf/v3/Core/LifecycleScopeType/other> ) ;
     ns0:term_status "Stable" .
 
 core:Relationship a owl:Class,
@@ -3253,7 +3183,20 @@ core:Relationship a owl:Class,
 that one Element is related to one or more other Elements in some way.""" ;
     rdfs:subClassOf core:Element ;
     ns0:term_status "Stable" ;
-    sh:property [ sh:datatype core:DateTime ;
+    sh:property [ sh:class core:RelationshipType ;
+            sh:maxCount 1 ;
+            sh:minCount 1 ;
+            sh:name "relationshipType" ;
+            sh:path core:relationshipType ],
+        [ sh:class core:Element ;
+            sh:maxCount 1 ;
+            sh:minCount 1 ;
+            sh:name "from" ;
+            sh:path core:from ],
+        [ sh:class core:Element ;
+            sh:name "to" ;
+            sh:path core:to ],
+        [ sh:datatype core:DateTime ;
             sh:maxCount 1 ;
             sh:name "startTime" ;
             sh:path core:startTime ],
@@ -3264,24 +3207,12 @@ that one Element is related to one or more other Elements in some way.""" ;
         [ sh:datatype core:DateTime ;
             sh:maxCount 1 ;
             sh:name "endTime" ;
-            sh:path core:endTime ],
-        [ sh:class core:RelationshipType ;
-            sh:maxCount 1 ;
-            sh:minCount 1 ;
-            sh:name "relationshipType" ;
-            sh:path core:relationshipType ],
-        [ sh:class core:Element ;
-            sh:name "to" ;
-            sh:path core:to ],
-        [ sh:class core:Element ;
-            sh:maxCount 1 ;
-            sh:minCount 1 ;
-            sh:name "from" ;
-            sh:path core:from ] .
+            sh:path core:endTime ] .
 
-software:SBOMType a owl:Class ;
+software:SbomType a owl:Class ;
     rdfs:comment """The set of SBOM types with definitions as defined in [Types of Software Bill of Material (SBOM) Documents](https://www.cisa.gov/sites/default/files/2023-04/sbom-types-document-508c.pdf), published on April 21, 2023. 
 An SBOM type describes the most likely type of an SBOM from the producer perspective, so that consumers can draw conclusions about the data inside an SBOM.  A single SBOM can have multiple SBOM document types associated with it.""" ;
+    owl:oneOf ( <https://spdx.org/rdf/v3/Software/SbomType/source> <https://spdx.org/rdf/v3/Software/SbomType/analyzed> <https://spdx.org/rdf/v3/Software/SbomType/build> <https://spdx.org/rdf/v3/Software/SbomType/deployed> <https://spdx.org/rdf/v3/Software/SbomType/runtime> <https://spdx.org/rdf/v3/Software/SbomType/design> ) ;
     ns0:term_status "Stable" .
 
 build:Build a owl:Class,
@@ -3297,26 +3228,16 @@ ExternalIdentifier of type "urlScheme" may be used to identify build logs. In th
 Note that buildStart and buildEnd are optional, and may be omitted to simplify creating reproducible builds.""" ;
     rdfs:subClassOf core:Element ;
     ns0:term_status "Stable" ;
-    sh:property [ sh:datatype core:DateTime ;
+    sh:property [ sh:datatype xsd:string ;
+            sh:name "configSourceEntrypoint" ;
+            sh:path build:configSourceEntrypoint ],
+        [ sh:datatype core:DateTime ;
             sh:maxCount 1 ;
             sh:name "buildEndTime" ;
             sh:path build:buildEndTime ],
-        [ sh:datatype core:DateTime ;
-            sh:maxCount 1 ;
-            sh:name "buildStartTime" ;
-            sh:path build:buildStartTime ],
-        [ sh:datatype xsd:anyURI ;
-            sh:name "configSourceUri" ;
-            sh:path build:configSourceUri ],
-        [ sh:class core:Hash ;
-            sh:name "configSourceDigest" ;
-            sh:path build:configSourceDigest ],
         [ sh:class core:DictionaryEntry ;
             sh:name "environment" ;
             sh:path build:environment ],
-        [ sh:class core:DictionaryEntry ;
-            sh:name "parameters" ;
-            sh:path build:parameters ],
         [ sh:datatype xsd:anyURI ;
             sh:maxCount 1 ;
             sh:minCount 1 ;
@@ -3326,49 +3247,19 @@ Note that buildStart and buildEnd are optional, and may be omitted to simplify c
             sh:maxCount 1 ;
             sh:name "buildId" ;
             sh:path build:buildId ],
-        [ sh:datatype xsd:string ;
-            sh:name "configSourceEntrypoint" ;
-            sh:path build:configSourceEntrypoint ] .
-
-software:SoftwareArtifact a owl:Class,
-        sh:NodeShape ;
-    rdfs:comment """A software artifact is a distinct article or unit related to software
-such as a package, a file, or a snippet.""" ;
-    rdfs:subClassOf core:Artifact ;
-    ns0:term_status "Stable" ;
-    sh:property [ sh:datatype xsd:anyURI ;
+        [ sh:class core:DictionaryEntry ;
+            sh:name "parameters" ;
+            sh:path build:parameters ],
+        [ sh:datatype xsd:anyURI ;
+            sh:name "configSourceUri" ;
+            sh:path build:configSourceUri ],
+        [ sh:class core:Hash ;
+            sh:name "configSourceDigest" ;
+            sh:path build:configSourceDigest ],
+        [ sh:datatype core:DateTime ;
             sh:maxCount 1 ;
-            sh:name "contentIdentifier" ;
-            sh:path software:contentIdentifier ],
-        [ sh:class licensing:AnyLicenseInfo ;
-            sh:maxCount 1 ;
-            sh:name "concludedLicense" ;
-            sh:path software:concludedLicense ],
-        [ sh:class software:SoftwarePurpose ;
-            sh:name "additionalPurpose" ;
-            sh:path software:additionalPurpose ],
-        [ sh:datatype xsd:string ;
-            sh:maxCount 1 ;
-            sh:name "attributionText" ;
-            sh:path software:attributionText ],
-        [ sh:datatype xsd:string ;
-            sh:maxCount 1 ;
-            sh:name "copyrightText" ;
-            sh:path software:copyrightText ],
-        [ sh:class software:SoftwarePurpose ;
-            sh:maxCount 1 ;
-            sh:name "primaryPurpose" ;
-            sh:path software:primaryPurpose ],
-        [ sh:class licensing:AnyLicenseInfo ;
-            sh:maxCount 1 ;
-            sh:name "declaredLicense" ;
-            sh:path software:declaredLicense ] .
-
-core:Agent a owl:Class,
-        sh:NodeShape ;
-    rdfs:comment "The Agent class represents anything that has the potential to act on a system. This could be a person, organization, software agent, etc. This is not to be confused with tools that are used to perform tasks." ;
-    rdfs:subClassOf core:Element ;
-    ns0:term_status "Stable" .
+            sh:name "buildStartTime" ;
+            sh:path build:buildStartTime ] .
 
 core:CreationInfo a owl:Class,
         sh:NodeShape ;
@@ -3376,70 +3267,115 @@ core:CreationInfo a owl:Class,
 
 The dateTime created is often the date of last change (e.g., a git commit date), not the date when the SPDX data was created, as doing so supports reproducible builds.""" ;
     ns0:term_status "Stable" ;
-    sh:property [ sh:datatype xsd:string ;
-            sh:name "dataLicense" ;
-            sh:path core:dataLicense ],
-        [ sh:datatype xsd:string ;
-            sh:maxCount 1 ;
-            sh:name "comment" ;
-            sh:path core:comment ],
-        [ sh:datatype core:SemVer ;
-            sh:name "specVersion" ;
-            sh:path core:specVersion ],
-        [ sh:datatype core:DateTime ;
-            sh:name "created" ;
-            sh:path core:created ],
-        [ sh:class core:Tool ;
+    sh:property [ sh:class core:Tool ;
             sh:name "createdUsing" ;
             sh:path core:createdUsing ],
+        [ sh:class core:Agent ;
+            sh:minCount 1 ;
+            sh:name "createdBy" ;
+            sh:path core:createdBy ],
+        [ sh:datatype xsd:string ;
+            sh:maxCount 1 ;
+            sh:name "dataLicense" ;
+            sh:path core:dataLicense ],
+        [ sh:datatype core:SemVer ;
+            sh:maxCount 1 ;
+            sh:minCount 1 ;
+            sh:name "specVersion" ;
+            sh:path core:specVersion ],
         [ sh:class core:ProfileIdentifierType ;
             sh:minCount 1 ;
             sh:name "profile" ;
             sh:path core:profile ],
-        [ sh:class core:Agent ;
-            sh:minCount 1 ;
-            sh:name "createdBy" ;
-            sh:path core:createdBy ] .
+        [ sh:datatype core:DateTime ;
+            sh:maxCount 1 ;
+            sh:name "created" ;
+            sh:path core:created ],
+        [ sh:datatype xsd:string ;
+            sh:maxCount 1 ;
+            sh:name "comment" ;
+            sh:path core:comment ] .
+
+software:SoftwareArtifact a owl:Class,
+        sh:NodeShape ;
+    rdfs:comment """A software artifact is a distinct article or unit related to software
+such as a package, a file, or a snippet.""" ;
+    rdfs:subClassOf core:Artifact ;
+    ns0:term_status "Stable" ;
+    sh:property [ sh:datatype xsd:string ;
+            sh:maxCount 1 ;
+            sh:name "attributionText" ;
+            sh:path software:attributionText ],
+        [ sh:datatype xsd:string ;
+            sh:maxCount 1 ;
+            sh:name "copyrightText" ;
+            sh:path software:copyrightText ],
+        [ sh:class licensing:AnyLicenseInfo ;
+            sh:maxCount 1 ;
+            sh:name "concludedLicense" ;
+            sh:path software:concludedLicense ],
+        [ sh:datatype xsd:anyURI ;
+            sh:maxCount 1 ;
+            sh:name "contentIdentifier" ;
+            sh:path software:contentIdentifier ],
+        [ sh:class software:SoftwarePurpose ;
+            sh:name "additionalPurpose" ;
+            sh:path software:additionalPurpose ],
+        [ sh:class licensing:AnyLicenseInfo ;
+            sh:maxCount 1 ;
+            sh:name "declaredLicense" ;
+            sh:path software:declaredLicense ],
+        [ sh:class software:SoftwarePurpose ;
+            sh:maxCount 1 ;
+            sh:name "primaryPurpose" ;
+            sh:path software:primaryPurpose ] .
+
+core:Agent a owl:Class,
+        sh:NodeShape ;
+    rdfs:comment "The Agent class represents anything that has the potential to act on a system. This could be a person, organization, software agent, etc. This is not to be confused with tools that are used to perform tasks." ;
+    rdfs:subClassOf core:Element ;
+    ns0:term_status "Stable" .
 
 core:ProfileIdentifierType a owl:Class ;
     rdfs:comment "There are a set of profiles that have been defined to be valid for a specific release   This file enumerates the values that have been agreed on, and may be applied to the creation information for an an element." ;
+    owl:oneOf ( <https://spdx.org/rdf/v3/Core/ProfileIdentifierType/core> <https://spdx.org/rdf/v3/Core/ProfileIdentifierType/extension> <https://spdx.org/rdf/v3/Core/ProfileIdentifierType/security> <https://spdx.org/rdf/v3/Core/ProfileIdentifierType/software> <https://spdx.org/rdf/v3/Core/ProfileIdentifierType/usage> <https://spdx.org/rdf/v3/Core/ProfileIdentifierType/ai> <https://spdx.org/rdf/v3/Core/ProfileIdentifierType/licensing> <https://spdx.org/rdf/v3/Core/ProfileIdentifierType/dataset> <https://spdx.org/rdf/v3/Core/ProfileIdentifierType/build> ) ;
     ns0:term_status "Stable" .
 
 licensing:License a owl:Class,
         sh:NodeShape ;
     rdfs:comment """A License represents a license text, whether listed on the SPDX License List
 (ListedLicense) or defined by an SPDX data creator (CustomLicense).""" ;
-    rdfs:subClassOf expandedlicense:ExtendableLicense ;
+    rdfs:subClassOf licensing:ExtendableLicense ;
     ns0:term_status "Stable" ;
     sh:property [ sh:datatype xsd:string ;
             sh:maxCount 1 ;
             sh:name "standardLicenseHeader" ;
             sh:path licensing:standardLicenseHeader ],
+        [ sh:datatype xsd:string ;
+            sh:maxCount 1 ;
+            sh:name "standardLicenseTemplate" ;
+            sh:path licensing:standardLicenseTemplate ],
         [ sh:datatype xsd:boolean ;
             sh:maxCount 1 ;
             sh:name "isOsiApproved" ;
             sh:path licensing:isOsiApproved ],
-        [ sh:datatype xsd:boolean ;
-            sh:maxCount 1 ;
-            sh:name "isDeprecatedLicenseId" ;
-            sh:path licensing:isDeprecatedLicenseId ],
-        [ sh:datatype xsd:boolean ;
-            sh:maxCount 1 ;
-            sh:name "isFsfLibre" ;
-            sh:path licensing:isFsfLibre ],
         [ sh:datatype xsd:string ;
             sh:maxCount 1 ;
             sh:name "obsoletedBy" ;
             sh:path licensing:obsoletedBy ],
+        [ sh:datatype xsd:boolean ;
+            sh:maxCount 1 ;
+            sh:name "isDeprecatedLicenseId" ;
+            sh:path licensing:isDeprecatedLicenseId ],
         [ sh:datatype xsd:string ;
             sh:maxCount 1 ;
             sh:minCount 1 ;
             sh:name "licenseText" ;
             sh:path licensing:licenseText ],
-        [ sh:datatype xsd:string ;
+        [ sh:datatype xsd:boolean ;
             sh:maxCount 1 ;
-            sh:name "standardLicenseTemplate" ;
-            sh:path licensing:standardLicenseTemplate ] .
+            sh:name "isFsfLibre" ;
+            sh:path licensing:isFsfLibre ] .
 
 security:VulnAssessmentRelationship a owl:Class,
         sh:NodeShape ;
@@ -3448,10 +3384,14 @@ assessment relationships. It factors out the common properties shared by them.
 External property restriction on /Core/Relationship/to: minCount: 1""" ;
     rdfs:subClassOf core:Relationship ;
     ns0:term_status "Stable" ;
-    sh:property [ sh:datatype core:DateTime ;
+    sh:property [ sh:class core:Agent ;
             sh:maxCount 1 ;
-            sh:name "publishedTime" ;
-            sh:path security:publishedTime ],
+            sh:name "suppliedBy" ;
+            sh:path security:suppliedBy ],
+        [ sh:datatype core:DateTime ;
+            sh:maxCount 1 ;
+            sh:name "withdrawnTime" ;
+            sh:path security:withdrawnTime ],
         [ sh:datatype core:DateTime ;
             sh:maxCount 1 ;
             sh:name "modifiedTime" ;
@@ -3462,12 +3402,8 @@ External property restriction on /Core/Relationship/to: minCount: 1""" ;
             sh:path security:assessedElement ],
         [ sh:datatype core:DateTime ;
             sh:maxCount 1 ;
-            sh:name "withdrawnTime" ;
-            sh:path security:withdrawnTime ],
-        [ sh:class core:Agent ;
-            sh:maxCount 1 ;
-            sh:name "suppliedBy" ;
-            sh:path security:suppliedBy ] .
+            sh:name "publishedTime" ;
+            sh:path security:publishedTime ] .
 
 licensing:AnyLicenseInfo a owl:Class,
         sh:NodeShape ;
@@ -3482,6 +3418,7 @@ additional text applied; or a set of licenses combined by applying "AND" and
 
 core:ExternalIdentifierType a owl:Class ;
     rdfs:comment "ExteralIdentifierType specifies the type of an external identifier." ;
+    owl:oneOf ( <https://spdx.org/rdf/v3/Core/ExternalIdentifierType/gitoid> <https://spdx.org/rdf/v3/Core/ExternalIdentifierType/pkgUrl> <https://spdx.org/rdf/v3/Core/ExternalIdentifierType/other> <https://spdx.org/rdf/v3/Core/ExternalIdentifierType/swhid> <https://spdx.org/rdf/v3/Core/ExternalIdentifierType/swid> <https://spdx.org/rdf/v3/Core/ExternalIdentifierType/email> <https://spdx.org/rdf/v3/Core/ExternalIdentifierType/securityOther> <https://spdx.org/rdf/v3/Core/ExternalIdentifierType/cve> <https://spdx.org/rdf/v3/Core/ExternalIdentifierType/cpe22> <https://spdx.org/rdf/v3/Core/ExternalIdentifierType/urlScheme> <https://spdx.org/rdf/v3/Core/ExternalIdentifierType/cpe23> ) ;
     ns0:term_status "Stable" .
 
 dataset:Dataset a owl:Class,
@@ -3494,33 +3431,21 @@ External property restriction on /Core/Artifact/releaseTime: minCount: 1
 External property restriction on /Core/Artifact/builtTime: minCount: 1""" ;
     rdfs:subClassOf software:Package ;
     ns0:term_status "Stable" ;
-    sh:property [ sh:class dataset:DatasetType ;
-            sh:minCount 1 ;
-            sh:name "datasetType" ;
-            sh:path dataset:datasetType ],
-        [ sh:datatype xsd:string ;
-            sh:name "dataPreprocessing" ;
-            sh:path dataset:dataPreprocessing ],
-        [ sh:datatype xsd:string ;
+    sh:property [ sh:class dataset:DatasetAvailabilityType ;
             sh:maxCount 1 ;
-            sh:name "datasetUpdateMechanism" ;
-            sh:path dataset:datasetUpdateMechanism ],
-        [ sh:datatype xsd:nonNegativeInteger ;
-            sh:maxCount 1 ;
-            sh:name "datasetSize" ;
-            sh:path dataset:datasetSize ],
+            sh:name "datasetAvailability" ;
+            sh:path dataset:datasetAvailability ],
         [ sh:datatype dataset:PresenceType ;
             sh:maxCount 1 ;
             sh:name "sensitivePersonalInformation" ;
             sh:path dataset:sensitivePersonalInformation ],
         [ sh:datatype xsd:string ;
+            sh:name "dataPreprocessing" ;
+            sh:path dataset:dataPreprocessing ],
+        [ sh:datatype xsd:string ;
             sh:maxCount 1 ;
             sh:name "dataCollectionProcess" ;
             sh:path dataset:dataCollectionProcess ],
-        [ sh:class dataset:ConfidentialityLevelType ;
-            sh:maxCount 1 ;
-            sh:name "confidentialityLevel" ;
-            sh:path dataset:confidentialityLevel ],
         [ sh:datatype xsd:string ;
             sh:maxCount 1 ;
             sh:name "datasetNoise" ;
@@ -3528,16 +3453,28 @@ External property restriction on /Core/Artifact/builtTime: minCount: 1""" ;
         [ sh:class core:DictionaryEntry ;
             sh:name "sensor" ;
             sh:path dataset:sensor ],
-        [ sh:class dataset:DatasetAvailabilityType ;
+        [ sh:class dataset:ConfidentialityLevelType ;
             sh:maxCount 1 ;
-            sh:name "datasetAvailability" ;
-            sh:path dataset:datasetAvailability ],
+            sh:name "confidentialityLevel" ;
+            sh:path dataset:confidentialityLevel ],
         [ sh:datatype xsd:string ;
             sh:name "knownBias" ;
             sh:path dataset:knownBias ],
         [ sh:datatype xsd:string ;
             sh:name "anonymizationMethodUsed" ;
             sh:path dataset:anonymizationMethodUsed ],
+        [ sh:class dataset:DatasetType ;
+            sh:minCount 1 ;
+            sh:name "datasetType" ;
+            sh:path dataset:datasetType ],
+        [ sh:datatype xsd:nonNegativeInteger ;
+            sh:maxCount 1 ;
+            sh:name "datasetSize" ;
+            sh:path dataset:datasetSize ],
+        [ sh:datatype xsd:string ;
+            sh:maxCount 1 ;
+            sh:name "datasetUpdateMechanism" ;
+            sh:path dataset:datasetUpdateMechanism ],
         [ sh:datatype xsd:string ;
             sh:maxCount 1 ;
             sh:name "intendedUse" ;
@@ -3549,13 +3486,13 @@ core:DictionaryEntry a owl:Class,
     ns0:term_status "Stable" ;
     sh:property [ sh:datatype xsd:string ;
             sh:maxCount 1 ;
-            sh:minCount 1 ;
-            sh:name "key" ;
-            sh:path core:key ],
+            sh:name "value" ;
+            sh:path core:value ],
         [ sh:datatype xsd:string ;
             sh:maxCount 1 ;
-            sh:name "value" ;
-            sh:path core:value ] .
+            sh:minCount 1 ;
+            sh:name "key" ;
+            sh:path core:key ] .
 
 ai:AIPackage a owl:Class,
         sh:NodeShape ;
@@ -3567,75 +3504,68 @@ External property restriction on /Software/SoftwareArtifact/primaryPurpose: minC
 External property restriction on /Core/Artifact/releaseTime: minCount: 1""" ;
     rdfs:subClassOf software:Package ;
     ns0:term_status "Stable" ;
-    sh:property [ sh:datatype xsd:string ;
-            sh:name "standardCompliance" ;
-            sh:path ai:standardCompliance ],
-        [ sh:datatype xsd:string ;
-            sh:name "modelDataPreprocessing" ;
-            sh:path ai:modelDataPreprocessing ],
+    sh:property [ sh:class core:DictionaryEntry ;
+            sh:name "metricDecisionThreshold" ;
+            sh:path ai:metricDecisionThreshold ],
         [ sh:class ai:PresenceType ;
             sh:maxCount 1 ;
             sh:name "sensitivePersonalInformation" ;
             sh:path ai:sensitivePersonalInformation ],
         [ sh:datatype xsd:string ;
-            sh:name "domain" ;
-            sh:path ai:domain ],
-        [ sh:class core:DictionaryEntry ;
-            sh:name "metric" ;
-            sh:path ai:metric ],
+            sh:maxCount 1 ;
+            sh:name "informationAboutTraining" ;
+            sh:path ai:informationAboutTraining ],
         [ sh:class core:DictionaryEntry ;
             sh:name "hyperparameter" ;
             sh:path ai:hyperparameter ],
         [ sh:datatype xsd:string ;
-            sh:name "typeOfModel" ;
-            sh:path ai:typeOfModel ],
-        [ sh:class core:DictionaryEntry ;
-            sh:name "metricDecisionThreshold" ;
-            sh:path ai:metricDecisionThreshold ],
-        [ sh:datatype xsd:string ;
-            sh:maxCount 1 ;
-            sh:name "informationAboutTraining" ;
-            sh:path ai:informationAboutTraining ],
-        [ sh:class ai:SafetyRiskAssessmentType ;
-            sh:maxCount 1 ;
-            sh:name "safetyRiskAssessment" ;
-            sh:path ai:safetyRiskAssessment ],
-        [ sh:datatype xsd:string ;
-            sh:maxCount 1 ;
-            sh:name "energyConsumption" ;
-            sh:path ai:energyConsumption ],
+            sh:name "standardCompliance" ;
+            sh:path ai:standardCompliance ],
         [ sh:datatype xsd:string ;
             sh:name "modelExplainability" ;
             sh:path ai:modelExplainability ],
+        [ sh:datatype xsd:string ;
+            sh:name "typeOfModel" ;
+            sh:path ai:typeOfModel ],
         [ sh:class ai:PresenceType ;
             sh:maxCount 1 ;
             sh:name "autonomyType" ;
             sh:path ai:autonomyType ],
         [ sh:datatype xsd:string ;
             sh:maxCount 1 ;
+            sh:name "limitation" ;
+            sh:path ai:limitation ],
+        [ sh:datatype xsd:string ;
+            sh:name "domain" ;
+            sh:path ai:domain ],
+        [ sh:class core:DictionaryEntry ;
+            sh:name "metric" ;
+            sh:path ai:metric ],
+        [ sh:datatype xsd:string ;
+            sh:name "modelDataPreprocessing" ;
+            sh:path ai:modelDataPreprocessing ],
+        [ sh:class ai:SafetyRiskAssessmentType ;
+            sh:maxCount 1 ;
+            sh:name "safetyRiskAssessment" ;
+            sh:path ai:safetyRiskAssessment ],
+        [ sh:datatype xsd:string ;
+            sh:maxCount 1 ;
             sh:name "informationAboutApplication" ;
             sh:path ai:informationAboutApplication ],
         [ sh:datatype xsd:string ;
             sh:maxCount 1 ;
-            sh:name "limitation" ;
-            sh:path ai:limitation ] .
+            sh:name "energyConsumption" ;
+            sh:path ai:energyConsumption ] .
 
 dataset:DatasetType a owl:Class ;
     rdfs:comment "Describes the different structures of data within a given dataset. A dataset can have multiple types of data, or even a single type of data but still match multiple types, for example sensor data could also be timeseries or labeled image data could also be considered categorical." ;
+    owl:oneOf ( <https://spdx.org/rdf/v3/Dataset/DatasetType/timeseries> <https://spdx.org/rdf/v3/Dataset/DatasetType/other> <https://spdx.org/rdf/v3/Dataset/DatasetType/structured> <https://spdx.org/rdf/v3/Dataset/DatasetType/graph> <https://spdx.org/rdf/v3/Dataset/DatasetType/sensor> <https://spdx.org/rdf/v3/Dataset/DatasetType/image> <https://spdx.org/rdf/v3/Dataset/DatasetType/audio> <https://spdx.org/rdf/v3/Dataset/DatasetType/numeric> <https://spdx.org/rdf/v3/Dataset/DatasetType/syntactic> <https://spdx.org/rdf/v3/Dataset/DatasetType/video> <https://spdx.org/rdf/v3/Dataset/DatasetType/timestamp> <https://spdx.org/rdf/v3/Dataset/DatasetType/text> <https://spdx.org/rdf/v3/Dataset/DatasetType/noAssertion> <https://spdx.org/rdf/v3/Dataset/DatasetType/categorical> ) ;
     ns0:term_status "Stable" .
 
 core:HashAlgorithm a owl:Class ;
     rdfs:comment """A HashAlgorithm is a mathematical algorithm that maps data of arbitrary size to a bit string (the hash)
 and is a one-way function, that is, a function which is practically infeasible to invert.""" ;
-    ns0:term_status "Stable" .
-
-core:DateTime a owl:Class,
-        sh:NodeShape ;
-    rdfs:comment """A Datetime is a string representation of a specific date and time.
-It has resolution of seconds and is always expressed in UTC timezone.
-The specific format is one of the most commonly used ISO-8601 formats.
-Format restriction: pattern: ^\\d\\d\\d\\d-\\d\\d-\\d\\dT\\d\\d:\\d\\d:\\d\\dZ$""" ;
-    rdfs:subClassOf xsd:string ;
+    owl:oneOf ( <https://spdx.org/rdf/v3/Core/HashAlgorithm/crystalsKyber> <https://spdx.org/rdf/v3/Core/HashAlgorithm/sha384> <https://spdx.org/rdf/v3/Core/HashAlgorithm/sha512> <https://spdx.org/rdf/v3/Core/HashAlgorithm/blake2b384> <https://spdx.org/rdf/v3/Core/HashAlgorithm/sha3_256> <https://spdx.org/rdf/v3/Core/HashAlgorithm/sha256> <https://spdx.org/rdf/v3/Core/HashAlgorithm/sha1> <https://spdx.org/rdf/v3/Core/HashAlgorithm/blake3> <https://spdx.org/rdf/v3/Core/HashAlgorithm/md5> <https://spdx.org/rdf/v3/Core/HashAlgorithm/md4> <https://spdx.org/rdf/v3/Core/HashAlgorithm/blake2b512> <https://spdx.org/rdf/v3/Core/HashAlgorithm/sphincsPlus> <https://spdx.org/rdf/v3/Core/HashAlgorithm/falcon> <https://spdx.org/rdf/v3/Core/HashAlgorithm/blake2b256> <https://spdx.org/rdf/v3/Core/HashAlgorithm/crystalsDilithium> <https://spdx.org/rdf/v3/Core/HashAlgorithm/md6> <https://spdx.org/rdf/v3/Core/HashAlgorithm/spdxPvcSha256> <https://spdx.org/rdf/v3/Core/HashAlgorithm/other> <https://spdx.org/rdf/v3/Core/HashAlgorithm/sha3_384> <https://spdx.org/rdf/v3/Core/HashAlgorithm/md2> <https://spdx.org/rdf/v3/Core/HashAlgorithm/sha3_224> <https://spdx.org/rdf/v3/Core/HashAlgorithm/spdxPvcSha1> <https://spdx.org/rdf/v3/Core/HashAlgorithm/sha3_512> <https://spdx.org/rdf/v3/Core/HashAlgorithm/sha224> ) ;
     ns0:term_status "Stable" .
 
 software:SoftwarePurpose a owl:Class ;
@@ -3644,6 +3574,7 @@ Software Purpose is intrinsic to how the Element is being used rather than the c
 This field is a reasonable estimate of the most likely usage of the Element
 from the producer and consumer perspective from which both parties can draw conclusions
 about the context in which the Element exists.""" ;
+    owl:oneOf ( <https://spdx.org/rdf/v3/Software/SoftwarePurpose/device> <https://spdx.org/rdf/v3/Software/SoftwarePurpose/archive> <https://spdx.org/rdf/v3/Software/SoftwarePurpose/specification> <https://spdx.org/rdf/v3/Software/SoftwarePurpose/model> <https://spdx.org/rdf/v3/Software/SoftwarePurpose/other> <https://spdx.org/rdf/v3/Software/SoftwarePurpose/framework> <https://spdx.org/rdf/v3/Software/SoftwarePurpose/operatingSystem> <https://spdx.org/rdf/v3/Software/SoftwarePurpose/container> <https://spdx.org/rdf/v3/Software/SoftwarePurpose/application> <https://spdx.org/rdf/v3/Software/SoftwarePurpose/firmware> <https://spdx.org/rdf/v3/Software/SoftwarePurpose/patch> <https://spdx.org/rdf/v3/Software/SoftwarePurpose/module> <https://spdx.org/rdf/v3/Software/SoftwarePurpose/documentation> <https://spdx.org/rdf/v3/Software/SoftwarePurpose/test> <https://spdx.org/rdf/v3/Software/SoftwarePurpose/evidence> <https://spdx.org/rdf/v3/Software/SoftwarePurpose/source> <https://spdx.org/rdf/v3/Software/SoftwarePurpose/library> <https://spdx.org/rdf/v3/Software/SoftwarePurpose/bom> <https://spdx.org/rdf/v3/Software/SoftwarePurpose/file> <https://spdx.org/rdf/v3/Software/SoftwarePurpose/configuration> <https://spdx.org/rdf/v3/Software/SoftwarePurpose/data> <https://spdx.org/rdf/v3/Software/SoftwarePurpose/manifest> <https://spdx.org/rdf/v3/Software/SoftwarePurpose/install> <https://spdx.org/rdf/v3/Software/SoftwarePurpose/executable> <https://spdx.org/rdf/v3/Software/SoftwarePurpose/requirement> ) ;
     ns0:term_status "Stable" .
 
 core:Element a owl:Class,
@@ -3654,48 +3585,47 @@ and necessary for contextually characterizing BOM concepts and relationships.
 Within SPDX-3.0 structure this is the base class acting as a consistent,
 unifying, and interoperable foundation for all explicit
 and inter-relatable content objects.""" ;
-    rdfs:subClassOf core:Payload ;
+    rdfs:subClassOf owl:Thing ;
     ns0:term_status "Stable" ;
-    sh:property [ sh:datatype core:Extension ;
-            sh:name "extension" ;
-            sh:path core:extension ],
-        [ sh:class core:CreationInfo ;
-            sh:maxCount 1 ;
-            sh:name "creationInfo" ;
-            sh:path core:creationInfo ],
-        [ sh:datatype xsd:string ;
+    sh:property [ sh:datatype xsd:string ;
             sh:maxCount 1 ;
             sh:name "description" ;
             sh:path core:description ],
+        [ sh:class core:ExternalReference ;
+            sh:name "externalReference" ;
+            sh:path core:externalReference ],
+        [ sh:class core:ExternalIdentifier ;
+            sh:name "externalIdentifier" ;
+            sh:path core:externalIdentifier ],
+        [ sh:datatype xsd:string ;
+            sh:maxCount 1 ;
+            sh:name "comment" ;
+            sh:path core:comment ],
+        [ sh:class core:CreationInfo ;
+            sh:maxCount 1 ;
+            sh:minCount 1 ;
+            sh:name "creationInfo" ;
+            sh:path core:creationInfo ],
         [ sh:datatype xsd:string ;
             sh:maxCount 1 ;
             sh:name "name" ;
             sh:path core:name ],
         [ sh:datatype xsd:string ;
             sh:maxCount 1 ;
-            sh:name "comment" ;
-            sh:path core:comment ],
-        [ sh:class core:IntegrityMethod ;
-            sh:name "verifiedUsing" ;
-            sh:path core:verifiedUsing ],
-        [ sh:class core:ExternalReference ;
-            sh:name "externalReference" ;
-            sh:path core:externalReference ],
-        [ sh:datatype xsd:string ;
-            sh:maxCount 1 ;
             sh:name "summary" ;
             sh:path core:summary ],
-        [ sh:class core:ExternalIdentifier ;
-            sh:name "externalIdentifier" ;
-            sh:path core:externalIdentifier ] .
+        [ sh:class core:IntegrityMethod ;
+            sh:name "verifiedUsing" ;
+            sh:path core:verifiedUsing ] .
 
 core:ExternalReferenceType a owl:Class ;
     rdfs:comment "ExteralReferenceType specifies the type of an external reference." ;
+    owl:oneOf ( <https://spdx.org/rdf/v3/Core/ExternalReferenceType/vulnerabilityDisclosureReport> <https://spdx.org/rdf/v3/Core/ExternalReferenceType/mailingList> <https://spdx.org/rdf/v3/Core/ExternalReferenceType/documentation> <https://spdx.org/rdf/v3/Core/ExternalReferenceType/secureSoftwareAttestation> <https://spdx.org/rdf/v3/Core/ExternalReferenceType/securityAdversaryModel> <https://spdx.org/rdf/v3/Core/ExternalReferenceType/securityFix> <https://spdx.org/rdf/v3/Core/ExternalReferenceType/buildMeta> <https://spdx.org/rdf/v3/Core/ExternalReferenceType/securityAdvisory> <https://spdx.org/rdf/v3/Core/ExternalReferenceType/securityThreatModel> <https://spdx.org/rdf/v3/Core/ExternalReferenceType/runtimeAnalysisReport> <https://spdx.org/rdf/v3/Core/ExternalReferenceType/securityPenTestReport> <https://spdx.org/rdf/v3/Core/ExternalReferenceType/staticAnalysisReport> <https://spdx.org/rdf/v3/Core/ExternalReferenceType/qualityAssessmentReport> <https://spdx.org/rdf/v3/Core/ExternalReferenceType/eolNotice> <https://spdx.org/rdf/v3/Core/ExternalReferenceType/dynamicAnalysisReport> <https://spdx.org/rdf/v3/Core/ExternalReferenceType/metrics> <https://spdx.org/rdf/v3/Core/ExternalReferenceType/chat> <https://spdx.org/rdf/v3/Core/ExternalReferenceType/buildSystem> <https://spdx.org/rdf/v3/Core/ExternalReferenceType/sourceArtifact> <https://spdx.org/rdf/v3/Core/ExternalReferenceType/vulnerabilityExploitabilityAssessment> <https://spdx.org/rdf/v3/Core/ExternalReferenceType/componentAnalysisReport> <https://spdx.org/rdf/v3/Core/ExternalReferenceType/certificationReport> <https://spdx.org/rdf/v3/Core/ExternalReferenceType/issueTracker> <https://spdx.org/rdf/v3/Core/ExternalReferenceType/productMetadata> <https://spdx.org/rdf/v3/Core/ExternalReferenceType/releaseHistory> <https://spdx.org/rdf/v3/Core/ExternalReferenceType/binaryArtifact> <https://spdx.org/rdf/v3/Core/ExternalReferenceType/altDownloadLocation> <https://spdx.org/rdf/v3/Core/ExternalReferenceType/exportControlAssessment> <https://spdx.org/rdf/v3/Core/ExternalReferenceType/riskAssessment> <https://spdx.org/rdf/v3/Core/ExternalReferenceType/funding> <https://spdx.org/rdf/v3/Core/ExternalReferenceType/securityPolicy> <https://spdx.org/rdf/v3/Core/ExternalReferenceType/license> <https://spdx.org/rdf/v3/Core/ExternalReferenceType/vcs> <https://spdx.org/rdf/v3/Core/ExternalReferenceType/other> <https://spdx.org/rdf/v3/Core/ExternalReferenceType/purchaseOrder> <https://spdx.org/rdf/v3/Core/ExternalReferenceType/support> <https://spdx.org/rdf/v3/Core/ExternalReferenceType/releaseNotes> <https://spdx.org/rdf/v3/Core/ExternalReferenceType/privacyAssessment> <https://spdx.org/rdf/v3/Core/ExternalReferenceType/altWebPage> <https://spdx.org/rdf/v3/Core/ExternalReferenceType/securityOther> <https://spdx.org/rdf/v3/Core/ExternalReferenceType/socialMedia> ) ;
     ns0:term_status "Stable" .
 
 core:RelationshipType a owl:Class ;
     rdfs:comment """Provides information about the relationship between two Elements.
 For example, you can represent a relationship between two different Files,
 between a Package and a File, between two Packages, or between one SPDXDocument and another SPDXDocument.""" ;
+    owl:oneOf ( <https://spdx.org/rdf/v3/Core/RelationshipType/fixedIn> <https://spdx.org/rdf/v3/Core/RelationshipType/availableFrom> <https://spdx.org/rdf/v3/Core/RelationshipType/example> <https://spdx.org/rdf/v3/Core/RelationshipType/buildDependency> <https://spdx.org/rdf/v3/Core/RelationshipType/hasAssessmentFor> <https://spdx.org/rdf/v3/Core/RelationshipType/republishedBy> <https://spdx.org/rdf/v3/Core/RelationshipType/expandedFromArchive> <https://spdx.org/rdf/v3/Core/RelationshipType/optionalComponent> <https://spdx.org/rdf/v3/Core/RelationshipType/patch> <https://spdx.org/rdf/v3/Core/RelationshipType/coordinatedBy> <https://spdx.org/rdf/v3/Core/RelationshipType/requirementFor> <https://spdx.org/rdf/v3/Core/RelationshipType/evidenceFor> <https://spdx.org/rdf/v3/Core/RelationshipType/specificationFor> <https://spdx.org/rdf/v3/Core/RelationshipType/trainedOn> <https://spdx.org/rdf/v3/Core/RelationshipType/metafile> <https://spdx.org/rdf/v3/Core/RelationshipType/devDependency> <https://spdx.org/rdf/v3/Core/RelationshipType/documentation> <https://spdx.org/rdf/v3/Core/RelationshipType/ancestor> <https://spdx.org/rdf/v3/Core/RelationshipType/dependsOn> <https://spdx.org/rdf/v3/Core/RelationshipType/copy> <https://spdx.org/rdf/v3/Core/RelationshipType/testDependency> <https://spdx.org/rdf/v3/Core/RelationshipType/exploitCreatedBy> <https://spdx.org/rdf/v3/Core/RelationshipType/distributionArtifact> <https://spdx.org/rdf/v3/Core/RelationshipType/fileAdded> <https://spdx.org/rdf/v3/Core/RelationshipType/reportedBy> <https://spdx.org/rdf/v3/Core/RelationshipType/configOf> <https://spdx.org/rdf/v3/Core/RelationshipType/fileDeleted> <https://spdx.org/rdf/v3/Core/RelationshipType/doesNotAffect> <https://spdx.org/rdf/v3/Core/RelationshipType/providedDependency> <https://spdx.org/rdf/v3/Core/RelationshipType/fixedBy> <https://spdx.org/rdf/v3/Core/RelationshipType/optionalDependency> <https://spdx.org/rdf/v3/Core/RelationshipType/test> <https://spdx.org/rdf/v3/Core/RelationshipType/other> <https://spdx.org/rdf/v3/Core/RelationshipType/packages> <https://spdx.org/rdf/v3/Core/RelationshipType/descendant> <https://spdx.org/rdf/v3/Core/RelationshipType/testCase> <https://spdx.org/rdf/v3/Core/RelationshipType/prerequisite> <https://spdx.org/rdf/v3/Core/RelationshipType/onBehalfOf> <https://spdx.org/rdf/v3/Core/RelationshipType/publishedBy> <https://spdx.org/rdf/v3/Core/RelationshipType/testTool> <https://spdx.org/rdf/v3/Core/RelationshipType/dynamicLink> <https://spdx.org/rdf/v3/Core/RelationshipType/affects> <https://spdx.org/rdf/v3/Core/RelationshipType/inputOf> <https://spdx.org/rdf/v3/Core/RelationshipType/invokedBy> <https://spdx.org/rdf/v3/Core/RelationshipType/runtimeDependency> <https://spdx.org/rdf/v3/Core/RelationshipType/underInvestigationFor> <https://spdx.org/rdf/v3/Core/RelationshipType/outputOf> <https://spdx.org/rdf/v3/Core/RelationshipType/contains> <https://spdx.org/rdf/v3/Core/RelationshipType/fileModified> <https://spdx.org/rdf/v3/Core/RelationshipType/staticLink> <https://spdx.org/rdf/v3/Core/RelationshipType/testedOn> <https://spdx.org/rdf/v3/Core/RelationshipType/dependencyManifest> <https://spdx.org/rdf/v3/Core/RelationshipType/variant> <https://spdx.org/rdf/v3/Core/RelationshipType/amends> <https://spdx.org/rdf/v3/Core/RelationshipType/dataFile> <https://spdx.org/rdf/v3/Core/RelationshipType/buildTool> <https://spdx.org/rdf/v3/Core/RelationshipType/generates> <https://spdx.org/rdf/v3/Core/RelationshipType/hasAssociatedVulnerability> <https://spdx.org/rdf/v3/Core/RelationshipType/hostOf> <https://spdx.org/rdf/v3/Core/RelationshipType/foundBy> <https://spdx.org/rdf/v3/Core/RelationshipType/describes> <https://spdx.org/rdf/v3/Core/RelationshipType/devTool> ) ;
     ns0:term_status "Stable" .
-

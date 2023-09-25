@@ -48,8 +48,8 @@ public class SpdxConstants {
 	
 	// class types
 	{{#classConstantDefinitions}}
-	{{{.}}}
+	public {{{.}}}
 	{{/classConstantDefinitions}}
 	
-	{{{allClassConstants}}}
+	public {{{allClassConstants}}}
 }

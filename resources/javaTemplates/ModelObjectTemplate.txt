@@ -269,7 +269,7 @@ public class {{{className}}} extends {{{superClass}}} {{#compareUsingProperties}
 	/**
 	 * @return the {{{propertyName}}}
 	 */
-	public @Nullable AnyLicenseInfo {{{getter}}}() throws InvalidSPDXAnalysisException {
+	public @Nullable {{{type}}} {{{getter}}}() throws InvalidSPDXAnalysisException {
 		Optional<AnyLicenseInfo> retval = getAnyLicenseInfoPropertyValue(SpdxConstants.{{{propertyConstant}}});
 		return retval.isPresent() ? retval.get() : null;
 	}
@@ -583,7 +583,7 @@ public class {{{className}}} extends {{{superClass}}} {{#compareUsingProperties}
 				retval.addAll({{{propertyName}}}.get().verify(verifiedIds, specVersion, profiles));
 		{{/nonOptional}}
 			{{#required}}
-			else if (!Collections.disjoint(profiles, Arrays.asList(new ProfileIdentifierType[] { {{{requiredProfiles}}} }))) {
+			} else if (!Collections.disjoint(profiles, Arrays.asList(new ProfileIdentifierType[] { {{{requiredProfiles}}} }))) {
 					retval.add("Missing {{{propertyName}}} in {{{className}}}");
 			{{/required}}
 			}
@@ -607,7 +607,7 @@ public class {{{className}}} extends {{{superClass}}} {{#compareUsingProperties}
 				retval.addAll({{{propertyName}}}.get().verify(verifiedIds, specVersion, profiles));
 		{{/nonOptional}}
 			{{#required}}
-			else if (!Collections.disjoint(profiles, Arrays.asList(new ProfileIdentifierType[] { {{{requiredProfiles}}} }))) {
+			} else if (!Collections.disjoint(profiles, Arrays.asList(new ProfileIdentifierType[] { {{{requiredProfiles}}} }))) {
 					retval.add("Missing {{{propertyName}}} in {{{className}}}");
 			{{/required}}
 			}
@@ -902,7 +902,7 @@ public class {{{className}}} extends {{{superClass}}} {{#compareUsingProperties}
 		 * @parameter {{{propertyName}}} {{{propertyName}}} to add
 		 * @return this for chaining
 		**/
-		{{{className}}}Builder {{{adder}}}({{{type}}} {{{propertyName}}}) {
+		public {{{className}}}Builder {{{adder}}}({{{type}}} {{{propertyName}}}) {
 			if (Objects.nonNull({{{propertyName}}})) {
 				{{{propertyName}}}s.add({{{propertyName}}});
 			}
@@ -914,7 +914,7 @@ public class {{{className}}} extends {{{superClass}}} {{#compareUsingProperties}
 		 * @parameter {{{propertyName}}}Collection collection to initialize the {{{propertyName}}}
 		 * @return this for chaining
 		**/
-		{{{className}}}Builder {{{addAller}}}(Collection<{{{type}}}> {{{propertyName}}}Collection) {
+		public {{{className}}}Builder {{{addAller}}}(Collection<{{{type}}}> {{{propertyName}}}Collection) {
 			if (Objects.nonNull({{{propertyName}}}Collection)) {
 				{{{propertyName}}}s.addAll({{{propertyName}}}Collection);
 			}
@@ -928,7 +928,7 @@ public class {{{className}}} extends {{{superClass}}} {{#compareUsingProperties}
 		 * @parameter {{{propertyName}}} {{{propertyName}}} to add
 		 * @return this for chaining
 		**/
-		{{{className}}}Builder {{{adder}}}({{{type}}} {{{propertyName}}}) {
+		public {{{className}}}Builder {{{adder}}}({{{type}}} {{{propertyName}}}) {
 			if (Objects.nonNull({{{propertyName}}})) {
 				{{{propertyName}}}s.add({{{propertyName}}});
 			}
@@ -940,7 +940,7 @@ public class {{{className}}} extends {{{superClass}}} {{#compareUsingProperties}
 		 * @parameter {{{propertyName}}}Collection collection to initialize the {{{propertyName}}}
 		 * @return this for chaining
 		**/
-		{{{className}}}Builder {{{addAller}}}(Collection<{{{type}}}> {{{propertyName}}}Collection) {
+		public {{{className}}}Builder {{{addAller}}}(Collection<{{{type}}}> {{{propertyName}}}Collection) {
 			if (Objects.nonNull({{{propertyName}}}Collection)) {
 				{{{propertyName}}}s.addAll({{{propertyName}}}Collection);
 			}
@@ -954,7 +954,7 @@ public class {{{className}}} extends {{{superClass}}} {{#compareUsingProperties}
 		 * @parameter {{{propertyName}}} {{{propertyName}}} to add
 		 * @return this for chaining
 		**/
-		{{{className}}}Builder {{{adder}}}(String {{{propertyName}}}) {
+		public {{{className}}}Builder {{{adder}}}(String {{{propertyName}}}) {
 			if (Objects.nonNull({{{propertyName}}})) {
 				{{{propertyName}}}s.add({{{propertyName}}});
 			}
@@ -966,7 +966,7 @@ public class {{{className}}} extends {{{superClass}}} {{#compareUsingProperties}
 		 * @parameter {{{propertyName}}}Collection collection to initialize the {{{propertyName}}}
 		 * @return this for chaining
 		**/
-		{{{className}}}Builder {{{addAller}}}(Collection<String> {{{propertyName}}}Collection) {
+		public {{{className}}}Builder {{{addAller}}}(Collection<String> {{{propertyName}}}Collection) {
 			if (Objects.nonNull({{{propertyName}}}Collection)) {
 				{{{propertyName}}}s.addAll({{{propertyName}}}Collection);
 			}
@@ -980,7 +980,7 @@ public class {{{className}}} extends {{{superClass}}} {{#compareUsingProperties}
 		 * @parameter {{{propertyName}}} {{{propertyName}}} to add
 		 * @return this for chaining
 		**/
-		{{{className}}}Builder {{{adder}}}({{{type}}} {{{propertyName}}}) {
+		public {{{className}}}Builder {{{adder}}}({{{type}}} {{{propertyName}}}) {
 			if (Objects.nonNull({{{propertyName}}})) {
 				{{{propertyName}}}s.add({{{propertyName}}});
 			}
@@ -992,7 +992,7 @@ public class {{{className}}} extends {{{superClass}}} {{#compareUsingProperties}
 		 * @parameter {{{propertyName}}}Collection collection to initialize the {{{propertyName}}}
 		 * @return this for chaining
 		**/
-		{{{className}}}Builder {{{addAller}}}(Collection<{{{type}}}> {{{propertyName}}}Collection) {
+		public {{{className}}}Builder {{{addAller}}}(Collection<{{{type}}}> {{{propertyName}}}Collection) {
 			if (Objects.nonNull({{{propertyName}}}Collection)) {
 				{{{propertyName}}}s.addAll({{{propertyName}}}Collection);
 			}
@@ -1006,7 +1006,7 @@ public class {{{className}}} extends {{{superClass}}} {{#compareUsingProperties}
 		 * @parameter {{{propertyName}}} value to set
 		 * @return this for chaining
 		**/
-		{{{className}}}Builder {{{setter}}}({{{type}}} {{{propertyName}}}) {
+		public {{{className}}}Builder {{{setter}}}({{{type}}} {{{propertyName}}}) {
 			this.{{{propertyName}}} = {{{propertyName}}};
 			return this;
 		}
@@ -1018,7 +1018,7 @@ public class {{{className}}} extends {{{superClass}}} {{#compareUsingProperties}
 		 * @parameter {{{propertyName}}} value to set
 		 * @return this for chaining
 		**/
-		{{{className}}}Builder {{{setter}}}({{{type}}} {{{propertyName}}}) {
+		public {{{className}}}Builder {{{setter}}}({{{type}}} {{{propertyName}}}) {
 			this.{{{propertyName}}} = {{{propertyName}}};
 			return this;
 		}
@@ -1030,7 +1030,7 @@ public class {{{className}}} extends {{{superClass}}} {{#compareUsingProperties}
 		 * @parameter {{{propertyName}}} value to set
 		 * @return this for chaining
 		**/
-		{{{className}}}Builder {{{setter}}}({{{type}}} {{{propertyName}}}) {
+		public {{{className}}}Builder {{{setter}}}({{{type}}} {{{propertyName}}}) {
 			this.{{{propertyName}}} = {{{propertyName}}};
 			return this;
 		}
@@ -1042,7 +1042,7 @@ public class {{{className}}} extends {{{superClass}}} {{#compareUsingProperties}
 		 * @parameter {{{propertyName}}} value to set
 		 * @return this for chaining
 		**/
-		{{{className}}}Builder {{{setter}}}({{{type}}} {{{propertyName}}}) {
+		public {{{className}}}Builder {{{setter}}}({{{type}}} {{{propertyName}}}) {
 			this.{{{propertyName}}} = {{{propertyName}}};
 			return this;
 		}
@@ -1054,7 +1054,7 @@ public class {{{className}}} extends {{{superClass}}} {{#compareUsingProperties}
 		 * @parameter {{{propertyName}}} value to set
 		 * @return this for chaining
 		**/
-		{{{className}}}Builder {{{setter}}}({{{type}}} {{{propertyName}}}) {
+		public {{{className}}}Builder {{{setter}}}({{{type}}} {{{propertyName}}}) {
 			this.{{{propertyName}}} = {{{propertyName}}};
 			return this;
 		}
@@ -1066,7 +1066,7 @@ public class {{{className}}} extends {{{superClass}}} {{#compareUsingProperties}
 		 * @parameter {{{propertyName}}} value to set
 		 * @return this for chaining
 		**/
-		{{{className}}}Builder {{{setter}}}({{{type}}} {{{propertyName}}}) {
+		public {{{className}}}Builder {{{setter}}}({{{type}}} {{{propertyName}}}) {
 			this.{{{propertyName}}} = {{{propertyName}}};
 			return this;
 		}
@@ -1078,7 +1078,7 @@ public class {{{className}}} extends {{{superClass}}} {{#compareUsingProperties}
 		 * @parameter {{{propertyName}}} value to set
 		 * @return this for chaining
 		**/
-		{{{className}}}Builder {{{setter}}}(String {{{propertyName}}}) {
+		public {{{className}}}Builder {{{setter}}}(String {{{propertyName}}}) {
 			this.{{{propertyName}}} = {{{propertyName}}};
 			return this;
 		}

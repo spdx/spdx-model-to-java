@@ -16,6 +16,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -27,8 +28,6 @@ import org.apache.jena.ontology.OntModel;
 import org.apache.jena.ontology.Individual;
 import org.apache.jena.ontology.OntClass;
 import org.apache.jena.ontology.OntProperty;
-import org.apache.jena.ontology.OntResource;
-import org.apache.jena.rdf.model.Statement;
 import org.apache.commons.text.StringEscapeUtils;
 import org.apache.jena.graph.Node;
 import org.apache.jena.shacl.Shapes;
@@ -386,6 +385,14 @@ public class OwlToJava {
 		STRING_COLLECTION,
 		OBJECT_SET, ENUM_COLLECTION
 	}
+	
+	
+	public enum SuperclassRequired {
+		YES, // All superclasses have this as a required property
+		NO,	 // None of the superclasses have this as a required property
+		BOTH, // Some superclasses have this as a required property and other superclasses do not
+		NONE  // The property is not referenced in any of the superclasses
+	}
 
 	static String YEAR;
 	
@@ -428,24 +435,22 @@ public class OwlToJava {
 				name = RESERVED_JAVA_WORDS.get(name);
 			}
 			Shape classShape = shapeMap.get(ontClass.asNode());
-			List<Statement> props = new ArrayList<>();
-			ontClass.listProperties().forEach(stmt -> {
-				props.add(stmt);
-			});
+			List<PropertyShape> propertyShapes = Objects.nonNull(classShape) ? List.copyOf(classShape.getPropertyShapes()) :
+				new ArrayList<>();
 			List<OntClass> subClasses = new ArrayList<>();
 			ontClass.listSubClasses().forEach(oc -> {
 				subClasses.add(oc);
 			});
 			List<OntClass> superClasses = new ArrayList<>();
 			addAllSuperClasses(ontClass, superClasses);
-			List<OntProperty> properties = ontClass.listDeclaredProperties(true).toList();
+			
 			String superClassUri = superClasses.isEmpty() ? null : superClasses.get(0).getURI();
 			try {
 				if (isEnumClass(ontClass)) {
 					enumMustacheMaps.add(generateJavaEnum(dir, classUri, name, allIndividuals, comment));
 				} else if (!stringTypes.contains(classUri)) { // TODO: we may want to handle String subtypes in the future
 					try {
-						generateJavaClass(dir, classUri, name, properties, classShape, comment, superClassUri);
+						generateJavaClass(dir, classUri, name, propertyShapes, classShape, comment, superClassUri, superClasses);
 					} catch (OwlToJavaException e) {
 						warnings.add("Error generating Java class for "+name+":" + e.getMessage());
 					}
@@ -649,35 +654,34 @@ public class OwlToJava {
 	}
 	
 	/**
-	 * @param range range for the property if any
 	 * @param classTypeRestriction class restriction if any
 	 * @param dataTypeRestriction data restriction if any
 	 * @return The URI for the type of a property based on it's range and restrictions
+	 * @throws OwlToJavaException 
 	 */
-	private String getTypeUri(@Nullable OntResource range, @Nullable Node classTypeRestriction,
-			@Nullable Node dataTypeRestriction) {
-		// precedence - range, class restrictions, data restriction
-		String typeUri = range == null ? "" : range.getURI() == null ? "" : range.getURI();
-		if (typeUri.isEmpty()) {
-			typeUri = classTypeRestriction == null ? "" : classTypeRestriction.getURI() == null ? "" : classTypeRestriction.getURI();
+	private String getTypeUri(@Nullable Node classTypeRestriction,
+			@Nullable Node dataTypeRestriction) throws OwlToJavaException {
+		// precedence - class restrictions, data restriction
+		if (Objects.nonNull(classTypeRestriction) && Objects.nonNull(classTypeRestriction.getURI())) {
+			return classTypeRestriction.getURI();
+		} else if (Objects.nonNull(dataTypeRestriction) && Objects.nonNull(dataTypeRestriction.getURI())) {
+			return dataTypeRestriction.getURI();
+		} else {
+			throw new OwlToJavaException("Unable to determine type URI");
 		}
-		if (typeUri.isEmpty()) {
-			typeUri = dataTypeRestriction == null ? "" : dataTypeRestriction.getURI() == null ? "" : dataTypeRestriction.getURI();
-		}
-		return typeUri;
 	}
 	
 	/**
-	 * @param range range for the property if any
 	 * @param classTypeRestriction class restriction if any
 	 * @param dataTypeRestriction data restriction if any
 	 * @param minRestriction minimum cardinality restriction if any
 	 * @param maxRextriction maximum cardinality restriction if any
 	 * @return the property type based on the range and restrictions
+	 * @throws OwlToJavaException 
 	 */
-	private PropertyType determinePropertyType(@Nullable OntResource range, @Nullable Node classTypeRestriction,
-			@Nullable Node dataTypeRestriction, @Nullable Integer minRestriction, @Nullable Integer maxRestriction) {
-		String typeUri = getTypeUri(range, classTypeRestriction, dataTypeRestriction);
+	private PropertyType determinePropertyType(@Nullable Node classTypeRestriction,
+			@Nullable Node dataTypeRestriction, @Nullable Integer minRestriction, @Nullable Integer maxRestriction) throws OwlToJavaException {
+		String typeUri = getTypeUri(classTypeRestriction, dataTypeRestriction);
 		if (enumerationTypes.contains(typeUri)) {
 			if (Objects.isNull(maxRestriction) || maxRestriction > 1) {
 				return PropertyType.ENUM_COLLECTION;
@@ -769,11 +773,7 @@ public class OwlToJava {
 		if (ELEMENT_TYPE_ANY_LICENSE_INFO.equals(ontClass.getURI())) {
 			return true;
 		}
-		for (OntClass superClass:superClasses) {
-			if (ELEMENT_TYPE_ANY_LICENSE_INFO.equals(superClass.getURI())) {
-				return true;
-			}
-		}
+		// We don't include superclasses for AnyLicenseInfo types
 		return false;
 	}
 
@@ -795,16 +795,17 @@ public class OwlToJava {
 	 * @param dir Directory to store the source files in
 	 * @param classUri URI for the class
 	 * @param name local name for the class
-	 * @param properties properties for the class
+	 * @param propertyShapes properties for the class
 	 * @param classShape Shape for the class
 	 * @param comment Description of the class
 	 * @param superClassUri URI of the superclass (if any)
+	 * @param superClasses all superclasses for the class
 	 * @throws IOException 
 	 * @throws OwlToJavaException 
 	 */
 	private void generateJavaClass(File dir, String classUri, String name,
-			List<OntProperty> properties, Shape classShape, String comment, 
-			@Nullable String superClassUri) throws IOException, OwlToJavaException {
+			List<PropertyShape> propertyShapes, Shape classShape, String comment, 
+			@Nullable String superClassUri, List<OntClass> superClasses) throws IOException, OwlToJavaException {
 		String pkgName = uriToPkg(classUri);
 		File sourceFile = createJavaSourceFile(classUri, dir);
 		File unitTestFile = createUnitTestFile(classUri, dir);
@@ -812,8 +813,8 @@ public class OwlToJava {
 		Map<String, Object> mustacheMap = new HashMap<>();
 		mustacheMap.put("className", name);
 		mustacheMap.put("classProfile", uriToProfile(classUri));
-		Map<PropertyType, List<Map<String, Object>>> propertyMap = findProperties(properties, classShape, 
-				requiredImports, propertyUrisForConstants, classUri);
+		Map<PropertyType, List<Map<String, Object>>> propertyMap = findProperties(propertyShapes, classShape, 
+				requiredImports, propertyUrisForConstants, classUri, superClasses);
 		int numProperties = 0;
 		for (List<Map<String, Object>> props:propertyMap.values()) {
 			numProperties += props.size();
@@ -861,29 +862,25 @@ public class OwlToJava {
 	
 
 	/**
-	 * @param properties direct ontology properties
+	 * @param propertyShapes direct ontology properties
 	 * @param classShape Shape for the class containing the properties
 	 * @param requiredImport set of required imports for this class - updated with any additional imports
 	 * @param propertyUrisForConstants set of URI's for any properties - updated with any additional values
 	 * @param classUri URI for the class containing the properties
+	 * @param superClasses all superclasses for the class
 	 * @return map of mustache strings to properties for any properties returning a type of Element
 	 * @throws OwlToJavaException 
 	 */
-	private Map<PropertyType, List<Map<String, Object>>> findProperties(List<OntProperty> properties, Shape classShape, 
-			Set<String> requiredImports, Set<String> propertyUrisForConstants, String classUri) throws OwlToJavaException {
+	private Map<PropertyType, List<Map<String, Object>>> findProperties(List<PropertyShape> propertyShapes, Shape classShape, 
+			Set<String> requiredImports, Set<String> propertyUrisForConstants, String classUri, List<OntClass> superClasses) throws OwlToJavaException {
 		Map<PropertyType, List<Map<String, Object>>> retval = new HashMap<>();
 		for (PropertyType value:PropertyType.values()) {
 			retval.put(value, new ArrayList<Map<String, Object>>());
 		}
-		Map<String, PropertyShape> propShapeMap = new HashMap<>();
-		for (PropertyShape propShape:classShape.getPropertyShapes()) {
-			String propUri = propShape.getPath().toString().replaceAll("<", "").replaceAll(">", "");
-			propShapeMap.put(propUri, propShape);
-		}
-		for (OntProperty property:properties) {
-			PropertyShape propertyShape = propShapeMap.get(property.getURI());
+		for (PropertyShape propertyShape:propertyShapes) {
 			if (!Objects.isNull(propertyShape)) {
-				Map<String, Object> mustacheMap = propertyToMustachMap(property, propertyShape, requiredImports, propertyUrisForConstants, classUri);
+				Map<String, Object> mustacheMap = propertyToMustachMap(propertyShape, requiredImports, 
+						propertyUrisForConstants, classUri, superClasses);
 				retval.get(mustacheMap.get("propertyType")).add(mustacheMap);
 			}
 		}
@@ -892,19 +889,21 @@ public class OwlToJava {
 
 	/**
 	 * Maps a property to mustache map adding any required import strings and adding any required constant strings
-	 * @param property Property to convert to Mustache appropriate map
 	 * @param classShape Shape of the class using the property
 	 * @param requiredImport set of required imports for this class - updated with any additional imports
 	 * @param propertyUrisForConstants set of URI's for any properties - updated with any additional values
 	 * @param classUri URI of the class using the property
+	 * @param superClasses all superclasses for the class
 	 * @return map of Mustache strings to values for a give ontology property
 	 * @throws OwlToJavaException 
 	 */
-	private Map<String, Object> propertyToMustachMap(OntProperty property, Shape propertyShape,
-			Set<String> requiredImports, Set<String> propertyUrisForConstants, String classUri) throws OwlToJavaException {
+	private Map<String, Object> propertyToMustachMap(PropertyShape propertyShape,
+			Set<String> requiredImports, Set<String> propertyUrisForConstants, String classUri, List<OntClass> superClasses) throws OwlToJavaException {
 		Map<String, Object> retval = new HashMap<>();
 		String nameSpace = uriToNamespaceUri(classUri);
-		String name = property.getLocalName();
+		String propertyUri = propertyShape.getPath().toString().replaceAll("<", "").replaceAll(">", "");
+		
+		String name = uriToName(propertyUri);
 		if (RESERVED_JAVA_WORDS.containsKey(name)) {
 			name = RESERVED_JAVA_WORDS.get(name);
 		}
@@ -956,12 +955,8 @@ public class OwlToJava {
 				classRestriction = collector.getExpectedClass();
 			}
 		}
-		List<? extends OntResource> ranges = property.listRange().toList();
-		if (ranges.size() != 1) {
-			throw new OwlToJavaException("Ambiguous or missing type for property "+property.getLocalName());
-		}
-		OntResource rangeResource = ranges.get(0);
-		PropertyType propertyType = determinePropertyType(rangeResource, classRestriction, dataTypeRestriction, 
+		
+		PropertyType propertyType = determinePropertyType(classRestriction, dataTypeRestriction, 
 				minCardinality, maxCardinality);
 		if (PropertyType.OBJECT_COLLECTION.equals(propertyType) || PropertyType.STRING_COLLECTION.equals(propertyType) ||
 				PropertyType.ENUM_COLLECTION.equals(propertyType)) {
@@ -969,7 +964,7 @@ public class OwlToJava {
 			requiredImports.add("import java.util.Objects;");
 		}
  		retval.put("propertyType", propertyType);
-		String typeUri = getTypeUri(rangeResource, classRestriction, dataTypeRestriction);
+		String typeUri = getTypeUri(classRestriction, dataTypeRestriction);
 		String type;
 		if (BOOLEAN_TYPE.equals(typeUri)) {
 			type = "Boolean";
@@ -1002,7 +997,9 @@ public class OwlToJava {
 		String profileIdentifierType = namespaceToProfileIdentifierType(nameSpace);
 		retval.put("requiredProfiles",  profileIdentifierType);
 		String classNamespace = uriToNamespaceUri(classUri);
-		boolean nonOptional = required && nameSpace.equals(classNamespace);
+		SuperclassRequired superRequired = determineSuperRequired(superClasses, propertyShape);
+		boolean nonOptional = required && nameSpace.equals(classNamespace) && 
+				(SuperclassRequired.YES.equals(superRequired) || SuperclassRequired.NONE.equals(superRequired)); // we can't override an optional
 		retval.put("nonOptional", nonOptional);
 		boolean hasConstraint = required;
 		if (Objects.nonNull(pattern)) {
@@ -1028,12 +1025,58 @@ public class OwlToJava {
 			retval.put("pattern", StringEscapeUtils.escapeJava(pattern));
 		}
 		retval.put("hasConstraint", hasConstraint);
-		retval.put("uri", property.getURI());
-		String propNameSpace = uriToNamespaceUri(property.getURI());
+		retval.put("uri", propertyUri);
+		String propNameSpace = uriToNamespaceUri(propertyUri);
 		propNameSpace = propNameSpace.substring(propNameSpace.lastIndexOf('/')+1);
 		String propConstant = propertyNameToPropertyConstant(name, propNameSpace);
 		retval.put("propertyConstant", propConstant);
-		propertyUrisForConstants.add(property.getURI());
+		propertyUrisForConstants.add(propertyUri);
+		return retval;
+	}
+
+	/**
+	 * @param superClasses superclasses to search for required fields
+	 * @param propertyShape property shape for the property
+	 * @return
+	 */
+	private SuperclassRequired determineSuperRequired(List<OntClass> superClasses,
+			PropertyShape propertyShape) {
+		SuperclassRequired retval = SuperclassRequired.NONE;
+		for (OntClass ontClass:superClasses) {
+			Shape classShape = shapeMap.get(ontClass.asNode());
+			if (Objects.nonNull(classShape)) {
+				for (Iterator<PropertyShape> propIter = classShape.getPropertyShapes().iterator(); propIter.hasNext();) {
+					PropertyShape superPropertyShape = propIter.next();
+					if (propertyShape.getPath().equalTo(superPropertyShape.getPath(), null)) {
+						Integer minCardinality = null;
+						for (Constraint constraint:superPropertyShape.getConstraints()) {
+							ConstraintCollector collector = new ConstraintCollector();
+							constraint.visit(collector);
+							if (collector.getMinCardinality() != null) {
+								if (minCardinality == null || minCardinality > collector.getMinCardinality()) {
+									minCardinality = collector.getMinCardinality();
+								}
+							}
+						}
+						if (Objects.nonNull(minCardinality) && minCardinality > 0) {
+							// required
+							if (SuperclassRequired.NONE.equals(retval)) {
+								retval = SuperclassRequired.YES;
+							} else if (SuperclassRequired.NO.equals(retval)) {
+								retval = SuperclassRequired.BOTH;
+							}
+						} else {
+							// not required
+							if (SuperclassRequired.NONE.equals(retval)) {
+								retval = SuperclassRequired.NO;
+							} else if (SuperclassRequired.YES.equals(retval)) {
+								retval = SuperclassRequired.BOTH;
+							}
+						}
+					}
+				}
+			}
+		}
 		return retval;
 	}
 
@@ -1172,7 +1215,7 @@ public class OwlToJava {
 		retval.append(Character.toUpperCase(camel.charAt(0)));
 		for (int i = 1; i < camel.length(); i++) {
 			char ch = camel.charAt(i);
-			if (!Character.isLowerCase(ch)) {
+			if (!Character.isLowerCase(ch) && Character.isAlphabetic(ch)) {
 				retval.append('_');
 			}
 			if (ch == '-') {
