@@ -25,6 +25,7 @@ import java.util.Set;
 import javax.annotation.Nullable;
 
 import org.apache.jena.ontology.OntModel;
+import org.apache.jena.ontology.DatatypeProperty;
 import org.apache.jena.ontology.Individual;
 import org.apache.jena.ontology.OntClass;
 import org.apache.jena.ontology.OntProperty;
@@ -66,6 +67,8 @@ import org.apache.jena.shacl.parser.Constraint;
 import org.apache.jena.shacl.parser.ConstraintVisitor;
 import org.apache.jena.shacl.parser.PropertyShape;
 import org.apache.jena.shacl.parser.Shape;
+import org.apache.jena.sparql.syntax.Element;
+import org.apache.jena.sparql.syntax.ElementGroup;
 
 import com.github.mustachejava.DefaultMustacheFactory;
 import com.github.mustachejava.Mustache;
@@ -87,6 +90,7 @@ public class OwlToJava {
 		private Integer strMinLengh = null;
 		private Integer strMaxLenght = null;
 		private Node expectedClass = null;
+		private SparqlConstraint sparqlConstraint = null;
 		
 
 		@Override
@@ -242,8 +246,7 @@ public class OwlToJava {
 
 		@Override
 		public void visit(SparqlConstraint constraint) {
-			// ignore
-			
+			this.sparqlConstraint = constraint;
 		}
 
 		@Override
@@ -306,7 +309,13 @@ public class OwlToJava {
 		public Node getExpectedClass() {
 			return expectedClass;
 		}
-		
+
+		/**
+		 * @return the sparqlConstraint
+		 */
+		public SparqlConstraint getSparqlConstraint() {
+			return sparqlConstraint;
+		}
 	}
 	
 	static final String SPDX_URI_PREFIX = "https://spdx.org/rdf/";
@@ -423,7 +432,9 @@ public class OwlToJava {
 		List<String> warnings = new ArrayList<>();
 		List<Individual> allIndividuals = model.listIndividuals().toList();
 		List<OntClass> allClasses = model.listClasses().toList();
-		collectTypeInformation(allClasses, allIndividuals);
+		List<DatatypeProperty> allDataProperties = model.listDatatypeProperties().toList();
+		collectTypeInformation(allClasses, allIndividuals, allDataProperties);
+		collectRelationshipRestrictions();
 		List<String> classUris = new ArrayList<>();
 		List<Map<String, Object>> enumMustacheMaps = new ArrayList<>();
 		allClasses.forEach(ontClass -> {
@@ -466,6 +477,26 @@ public class OwlToJava {
 		return warnings;
 	}
 	
+
+	/**
+	 * Collect all relationship restrictions
+	 */
+	private void collectRelationshipRestrictions() {
+		for (Shape shape:shapes) {
+			if (shape.isNodeShape()) {
+				for (Constraint constraint:shape.getConstraints()) {
+					if (constraint instanceof SparqlConstraint) {
+						SparqlConstraint sparqlConstraint = (SparqlConstraint)constraint;
+						Element queryPattern = sparqlConstraint.getQuery().getQueryPattern();
+						if (queryPattern instanceof ElementGroup && ((ElementGroup)queryPattern).size() == 1) {
+							// TODO: Implement
+						}
+					}
+				}
+			}
+
+		}
+	}
 
 	/**
 	 * Generates the Enum Factory file
@@ -632,9 +663,10 @@ public class OwlToJava {
 	 * @param allDataProperties data properties in the schema
 	 * @param allClasses classes in the schema
 	 * @param allIndividuals Individuals to determine enum class types
+	 * @param allDataProperties any data type propoerties
 	 * @throws OwlToJavaException 
 	 */
-	private void collectTypeInformation(List<OntClass> allClasses, List<Individual> allIndividuals) throws OwlToJavaException {
+	private void collectTypeInformation(List<OntClass> allClasses, List<Individual> allIndividuals, List<DatatypeProperty> allDataProperties) throws OwlToJavaException {
 		for (Individual individual:allIndividuals) {
 			this.enumClassUris.add(individual.getOntClass(true).getURI());
 		}
@@ -665,7 +697,14 @@ public class OwlToJava {
 		if (Objects.nonNull(classTypeRestriction) && Objects.nonNull(classTypeRestriction.getURI())) {
 			return classTypeRestriction.getURI();
 		} else if (Objects.nonNull(dataTypeRestriction) && Objects.nonNull(dataTypeRestriction.getURI())) {
-			return dataTypeRestriction.getURI();
+			if (dataTypeRestriction.getURI().startsWith(SPDX_URI_PREFIX)) {
+				//TODO: Currently, all data type restrictions have a base type of String
+				// Once the spec parser produces the type information for data types, this should be updated
+				// to use the specified base type and the pattern
+				return STRING_TYPE;
+			} else {
+				return dataTypeRestriction.getURI();
+			}
 		} else {
 			throw new OwlToJavaException("Unable to determine type URI");
 		}
@@ -845,7 +884,7 @@ public class OwlToJava {
 		mustacheMap.put("superClass", superClass);
 		mustacheMap.put("verifySuperclass", superClass != "ModelObject");
 		if (!this.uriToNamespaceUri(classUri).endsWith("Core")) {
-			requiredImports.add("import org.spdx.library.model.core.ProfileIdentifierType;");
+			requiredImports.add("import org.spdx.library.model.v3.core.ProfileIdentifierType;");
 		}
 		List<String> imports = buildImports(new ArrayList<String>(requiredImports));
 		mustacheMap.put("imports", imports.toArray(new String[imports.size()]));
@@ -1085,7 +1124,7 @@ public class OwlToJava {
 	 * @return the ProfileIdentifierType string associated with the namespace
 	 */
 	private String namespaceToProfileIdentifierType(String nameSpace) {
-		return "ProfileIdentifierType." + uriToName(nameSpace).toUpperCase();
+		return "ProfileIdentifierType." + uriToName(nameSpace).replaceAll("([a-z])([A-Z])", "$1_$2").toUpperCase();
 	}
 
 	/**

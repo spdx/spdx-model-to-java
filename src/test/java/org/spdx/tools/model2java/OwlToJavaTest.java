@@ -56,7 +56,7 @@ public class OwlToJavaTest extends TestCase {
 					.resolve("v3")
 					.resolve("AI");
 				File classFile = aIPath.resolve("AIPackage.java").toFile();
-				File enumFile = aIPath.resolve("PresenceType.java").toFile();
+				File enumFile = aIPath.resolve("SafetyRiskAssessmentType.java").toFile();
 				assertTrue(classFile.exists());
 				assertTrue(classFile.isFile());
 				assertTrue(enumFile.exists());
