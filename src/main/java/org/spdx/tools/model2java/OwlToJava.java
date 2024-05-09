@@ -340,6 +340,7 @@ public class OwlToJava {
 	private static final String UNIT_TEST_TEMPLATE = "UnitTestTemplate.txt";
 	private static final String ENUM_FACTORY_TEMPLATE = "SpdxEnumFactoryTemplate.txt";
 	private static final String INDIVIDUALS_FACTORY_TEMPLATE = "SpdxIndividualFactoryTemplate.txt";
+	private static final String MODEL_CLASS_FACTORY_TEMPLATE = "ModelClassFactoryTemplate.txt";
 	private static Set<String> INTEGER_TYPES = new HashSet<>();
 	static {
 		INTEGER_TYPES.add(XSD_POSITIVE_INTEGER);
@@ -472,6 +473,7 @@ public class OwlToJava {
 		});
 		generateSpdxConstants(dir, classUris);
 		generateEnumFactory(dir, enumMustacheMaps);
+		generateModelClassFactory(dir, classUris);
 		//TODO: Implement Individual Maps
 		generateIndividualFactory(dir, new ArrayList<Map<String, Object>>());
 		return warnings;
@@ -559,6 +561,7 @@ public class OwlToJava {
 	/**
 	 * Generates the SPDX Constants file
 	 * @param dir source directory for the constants file
+	 * @param classUris list of all class URIs
 	 * @throws IOException thrown if any IO errors occurs
 	 */
 	private void generateSpdxConstants(File dir, List<String> classUris) throws IOException {
@@ -626,11 +629,41 @@ public class OwlToJava {
 		mustacheMap.put("classConstantDefinitions", classConstantDefinitions);
 		mustacheMap.put("allClassConstants", classConstantString.toString());
 		Path path = dir.toPath().resolve("generated").resolve("src").resolve("main").resolve("java").resolve("org")
-				.resolve("spdx").resolve("library");
+				.resolve("spdx").resolve("library").resolve("model").resolve("v3");
 		Files.createDirectories(path);
-		File constantsFile = path.resolve("SpdxConstants.java").toFile();
+		File constantsFile = path.resolve("SpdxConstantsV3.java").toFile();
 		constantsFile.createNewFile();	
 		writeMustacheFile(SPDX_CONSTANTS_TEMPLATE, constantsFile, mustacheMap);
+	}
+	
+	/**
+	 * Generates the SPDX Model Class Factory source file
+	 * @param dir source directory for the constants file
+	 * @param classUris list of all class URIs
+	 * @throws IOException thrown if any IO errors occurs
+	 */
+	private void generateModelClassFactory(File dir, List<String> classUris) throws IOException {		
+		Map<String, Object> mustacheMap = new HashMap<>();	
+		
+		List<Map<String, String>> typeToClasses = new ArrayList<>();
+		for (String classUri:classUris) {
+			String className = uriToName(classUri);
+			String profile = uriToProfile(classUri);
+			String packageName = uriToPkg(classUri);
+			String classConstant = camelCaseToConstCase(profile) + "_" + camelCaseToConstCase(className);
+			String classPath = packageName + "." + className;
+			Map<String, String> typeToClassMap = new HashMap<>();
+			typeToClassMap.put("classConstant", classConstant);
+			typeToClassMap.put("classPath", classPath);
+			typeToClasses.add(typeToClassMap);
+		}
+		mustacheMap.put("typeToClass", typeToClasses);
+		Path path = dir.toPath().resolve("generated").resolve("src").resolve("main").resolve("java").resolve("org")
+				.resolve("spdx").resolve("library").resolve("model").resolve("v3");
+		Files.createDirectories(path);
+		File modelClassFactoryFile = path.resolve("SpdxModelClassFactory.java").toFile();
+		modelClassFactoryFile.createNewFile();	
+		writeMustacheFile(MODEL_CLASS_FACTORY_TEMPLATE, modelClassFactoryFile, mustacheMap);
 	}
 	
 	private void writeMustacheFile(String templateName, File file, Map<String, Object> mustacheMap) throws IOException {
