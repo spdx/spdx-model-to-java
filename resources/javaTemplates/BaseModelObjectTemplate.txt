@@ -66,7 +66,7 @@ public abstract class ModelObjectV3 extends CoreModelObject {
 	 * @param builder
 	 * @throws InvalidSPDXAnalysisException
 	 */
-	public ModelObjectV3(CoreModelObjectBuilder builder)
+	public ModelObjectV3(ModelObjectV3Builder builder)
 			throws InvalidSPDXAnalysisException {
 		super(builder, SpdxConstantsV3.MODEL_SPEC_VERSION);
 	}
@@ -184,4 +184,17 @@ public abstract class ModelObjectV3 extends CoreModelObject {
 	
 	{{/createBuilder}}
 	
+	public static class ModelObjectV3Builder extends CoreModelObjectBuilder {
+
+		/**
+		 * @param modelStore
+		 * @param objectUri
+		 * @param copyManager
+		 */
+		public ModelObjectV3Builder(IModelStore modelStore, String objectUri,
+				IModelCopyManager copyManager) {
+			super(modelStore, objectUri, copyManager);
+		}
+		
+	}
 }

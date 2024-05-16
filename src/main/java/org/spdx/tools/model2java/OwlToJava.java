@@ -458,7 +458,7 @@ public class OwlToJava {
 				name = RESERVED_JAVA_WORDS.get(name);
 			}
 			Shape classShape = shapeMap.get(ontClass.asNode());
-			List<PropertyShape> propertyShapes = Objects.nonNull(classShape) ? List.copyOf(classShape.getPropertyShapes()) :
+			List<PropertyShape> propertyShapes = Objects.nonNull(classShape) ? new ArrayList<>(classShape.getPropertyShapes()) :
 				new ArrayList<>();
 			List<OntClass> subClasses = new ArrayList<>();
 			ontClass.listSubClasses().forEach(oc -> {
@@ -467,14 +467,29 @@ public class OwlToJava {
 			List<OntClass> superClasses = new ArrayList<>();
 			addAllSuperClasses(ontClass, superClasses);
 			
+			for (OntClass superClass : superClasses) {
+				Shape superClassShape = shapeMap.get(superClass.asNode());
+				if (Objects.nonNull(superClassShape)) {
+					for (PropertyShape ps : superClassShape.getPropertyShapes()) {
+						if (!propertyShapes.contains(ps)) {
+							propertyShapes.add(ps);
+						}
+					}
+				}
+			}
+			
 			String superClassUri = superClasses.isEmpty() ? null : superClasses.get(0).getURI();
 			try {
 				if (isEnumClass(ontClass)) {
 					enumMustacheMaps.add(generateJavaEnum(dir, classUri, name, allIndividuals, comment));
 				} else if (!stringTypes.contains(classUri)) { // TODO: we may want to handle String subtypes in the future
 					try {
-						createBuilderList.add(generateJavaClass(dir, classUri, name, propertyShapes, classShape, comment, superClassUri, 
-								superClasses, isAbstract(ontClass)));
+						boolean isAbstract = isAbstract(ontClass);
+						String createString = generateJavaClass(dir, classUri, name, propertyShapes, classShape, comment, superClassUri, 
+								superClasses, isAbstract);
+						if (!isAbstract) {
+							createBuilderList.add(createString);
+						}
 					} catch (OwlToJavaException e) {
 						warnings.add("Error generating Java class for "+name+":" + e.getMessage());
 					}
@@ -551,8 +566,12 @@ public class OwlToJava {
 		mustacheMap.put("createBuilder", createBuilderList);
 		List<String> imports = new ArrayList<>();
 		for (String classUri:classUris) {
-			imports.add("import "+uriToPkg(classUri) + "." + uriToName(classUri) +";");
+			if (!enumClassUris.contains(classUri) && !enumerationTypes.contains(classUri)) {
+				imports.add("import "+uriToPkg(classUri) + "." + uriToName(classUri) +";");
+			}
 		}
+		imports.add("import org.spdx.library.model.v3.core.ProfileIdentifierType;");
+		Collections.sort(imports);
 		mustacheMap.put("imports", imports);
 		writeMustacheFile(BASE_MODEL_OBJECT_TEMPLATE, file, mustacheMap);
 	}
@@ -1202,7 +1221,10 @@ public class OwlToJava {
 		String profileIdentifierType = namespaceToProfileIdentifierType(nameSpace);
 		retval.put("requiredProfiles",  profileIdentifierType);
 		String classNamespace = uriToNamespaceUri(classUri);
-		SuperclassRequired superRequired = determineSuperRequired(superClasses, propertyShape);
+		boolean inSuperClass = inSuperClass(superClasses, propertyShape);
+		retval.put("superSetter", inSuperClass);
+		SuperclassRequired superRequired = inSuperClass ? determineSuperRequired(superClasses, propertyShape) :
+			SuperclassRequired.NONE;
 		boolean nonOptional = required && nameSpace.equals(classNamespace) && 
 				(SuperclassRequired.YES.equals(superRequired) || SuperclassRequired.NONE.equals(superRequired)); // we can't override an optional
 		retval.put("nonOptional", nonOptional);
@@ -1237,15 +1259,36 @@ public class OwlToJava {
 		retval.put("propertyConstant", propConstant);
 		propertyUrisForConstants.add(propertyUri);
 		if ("specVersion".equals(name)) {
-			retval.put("superSetter", true); // special case that the spec version is set in the CoreModelObject in addition to the store
+			retval.put("isSpecVersion", true); // special case that the spec version is set in the CoreModelObject in addition to the store
 		}
 		return retval;
+	}
+	
+	/**
+	 * @param superClasses superclasses to search for required fields
+	 * @param propertyShape property shape for the property
+	 * @return true if the property is present in one of the superclasses
+	 */
+	private boolean inSuperClass(List<OntClass> superClasses,
+			PropertyShape propertyShape) {
+		for (OntClass ontClass:superClasses) {
+			Shape classShape = shapeMap.get(ontClass.asNode());
+			if (Objects.nonNull(classShape)) {
+				for (Iterator<PropertyShape> propIter = classShape.getPropertyShapes().iterator(); propIter.hasNext();) {
+					PropertyShape superPropertyShape = propIter.next();
+					if (propertyShape.getPath().equalTo(superPropertyShape.getPath(), null)) {
+						return true;
+					}
+				}
+			}
+		}
+		return false;
 	}
 
 	/**
 	 * @param superClasses superclasses to search for required fields
 	 * @param propertyShape property shape for the property
-	 * @return
+	 * @return the SuperClassRequired balue based on the constraints
 	 */
 	private SuperclassRequired determineSuperRequired(List<OntClass> superClasses,
 			PropertyShape propertyShape) {

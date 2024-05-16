@@ -79,6 +79,14 @@ public {{#abstract}}abstract{{/abstract}} class {{{className}}} extends {{{super
 		{{#objectPropertyValueSet}}
 		{{{propertyName}}}s = (Collection<{{{type}}}>)(Collection<?>)this.getObjectPropertyValueSet(SpdxConstantsV3.{{{propertyConstant}}}, {{{type}}}.class);
 		{{/objectPropertyValueSet}}
+		{{#stringProperty}}
+		{{#isSpecVersion}}
+		String specVersion = getSpecVersion();
+		if (Objects.nonNull(specVersion)) {
+			super.specVersion = specVersion;
+		}
+		{{/isSpecVersion}}
+		{{/stringProperty}}
 	}
 
 	/**
@@ -92,49 +100,79 @@ public {{#abstract}}abstract{{/abstract}} class {{{className}}} extends {{{super
 	protected {{{className}}}({{{className}}}Builder builder) throws InvalidSPDXAnalysisException {
 		super(builder);
 		{{#objectPropertyValueCollection}}
+		{{^superSetter}}
 		{{{propertyName}}}s = (Collection<{{{type}}}>)(Collection<?>)this.getObjectPropertyValueCollection(SpdxConstantsV3.{{{propertyConstant}}}, {{{type}}}.class);
+		{{/superSetter}}
 		{{/objectPropertyValueCollection}}
 		{{#enumPropertyValueCollection}}
+		{{^superSetter}}
 		{{{propertyName}}}s = (Collection<{{{type}}}>)(Collection<?>)this.getObjectPropertyValueCollection(SpdxConstantsV3.{{{propertyConstant}}}, {{{type}}}.class);
+		{{/superSetter}}
 		{{/enumPropertyValueCollection}}
 		{{#stringCollection}}
+		{{^superSetter}}
 		{{{propertyName}}}s = (Collection<String>)(Collection<?>)this.getObjectPropertyValueCollection(SpdxConstantsV3.{{{propertyConstant}}}, String.class);
+		{{/superSetter}}
 		{{/stringCollection}}
 		{{#objectPropertyValueSet}}
+		{{^superSetter}}
 		{{{propertyName}}}s = (Collection<{{{type}}}>)(Collection<?>)this.getObjectPropertyValueSet(SpdxConstantsV3.{{{propertyConstant}}}, {{{type}}}.class);
+		{{/superSetter}}
 		{{/objectPropertyValueSet}}
 		{{#objectPropertyValueCollection}}
+		{{^superSetter}}
 		{{{getter}}}s().addAll(builder.{{{propertyName}}}s);
+		{{/superSetter}}
 		{{/objectPropertyValueCollection}}
 		{{#enumPropertyValueCollection}}
+		{{^superSetter}}
 		{{{getter}}}s().addAll(builder.{{{propertyName}}}s);
+		{{/superSetter}}
 		{{/enumPropertyValueCollection}}
 		{{#stringCollection}}
+		{{^superSetter}}
 		{{{getter}}}s().addAll(builder.{{{propertyName}}}s);
+		{{/superSetter}}
 		{{/stringCollection}}
 		{{#objectPropertyValueSet}}
+		{{^superSetter}}
 		{{{getter}}}s().addAll(builder.{{{propertyName}}}s);
+		{{/superSetter}}
 		{{/objectPropertyValueSet}}
 		{{#elementProperties}}
+		{{^superSetter}}
 		{{{setter}}}(builder.{{{propertyName}}});
+		{{/superSetter}}
 		{{/elementProperties}}
 		{{#objectProperties}}
+		{{^superSetter}}
 		{{{setter}}}(builder.{{{propertyName}}});
+		{{/superSetter}}
 		{{/objectProperties}}
 		{{#anyLicenseInfoProperties}}
+		{{^superSetter}}
 		{{{setter}}}(builder.{{{propertyName}}});
+		{{/superSetter}}
 		{{/anyLicenseInfoProperties}}
 		{{#enumerationProperties}}
+		{{^superSetter}}
 		{{{setter}}}(builder.{{{propertyName}}});
+		{{/superSetter}}
 		{{/enumerationProperties}}
 		{{#booleanProperties}}
+		{{^superSetter}}
 		{{{setter}}}(builder.{{{propertyName}}});
+		{{/superSetter}}
 		{{/booleanProperties}}
 		{{#integerProperties}}
+		{{^superSetter}}
 		{{{setter}}}(builder.{{{propertyName}}});
+		{{/superSetter}}
 		{{/integerProperties}}
 		{{#stringProperties}}
+		{{^superSetter}}
 		{{{setter}}}(builder.{{{propertyName}}});
+		{{/superSetter}}
 		{{/stringProperties}}
 	}
 
@@ -148,27 +186,35 @@ public {{#abstract}}abstract{{/abstract}} class {{{className}}} extends {{{super
 	
 	// Getters and Setters
 	{{#objectPropertyValueCollection}}
+	{{^superSetter}}
 	public Collection<{{{type}}}> {{{getter}}}s() {
 		return {{{propertyName}}}s;
 	}
+	{{/superSetter}}
 	{{/objectPropertyValueCollection}}
 	{{#enumPropertyValueCollection}}
+	{{^superSetter}}
 	public Collection<{{{type}}}> {{{getter}}}s() {
 		return {{{propertyName}}}s;
 	}
+	{{/superSetter}}
 	{{/enumPropertyValueCollection}}
 	{{#stringCollection}}
+	{{^superSetter}}
 	public Collection<String> {{{getter}}}s() {
 		return {{{propertyName}}}s;
 	}
+	{{/superSetter}}
 	{{/stringCollection}}
 	{{#objectPropertyValueSet}}
+	{{^superSetter}}
 	public Set<{{{type}}}> {{{getter}}}s() {
 		return {{{propertyName}}}s;
 	}
+	{{/superSetter}}
 	{{/objectPropertyValueSet}}
 	{{#elementProperties}}
-	
+	{{^superSetter}}
 	{{#nonOptional}}
 	/**
 	 * @return the {{{propertyName}}}
@@ -203,11 +249,24 @@ public {{#abstract}}abstract{{/abstract}} class {{{className}}} extends {{{super
 		{{/superSetter}}
 		setPropertyValue(SpdxConstantsV3.{{{propertyConstant}}}, {{{propertyName}}});
 		return this;
-	}
+	}	
+	{{/superSetter}}
+	{{#superSetter}}
+	/**
+	 * @param {{{propertyName}}} the {{{propertyName}}} to set
+	 * @return this to chain setters
+	 * @throws InvalidSPDXAnalysisException 
+	 */
+	 @Override
+	public {{{className}}} {{{setter}}}(@Nullable Element {{{propertyName}}}) throws InvalidSPDXAnalysisException {
+		super.{{{setter}}}({{{propertyName}}});
+		return this;
+	}	
+	{{/superSetter}}
 	{{/elementProperties}}
 	
 	{{#objectProperties}}
-
+	{{^superSetter}}
 	{{#nonOptional}}
 	/**
 	 * @return the {{{propertyName}}}
@@ -254,15 +313,28 @@ public {{#abstract}}abstract{{/abstract}} class {{{className}}} extends {{{super
 			throw new InvalidSPDXAnalysisException("{{{propertyName}}} is a required property");
 		}
 		{{/required}}
-		{{#superSetter}}
-		super.{{{setter}}}({{{propertyName}}});
-		{{/superSetter}}
+		{{#isSpecVersion}}
+		super.specVersion = {{{propertyName}}};
+		{{/isSpecVersion}}
 		setPropertyValue(SpdxConstantsV3.{{{propertyConstant}}}, {{{propertyName}}});
 		return this;
 	}
+	{{/superSetter}}
+	{{#superSetter}}
+	/**
+	 * @param {{{propertyName}}} the {{{propertyName}}} to set
+	 * @return this to chain setters
+	 * @throws InvalidSPDXAnalysisException 
+	 */
+	 @Override
+	public {{{className}}} {{{setter}}}(@Nullable {{{type}}} {{{propertyName}}}) throws InvalidSPDXAnalysisException {
+		super.{{{setter}}}({{{propertyName}}});
+		return this;
+	}	
+	{{/superSetter}}
 	{{/objectProperties}}
 	{{#anyLicenseInfoProperties}}
-	
+	{{^superSetter}}
 	{{^nonOptional}}
 	/**
 	 * @return the {{{propertyName}}}
@@ -298,9 +370,22 @@ public {{#abstract}}abstract{{/abstract}} class {{{className}}} extends {{{super
 		setPropertyValue(SpdxConstantsV3.{{{propertyConstant}}}, {{{propertyName}}});
 		return this;
 	}
+	{{/superSetter}}
+	{{#superSetter}}
+	/**
+	 * @param {{{propertyName}}} the {{{propertyName}}} to set
+	 * @return this to chain setters
+	 * @throws InvalidSPDXAnalysisException 
+	 */
+	 @Override
+	public {{{className}}} {{{setter}}}(@Nullable {{{type}}} {{{propertyName}}}) throws InvalidSPDXAnalysisException {
+		super.{{{setter}}}({{{propertyName}}});
+		return this;
+	}
+	{{/superSetter}}
 	{{/anyLicenseInfoProperties}}
 	{{#enumerationProperties}}
-	
+	{{^superSetter}}
 	{{#nonOptional}}
 	/**
 	 * @return the {{{propertyName}}}
@@ -351,9 +436,22 @@ public {{#abstract}}abstract{{/abstract}} class {{{className}}} extends {{{super
 		setPropertyValue(SpdxConstantsV3.{{{propertyConstant}}}, {{{propertyName}}});
 		return this;
 	}
+	{{/superSetter}}
+	{{#superSetter}}
+	/**
+	 * @param {{{propertyName}}} the {{{propertyName}}} to set
+	 * @return this to chain setters
+	 * @throws InvalidSPDXAnalysisException 
+	 */
+	 @Override
+	public {{{className}}} {{{setter}}}(@Nullable {{{type}}} {{{propertyName}}}) throws InvalidSPDXAnalysisException {
+		super.{{{setter}}}({{{propertyName}}});
+		return this;
+	}	
+	{{/superSetter}}
 	{{/enumerationProperties}}
 	{{#booleanProperties}}
-
+	{{^superSetter}}
 	{{#nonOptional}}
 	/**
 	 * @return the {{{propertyName}}}
@@ -389,9 +487,21 @@ public {{#abstract}}abstract{{/abstract}} class {{{className}}} extends {{{super
 		setPropertyValue(SpdxConstantsV3.{{{propertyConstant}}}, {{{propertyName}}});
 		return this;
 	}
+	{{/superSetter}}
+	{{#superSetter}}
+	/**
+	 * @param {{{propertyName}}} the {{{propertyName}}} to set
+	 * @return this to chain setters
+	 * @throws InvalidSPDXAnalysisException 
+	 */
+	public {{{className}}} {{{setter}}}(@Nullable {{{type}}} {{{propertyName}}}) throws InvalidSPDXAnalysisException {
+		super.{{{setter}}}({{{propertyName}}});
+		return this;
+	}
+	{{/superSetter}}
 	{{/booleanProperties}}
 	{{#integerProperties}}
-	
+	{{^superSetter}}
 	{{#nonOptional}}
 	/**
 	 * @return the {{{propertyName}}}
@@ -437,9 +547,22 @@ public {{#abstract}}abstract{{/abstract}} class {{{className}}} extends {{{super
 		setPropertyValue(SpdxConstantsV3.{{{propertyConstant}}}, {{{propertyName}}});
 		return this;
 	}
+	{{/superSetter}}
+	{{#superSetter}}
+	/**
+	 * @param {{{propertyName}}} the {{{propertyName}}} to set
+	 * @return this to chain setters
+	 * @throws InvalidSPDXAnalysisException 
+	 */
+	@Override
+	public {{{className}}} {{{setter}}}(@Nullable {{{type}}} {{{propertyName}}}) throws InvalidSPDXAnalysisException {
+		super.{{{setter}}}({{{propertyName}}});
+		return this;
+	}	
+	{{/superSetter}}
 	{{/integerProperties}}
 	{{#stringProperties}}
-
+	{{^superSetter}}
 	{{#nonOptional}}
 	/**
 	 * @return the {{{propertyName}}}
@@ -480,6 +603,19 @@ public {{#abstract}}abstract{{/abstract}} class {{{className}}} extends {{{super
 		setPropertyValue(SpdxConstantsV3.{{{propertyConstant}}}, {{{propertyName}}});
 		return this;
 	}
+	{{/superSetter}}
+	{{#superSetter}}
+	/**
+	 * @param {{{propertyName}}} the {{{propertyName}}} to set
+	 * @return this to chain setters
+	 * @throws InvalidSPDXAnalysisException 
+	 */
+	 @Override
+	public {{{className}}} {{{setter}}}(@Nullable String {{{propertyName}}}) throws InvalidSPDXAnalysisException {
+		super.{{{setter}}}({{{propertyName}}});
+		return this;
+	}	
+	{{/superSetter}}
 	{{/stringProperties}}
 	
 	{{#compareUsingProperties}}
@@ -566,6 +702,7 @@ public {{#abstract}}abstract{{/abstract}} class {{{className}}} extends {{{super
 		retval.addAll(super._verify(verifiedIds, specVersionForVerify, profiles));
 		{{/verifySuperclass}}
 		{{#elementProperties}}
+		{{^superSetter}}
 		{{#nonOptional}}
 		Element {{{propertyName}}};
 		try {
@@ -588,8 +725,10 @@ public {{#abstract}}abstract{{/abstract}} class {{{className}}} extends {{{super
 		} catch (InvalidSPDXAnalysisException e) {
 			retval.add("Error getting {{{propertyName}}} for {{{className}}}: "+e.getMessage());
 		}
+		{{/superSetter}}
 		{{/elementProperties}}
 		{{#objectProperties}}
+		{{^superSetter}}
 		{{#nonOptional}}
 		{{{type}}} {{{propertyName}}};
 		try {
@@ -612,8 +751,10 @@ public {{#abstract}}abstract{{/abstract}} class {{{className}}} extends {{{super
 		} catch (InvalidSPDXAnalysisException e) {
 			retval.add("Error getting {{{propertyName}}} for {{{className}}}: "+e.getMessage());
 		}
+		{{/superSetter}}
 		{{/objectProperties}}
 		{{#anyLicenseInfoProperties}}
+		{{^superSetter}}
 		{{#nonOptional}}
 		{{{type}}} {{{propertyName}}};
 		try {
@@ -636,8 +777,10 @@ public {{#abstract}}abstract{{/abstract}} class {{{className}}} extends {{{super
 		} catch (InvalidSPDXAnalysisException e) {
 			retval.add("Error getting {{{propertyName}}} for {{{className}}}: "+e.getMessage());
 		}
+		{{/superSetter}}
 		{{/anyLicenseInfoProperties}}
 		{{#enumerationProperties}}
+		{{^superSetter}}
 		try {
 			{{#nonOptional}}
 			{{^hasConstraint}}
@@ -666,8 +809,10 @@ public {{#abstract}}abstract{{/abstract}} class {{{className}}} extends {{{super
 		} catch (InvalidSPDXAnalysisException e) {
 			retval.add("Error getting {{{propertyName}}} for {{{className}}}: "+e.getMessage());
 		}
+		{{/superSetter}}
 		{{/enumerationProperties}}
 		{{#booleanProperties}}
+		{{^superSetter}}
 		try {
 			{{#nonOptional}}
 			{{^hasConstraint}}
@@ -696,8 +841,10 @@ public {{#abstract}}abstract{{/abstract}} class {{{className}}} extends {{{super
 		} catch (InvalidSPDXAnalysisException e) {
 			retval.add("Error getting {{{propertyName}}} for {{{className}}}: "+e.getMessage());
 		}
+		{{/superSetter}}
 		{{/booleanProperties}}
 		{{#integerProperties}}
+		{{^superSetter}}
 		try {
 			{{#nonOptional}}
 			{{^hasConstraint}}
@@ -746,8 +893,10 @@ public {{#abstract}}abstract{{/abstract}} class {{{className}}} extends {{{super
 		} catch (InvalidSPDXAnalysisException e) {
 			retval.add("Error getting {{{propertyName}}} for {{{className}}}: "+e.getMessage());
 		}
+		{{/superSetter}}
 		{{/integerProperties}}
 		{{#stringProperties}}
+		{{^superSetter}}
 		try {
 			{{#nonOptional}}
 			{{^hasConstraint}}
@@ -788,8 +937,10 @@ public {{#abstract}}abstract{{/abstract}} class {{{className}}} extends {{{super
 		} catch (InvalidSPDXAnalysisException e) {
 			retval.add("Error getting {{{propertyName}}} for {{{className}}}: "+e.getMessage());
 		}
+		{{/superSetter}}
 		{{/stringProperties}}
 		{{#objectPropertyValueCollection}}
+		{{^superSetter}}
 		for ({{{type}}} {{{propertyName}}}:{{{propertyName}}}s) {
 			retval.addAll({{{propertyName}}}.verify(verifiedIds, specVersionForVerify, profiles));
 		}
@@ -803,8 +954,10 @@ public {{#abstract}}abstract{{/abstract}} class {{{className}}} extends {{{super
 			retval.add("{{{propertyName}}}s size " + {{{propertyName}}}s.size() + " is greater than {{{max}}} in {{{className}}}");
 		}
 		{{/max}}
+		{{/superSetter}}
 		{{/objectPropertyValueCollection}}
 		{{#enumPropertyValueCollection}}
+		{{^superSetter}}
 		{{#min}}
 		if ({{{propertyName}}}s.size() < {{{min}}}) {
 			retval.add("{{{propertyName}}}s size " + {{{propertyName}}}s.size() + " is less than {{{min}}} in {{{className}}}");
@@ -815,8 +968,10 @@ public {{#abstract}}abstract{{/abstract}} class {{{className}}} extends {{{super
 			retval.add("{{{propertyName}}}s size " + {{{propertyName}}}s.size() + " is greater than {{{max}}} in {{{className}}}");
 		}
 		{{/max}}
+		{{/superSetter}}
 		{{/enumPropertyValueCollection}}
 		{{#stringCollection}}
+		{{^superSetter}}
 		{{#pattern}}
 		for (String {{{propertyName}}}:{{{propertyName}}}s) {
 			if (!Pattern.matches("{{{pattern}}}", {{{propertyName}}}) {
@@ -835,8 +990,10 @@ public {{#abstract}}abstract{{/abstract}} class {{{className}}} extends {{{super
 			retval.add("{{{propertyName}}}s size " + {{{propertyName}}}s.size() + " is greater than {{{max}}} in {{{className}}}");
 		}
 		{{/max}}
+		{{/superSetter}}
 		{{/stringCollection}}
 		{{#objectPropertyValueSet}}
+		{{^superSetter}}
 		for ({{{type}}} {{{propertyName}}}:{{{propertyName}}}s) {
 			retval.addAll({{{propertyName}}}.verify(verifiedIds, specVersionForVerify, profiles));
 		}
@@ -850,11 +1007,12 @@ public {{#abstract}}abstract{{/abstract}} class {{{className}}} extends {{{super
 			retval.add("{{{propertyName}}}s size " + {{{propertyName}}}s.size() + " is greater than {{{max}}} in {{{className}}}");
 		}
 		{{/max}}
+		{{/superSetter}}
 		{{/objectPropertyValueSet}}
 		return retval;
 	}
 	
-	public static class {{{className}}}Builder extends {{{superClass}}}Builder {
+	public static {{#abstract}}abstract {{/abstract}}class {{{className}}}Builder extends {{{superClass}}}Builder {
 	
 		/**
 		 * Create an {{{className}}}Builder from another model object copying the modelStore and copyManager and using an anonymous ID
@@ -1109,7 +1267,7 @@ public {{#abstract}}abstract{{/abstract}} class {{{className}}} extends {{{super
 		}
 		{{/stringProperties}}
 	
-		
+		{{^abstract}}
 		/**
 		 * @return the {{{className}}}
 		 * @throws InvalidSPDXAnalysisException on any errors during build
@@ -1122,5 +1280,13 @@ public {{#abstract}}abstract{{/abstract}} class {{{className}}} extends {{{super
 				modelStore.leaveCriticalSection(lock);
 			}
 		}
+		{{/abstract}}
+		{{#abstract}}
+		/**
+		 * @return the {{{className}}}
+		 * @throws InvalidSPDXAnalysisException on any errors during build
+		 */
+		public abstract {{{className}}} build() throws InvalidSPDXAnalysisException;
+		{{/abstract}}
 	}
 }
