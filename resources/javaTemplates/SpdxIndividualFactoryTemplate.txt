@@ -16,7 +16,7 @@
  *   limitations under the License.
  */
  
-package org.spdx.library;
+package org.spdx.library.model.v3;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -39,7 +39,7 @@ public class SpdxIndividualFactory {
  	/**
 	 * Map of individual URI's to their individual values
 	 */
-	public static Map<String, Element> uriToIndividual;
+	public static Map<String, Object> uriToIndividual;
 	
 	static {
 		Map<String, Element> map = new HashMap<>();

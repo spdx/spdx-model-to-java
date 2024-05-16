@@ -8,6 +8,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
+import java.io.StringWriter;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.text.SimpleDateFormat;
@@ -29,6 +30,7 @@ import org.apache.jena.ontology.DatatypeProperty;
 import org.apache.jena.ontology.Individual;
 import org.apache.jena.ontology.OntClass;
 import org.apache.jena.ontology.OntProperty;
+import org.apache.jena.rdf.model.Resource;
 import org.apache.commons.text.StringEscapeUtils;
 import org.apache.jena.graph.Node;
 import org.apache.jena.shacl.Shapes;
@@ -69,6 +71,7 @@ import org.apache.jena.shacl.parser.PropertyShape;
 import org.apache.jena.shacl.parser.Shape;
 import org.apache.jena.sparql.syntax.Element;
 import org.apache.jena.sparql.syntax.ElementGroup;
+import org.apache.jena.util.iterator.ExtendedIterator;
 
 import com.github.mustachejava.DefaultMustacheFactory;
 import com.github.mustachejava.Mustache;
@@ -325,12 +328,13 @@ public class OwlToJava {
 	private static final String STRING_TYPE = "http://www.w3.org/2001/XMLSchema#string";
 	private static final String ELEMENT_TYPE_URI = "https://spdx.org/rdf/Core/Element";
 	private static final String ELEMENT_TYPE_ANY_LICENSE_INFO = "https://spdx.org/rdf/Licensing/AnyLicenseInfo";
-	private static final String DATE_TIME_TYPE = "https://spdx.org/rdf/Core/DateTime";
+	private static final String DATE_TIME_TYPE = "http://www.w3.org/2001/XMLSchema#dateTimeStamp";
 	private static final String ANY_URI_TYPE = "http://www.w3.org/2001/XMLSchema#anyURI";
 	private static final String OWL_THING_URI = "http://www.w3.org/2002/07/owl#Thing";
 	private static final String XSD_INTEGER = "http://www.w3.org/2001/XMLSchema#integer";
 	private static final String XSD_POSITIVE_INTEGER = "http://www.w3.org/2001/XMLSchema#positiveInteger";
 	private static final String XSD_NON_NEGATIVE_INTEGER = "http://www.w3.org/2001/XMLSchema#nonNegativeInteger";
+	private static final String ABSTRACT_TYPE_URI = "http://spdx.invalid./AbstractClass";
 	
 	static final String TEMPLATE_CLASS_PATH = "resources" + "/" + "javaTemplates";
 	static final String TEMPLATE_ROOT_PATH = "resources" + File.separator + "javaTemplates";
@@ -341,6 +345,12 @@ public class OwlToJava {
 	private static final String ENUM_FACTORY_TEMPLATE = "SpdxEnumFactoryTemplate.txt";
 	private static final String INDIVIDUALS_FACTORY_TEMPLATE = "SpdxIndividualFactoryTemplate.txt";
 	private static final String MODEL_CLASS_FACTORY_TEMPLATE = "ModelClassFactoryTemplate.txt";
+	private static final String CREATE_CLASS_TEMPLATE = "CreateClassTemplate.txt";
+	private static final String EXTERNAL_ELEMENT_TEMPLATE = "ExternalElementTemplate.txt";
+	private static final String BASE_MODEL_OBJECT_TEMPLATE = "BaseModelObjectTemplate.txt";
+	private static final String MODEL_INFO_TEMPLATE = "ModelInfoTemplate.txt";
+	private static final String PACKAGE_INFO_TEMPLATE = "PackageInfoTemplate.txt";
+	private static final String POM_TEMPLATE = "PomTemplate.txt";
 	private static Set<String> INTEGER_TYPES = new HashSet<>();
 	static {
 		INTEGER_TYPES.add(XSD_POSITIVE_INTEGER);
@@ -438,6 +448,7 @@ public class OwlToJava {
 		collectRelationshipRestrictions();
 		List<String> classUris = new ArrayList<>();
 		List<Map<String, Object>> enumMustacheMaps = new ArrayList<>();
+		List<String> createBuilderList = new ArrayList<>();
 		allClasses.forEach(ontClass -> {
 			String comment = ontClass.getComment(null);
 			String classUri = ontClass.getURI();
@@ -462,7 +473,8 @@ public class OwlToJava {
 					enumMustacheMaps.add(generateJavaEnum(dir, classUri, name, allIndividuals, comment));
 				} else if (!stringTypes.contains(classUri)) { // TODO: we may want to handle String subtypes in the future
 					try {
-						generateJavaClass(dir, classUri, name, propertyShapes, classShape, comment, superClassUri, superClasses);
+						createBuilderList.add(generateJavaClass(dir, classUri, name, propertyShapes, classShape, comment, superClassUri, 
+								superClasses, isAbstract(ontClass)));
 					} catch (OwlToJavaException e) {
 						warnings.add("Error generating Java class for "+name+":" + e.getMessage());
 					}
@@ -474,11 +486,90 @@ public class OwlToJava {
 		generateSpdxConstants(dir, classUris);
 		generateEnumFactory(dir, enumMustacheMaps);
 		generateModelClassFactory(dir, classUris);
+		generateExternalElement(dir);
+		generateModelObject(dir, createBuilderList, classUris);
+		generateSpdxModelInfo(dir);
+		generatePackageInfo(dir);
+		generatePomFile(dir);
 		//TODO: Implement Individual Maps
 		generateIndividualFactory(dir, new ArrayList<Map<String, Object>>());
 		return warnings;
 	}
 	
+
+	/**
+	 * @param dir
+	 * @throws IOException 
+	 */
+	private void generatePomFile(File dir) throws IOException {
+		Path path = dir.toPath();
+		Files.createDirectories(path);
+		File file = path.resolve("pom.xml").toFile();
+		file.createNewFile();
+		writeMustacheFile(POM_TEMPLATE, file, new HashMap<>());
+	}
+
+	/**
+	 * @param dir
+	 * @throws IOException 
+	 */
+	private void generatePackageInfo(File dir) throws IOException {
+		Path path = dir.toPath().resolve("src").resolve("main").resolve("java").resolve("org")
+				.resolve("spdx").resolve("library").resolve("model").resolve("v3");
+		Files.createDirectories(path);
+		File file = path.resolve("package-info.java").toFile();
+		file.createNewFile();
+		writeMustacheFile(PACKAGE_INFO_TEMPLATE, file, new HashMap<>());
+	}
+
+	/**
+	 * @param dir
+	 * @throws IOException 
+	 */
+	private void generateSpdxModelInfo(File dir) throws IOException {
+		Path path = dir.toPath().resolve("src").resolve("main").resolve("java").resolve("org")
+				.resolve("spdx").resolve("library").resolve("model").resolve("v3");
+		Files.createDirectories(path);
+		File file = path.resolve("SpdxModelInfoV3_0.java").toFile();
+		file.createNewFile();
+		writeMustacheFile(MODEL_INFO_TEMPLATE, file, new HashMap<>());
+	}
+
+	/**
+	 * @param dir
+	 * @param createBuilderList
+	 * @param classUris
+	 * @throws IOException 
+	 */
+	private void generateModelObject(File dir, List<String> createBuilderList, List<String> classUris) throws IOException {
+		Path path = dir.toPath().resolve("src").resolve("main").resolve("java").resolve("org")
+				.resolve("spdx").resolve("library").resolve("model").resolve("v3");
+		Files.createDirectories(path);
+		File file = path.resolve("ModelObjectV3.java").toFile();
+		file.createNewFile();
+		Map<String, Object> mustacheMap = new HashMap<>();
+		mustacheMap.put("createBuilder", createBuilderList);
+		List<String> imports = new ArrayList<>();
+		for (String classUri:classUris) {
+			imports.add("import "+uriToPkg(classUri) + "." + uriToName(classUri) +";");
+		}
+		mustacheMap.put("imports", imports);
+		writeMustacheFile(BASE_MODEL_OBJECT_TEMPLATE, file, mustacheMap);
+	}
+
+	/**
+	 * Generate the ExternalElement.java file
+	 * @param dir top level directory for the project
+	 * @throws IOException 
+	 */
+	private void generateExternalElement(File dir) throws IOException {
+		Path path = dir.toPath().resolve("src").resolve("main").resolve("java").resolve("org")
+				.resolve("spdx").resolve("library").resolve("model").resolve("v3");
+		Files.createDirectories(path);
+		File file = path.resolve("ExternalElement.java").toFile();
+		file.createNewFile();
+		writeMustacheFile(EXTERNAL_ELEMENT_TEMPLATE, file, new HashMap<>());
+	}
 
 	/**
 	 * Collect all relationship restrictions
@@ -521,8 +612,8 @@ public class OwlToJava {
 		Collections.sort(imports);
 		mustacheMap.put("imports", imports);
 		
-		Path path = dir.toPath().resolve("generated").resolve("src").resolve("main").resolve("java").resolve("org")
-				.resolve("spdx").resolve("library");
+		Path path = dir.toPath().resolve("src").resolve("main").resolve("java").resolve("org")
+				.resolve("spdx").resolve("library").resolve("model").resolve("v3");
 		Files.createDirectories(path);
 		File enumFactoryFile = path.resolve("SpdxEnumFactory.java").toFile();
 		enumFactoryFile.createNewFile();	
@@ -550,8 +641,8 @@ public class OwlToJava {
 		Collections.sort(imports);
 		mustacheMap.put("imports", imports);
 		
-		Path path = dir.toPath().resolve("generated").resolve("src").resolve("main").resolve("java").resolve("org")
-				.resolve("spdx").resolve("library");
+		Path path = dir.toPath().resolve("src").resolve("main").resolve("java").resolve("org")
+				.resolve("spdx").resolve("library").resolve("model").resolve("v3");
 		Files.createDirectories(path);
 		File individualsFile = path.resolve("SpdxIndividualFactory.java").toFile();
 		individualsFile.createNewFile();	
@@ -628,7 +719,7 @@ public class OwlToJava {
 		classConstantString.append("};");
 		mustacheMap.put("classConstantDefinitions", classConstantDefinitions);
 		mustacheMap.put("allClassConstants", classConstantString.toString());
-		Path path = dir.toPath().resolve("generated").resolve("src").resolve("main").resolve("java").resolve("org")
+		Path path = dir.toPath().resolve("src").resolve("main").resolve("java").resolve("org")
 				.resolve("spdx").resolve("library").resolve("model").resolve("v3");
 		Files.createDirectories(path);
 		File constantsFile = path.resolve("SpdxConstantsV3.java").toFile();
@@ -658,12 +749,31 @@ public class OwlToJava {
 			typeToClasses.add(typeToClassMap);
 		}
 		mustacheMap.put("typeToClass", typeToClasses);
-		Path path = dir.toPath().resolve("generated").resolve("src").resolve("main").resolve("java").resolve("org")
+		Path path = dir.toPath().resolve("src").resolve("main").resolve("java").resolve("org")
 				.resolve("spdx").resolve("library").resolve("model").resolve("v3");
 		Files.createDirectories(path);
 		File modelClassFactoryFile = path.resolve("SpdxModelClassFactory.java").toFile();
 		modelClassFactoryFile.createNewFile();	
 		writeMustacheFile(MODEL_CLASS_FACTORY_TEMPLATE, modelClassFactoryFile, mustacheMap);
+	}
+	
+	private String mustacheToString(String templateName, Map<String, Object> mustacheMap) throws IOException {
+		String templateDirName = TEMPLATE_ROOT_PATH;
+		File templateDirectoryRoot = new File(templateDirName);
+		if (!(templateDirectoryRoot.exists() && templateDirectoryRoot.isDirectory())) {
+			templateDirName = TEMPLATE_CLASS_PATH;
+		}
+		DefaultMustacheFactory builder = new DefaultMustacheFactory(templateDirName);
+		Mustache mustache = builder.compile(templateName);
+		StringWriter writer = new StringWriter();
+		try {
+			mustache.execute(writer, mustacheMap);
+			return writer.toString();
+		} finally {
+			if (writer != null) {
+				writer.close();
+			}
+		}
 	}
 	
 	private void writeMustacheFile(String templateName, File file, Map<String, Object> mustacheMap) throws IOException {
@@ -872,17 +982,21 @@ public class OwlToJava {
 	 * @param comment Description of the class
 	 * @param superClassUri URI of the superclass (if any)
 	 * @param superClasses all superclasses for the class
+	 * @param abstractClass if true, the class is abstract
+	 * @return Code to create the Java object to be appended to the model object source file
 	 * @throws IOException 
 	 * @throws OwlToJavaException 
 	 */
-	private void generateJavaClass(File dir, String classUri, String name,
+	private String generateJavaClass(File dir, String classUri, String name,
 			List<PropertyShape> propertyShapes, Shape classShape, String comment, 
-			@Nullable String superClassUri, List<OntClass> superClasses) throws IOException, OwlToJavaException {
+			@Nullable String superClassUri, List<OntClass> superClasses,
+			boolean abstractClass) throws IOException, OwlToJavaException {
 		String pkgName = uriToPkg(classUri);
 		File sourceFile = createJavaSourceFile(classUri, dir);
 		File unitTestFile = createUnitTestFile(classUri, dir);
 		Set<String> requiredImports = new HashSet<>();
 		Map<String, Object> mustacheMap = new HashMap<>();
+		mustacheMap.put("abstract", abstractClass);
 		mustacheMap.put("className", name);
 		mustacheMap.put("classProfile", uriToProfile(classUri));
 		Map<PropertyType, List<Map<String, Object>>> propertyMap = findProperties(propertyShapes, classShape, 
@@ -892,7 +1006,7 @@ public class OwlToJava {
 			numProperties += props.size();
 		}
 		if (numProperties > 0) {
-			requiredImports.add("import org.spdx.library.SpdxConstants;");
+			requiredImports.add("import org.spdx.library.model.v3.SpdxConstantsV3;");
 			requiredImports.add("import java.util.Optional;");
 		}
 		mustacheMap.put("elementProperties", propertyMap.get(PropertyType.ELEMENT));
@@ -915,7 +1029,7 @@ public class OwlToJava {
 		mustacheMap.put("classComments", toClassComment(comment));
 		String superClass = getSuperClass(superClassUri, requiredImports, classUri);
 		mustacheMap.put("superClass", superClass);
-		mustacheMap.put("verifySuperclass", superClass != "ModelObject");
+		mustacheMap.put("verifySuperclass", superClass != "ModelObjectV3");
 		if (!this.uriToNamespaceUri(classUri).endsWith("Core")) {
 			requiredImports.add("import org.spdx.library.model.v3.core.ProfileIdentifierType;");
 		}
@@ -930,8 +1044,27 @@ public class OwlToJava {
 		//TODO: Figure out how to handle version specific verify
 		writeMustacheFile(JAVA_CLASS_TEMPLATE, sourceFile, mustacheMap);
 		writeMustacheFile(UNIT_TEST_TEMPLATE, unitTestFile, mustacheMap);
+		return mustacheToString(CREATE_CLASS_TEMPLATE, mustacheMap);
+		
 	}
 	
+
+	/**
+	 * @param ontClass shape of class
+	 * @return true if the classShape represents an abstract class
+	 */
+	private boolean isAbstract(OntClass ontClass) {
+		if (Objects.isNull(ontClass)) {
+			return false;
+		}
+		ExtendedIterator<Resource> iter = ontClass.listRDFTypes(true);
+		while (iter.hasNext()) {
+			if (ABSTRACT_TYPE_URI.equals(iter.next().getURI())) {
+				return true;
+			}
+		}
+		return false;
+	}
 
 	/**
 	 * @param propertyShapes direct ontology properties
@@ -1103,6 +1236,9 @@ public class OwlToJava {
 		String propConstant = propertyNameToPropertyConstant(name, propNameSpace);
 		retval.put("propertyConstant", propConstant);
 		propertyUrisForConstants.add(propertyUri);
+		if ("specVersion".equals(name)) {
+			retval.put("superSetter", true); // special case that the spec version is set in the CoreModelObject in addition to the store
+		}
 		return retval;
 	}
 
@@ -1201,7 +1337,7 @@ public class OwlToJava {
 	 */
 	private String getSuperClass(String superClassUri, Set<String> requiredImports, String classUri) {
 		if (Objects.isNull(superClassUri) || OWL_THING_URI.equals(superClassUri)) {
-			return "ModelObject";
+			return "ModelObjectV3";
 		}
 		String classNameSpace = uriToNamespaceUri(classUri);
 		if (!superClassUri.startsWith(classNameSpace)) {
@@ -1221,10 +1357,12 @@ public class OwlToJava {
 		retval.add("import java.util.List;");
 		retval.add("import java.util.Set;");
 		retval.add("");
-		retval.add("import org.spdx.library.DefaultModelStore;");
-		retval.add("import org.spdx.library.InvalidSPDXAnalysisException;");
-		retval.add("import org.spdx.library.ModelCopyManager;");
-		retval.add("import org.spdx.library.model.ModelObject;");
+		retval.add("import org.spdx.core.CoreModelObject;");
+		retval.add("import org.spdx.core.DefaultModelStore;");
+		retval.add("import org.spdx.core.InvalidSPDXAnalysisException;");
+		retval.add("import org.spdx.core.IModelCopyManager;");
+		retval.add("import org.spdx.core.IndividualUriValue;");
+		retval.add("import org.spdx.library.model.v3.ModelObjectV3;");
 		retval.add("import org.spdx.storage.IModelStore;");
 		retval.add("import org.spdx.storage.IModelStore.IdType;");
 		retval.add("import org.spdx.storage.IModelStore.IModelStoreLock;");
@@ -1342,9 +1480,9 @@ public class OwlToJava {
 	 */
 	private File createUnitTestFile(String classUri, File dir) throws IOException {		
 		Path path = dir.toPath().resolve("src").resolve("test").resolve("java").resolve("org")
-				.resolve("spdx").resolve("library").resolve("model");
+				.resolve("spdx").resolve("library").resolve("model").resolve("v3");
 		String[] parts = classUri.substring(SPDX_URI_PREFIX.length()).split("/");
-		for (int i = 0; i < parts.length-1; i++) {
+		for (int i = 2; i < parts.length-1; i++) {
 			path = path.resolve(parts[i].toLowerCase());
 		}
 		Files.createDirectories(path);
@@ -1362,10 +1500,11 @@ public class OwlToJava {
 	 * @throws IOException 
 	 */
 	private File createJavaSourceFile(String classUri, File dir) throws IOException {		
-		Path path = dir.toPath().resolve("generated").resolve("src").resolve("main").resolve("java").resolve("org")
-				.resolve("spdx").resolve("library").resolve("model");
+		Path path = dir.toPath().resolve("src").resolve("main").resolve("java").resolve("org")
+				.resolve("spdx").resolve("library").resolve("model").resolve("v3");
 		String[] parts = classUri.substring(SPDX_URI_PREFIX.length()).split("/");
-		for (int i = 0; i < parts.length-1; i++) {
+		// [0] is version, [1] is "terms"
+		for (int i = 2; i < parts.length-1; i++) {
 			path = path.resolve(parts[i].toLowerCase());
 		}
 		Files.createDirectories(path);
@@ -1382,8 +1521,8 @@ public class OwlToJava {
 	 */
 	private String uriToPkg(String classUri) {
 		String[] parts = classUri.substring(SPDX_URI_PREFIX.length()).split("/");
-		StringBuilder sb = new StringBuilder("org.spdx.library.model");
-		for (int i = 0; i < parts.length-1; i++) {
+		StringBuilder sb = new StringBuilder("org.spdx.library.model.v3");
+		for (int i = 2; i < parts.length-1; i++) {
 			sb.append(".");
 			sb.append(parts[i].toLowerCase());
 		}

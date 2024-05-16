@@ -46,7 +46,7 @@ public class OwlToJavaTest extends TestCase {
 				otj = new OwlToJava(model);
 				List<String> warnings = otj.generate(tempDir);
 				assertTrue(warnings.isEmpty());
-				Path aIPath = tempDir.toPath().resolve("generated").resolve("src")
+				Path aIPath = tempDir.toPath().resolve("src")
 					.resolve("main")
 					.resolve("java")
 					.resolve("org")
@@ -54,7 +54,7 @@ public class OwlToJavaTest extends TestCase {
 					.resolve("library")
 					.resolve("model")
 					.resolve("v3")
-					.resolve("AI");
+					.resolve("ai");
 				File classFile = aIPath.resolve("AIPackage.java").toFile();
 				File enumFile = aIPath.resolve("SafetyRiskAssessmentType.java").toFile();
 				assertTrue(classFile.exists());

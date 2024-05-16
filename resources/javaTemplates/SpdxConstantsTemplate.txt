@@ -15,7 +15,7 @@
  *   See the License for the specific language governing permissions and
  *   limitations under the License.
  */
-package org.spdx.library;
+package org.spdx.library.model.v3;
 
 import org.spdx.storage.PropertyDescriptor;
 
@@ -24,7 +24,7 @@ import org.spdx.storage.PropertyDescriptor;
  * @author Gary O'Neall
  *
  */
-public class SpdxConstants {
+public class SpdxConstantsV3 {
 	
 	public enum SpdxMajorVersion {
 		VERSION_1,
@@ -35,6 +35,9 @@ public class SpdxConstants {
 			return VERSION_3;
 		}
 	}
+	
+	public static final String MODEL_SPEC_VERSION = "SPDX-3.0";
+	
 	{{#namespaces}}
 	
 	/**

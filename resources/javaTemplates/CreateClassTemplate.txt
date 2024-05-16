@@ -1,0 +1,10 @@
+	/**
+	 * Create an {{{className}}}Builder inheriting model, and other information from this object
+	 * @param objectUri - URI or anonymous ID for the {{{className}}}
+	 * @return {{{className}}}Builder using the same modelStore and documentUri as this object
+	 * @throws InvalidSPDXAnalysisException
+	 */
+	public {{{className}}}.{{{className}}}Builder create{{{className}}}(String objectUri) throws InvalidSPDXAnalysisException {
+		Objects.requireNonNull(objectUri, "objectUri can not be null");
+		return new {{{className}}}.{{{className}}}Builder(this, objectUri);
+	}

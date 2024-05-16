@@ -28,6 +28,7 @@ import java.util.Optional;
 import org.spdx.library.InvalidSPDXAnalysisException;
 import org.spdx.library.ModelCopyManager;
 import {{{pkgName}}}.{{{className}}}.{{{className}}}Builder;
+import org.spdx.library.model.v3.core.CreationInfo;
 import org.spdx.storage.IModelStore;
 import org.spdx.storage.simple.InMemSpdxStore;
 import org.spdx.utility.compare.UnitTestHelper;
@@ -41,6 +42,7 @@ public class {{{className}}}Test extends TestCase {
 
 	IModelStore modelStore;
 	ModelCopyManager copyManager;
+	CreationInfo creationInfo;
 
 	{{#integerProperties}}
 	static final Integer {{{propertyNameUpper}}}_TEST_VALUE = 55;
@@ -70,13 +72,22 @@ public class {{{className}}}Test extends TestCase {
 		super.setUp();
 		modelStore = new InMemSpdxStore();
 		copyManager = new ModelCopyManager();
+		creationInfo = new CreationInfoBuilder(modelStore, modelStore.getNextId(IdType.Anonymous), copyManager)
+							.setCreated("2010-01-29T18:30:22Z")
+							.setSpecVersion("SPDX-3.0")
+							.addProfile(ProfileIdentifierType.SOFTWARE)
+							.addProfile(ProfileIdentifierType.CORE).build();
+		AgentBuilder agentBuilder = new AgentBuilder(modelStore, "https://unique/id" + modelStore.getNextId(IdType.SpdxId), copyManager);
+		agentBuilder.setCreationInfo(creationInfo);
+		agentBuilder.setName("Creator Name");
+		creationInfo.getCreatedBys().add(agentBuilder.build());
 	}
 
 	protected void tearDown() throws Exception {
 		super.tearDown();
 	}
 	
-	public static {{{className}}}Builder builderFor{{{className}}}Tests(
+	public {{{className}}}Builder builderFor{{{className}}}Tests(
 					IModelStore modelStore, String objectUri, @Nullable ModelCopyManager copyManager) throws InvalidSPDXAnalysisException {
 		{{{className}}}Builder retval = new {{{className}}}Builder(modelStore, objectUri, copyManager)
 				{{#booleanProperties}}
@@ -118,6 +129,7 @@ public class {{{className}}}Test extends TestCase {
 				{{/objectPropertyValueSet}}
 				***************/
 				;
+		retval.setCreationInfo(creationInfo);
 		return retval;
 	}
 	
