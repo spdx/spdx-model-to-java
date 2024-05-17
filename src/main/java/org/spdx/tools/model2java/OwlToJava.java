@@ -458,8 +458,13 @@ public class OwlToJava {
 				name = RESERVED_JAVA_WORDS.get(name);
 			}
 			Shape classShape = shapeMap.get(ontClass.asNode());
-			List<PropertyShape> propertyShapes = Objects.nonNull(classShape) ? new ArrayList<>(classShape.getPropertyShapes()) :
-				new ArrayList<>();
+			Map<String, PropertyShape> propertyShapes = new HashMap<>();
+			
+			if (Objects.nonNull(classShape)) {
+				for (PropertyShape ps : classShape.getPropertyShapes()) {
+					propertyShapes.put(ps.getPath().toString(), ps);
+				}
+			}
 			List<OntClass> subClasses = new ArrayList<>();
 			ontClass.listSubClasses().forEach(oc -> {
 				subClasses.add(oc);
@@ -471,8 +476,9 @@ public class OwlToJava {
 				Shape superClassShape = shapeMap.get(superClass.asNode());
 				if (Objects.nonNull(superClassShape)) {
 					for (PropertyShape ps : superClassShape.getPropertyShapes()) {
-						if (!propertyShapes.contains(ps)) {
-							propertyShapes.add(ps);
+						
+						if (!propertyShapes.containsKey(ps.getPath().toString())) {
+							propertyShapes.put(ps.getPath().toString(), ps);
 						}
 					}
 				}
@@ -485,8 +491,8 @@ public class OwlToJava {
 				} else if (!stringTypes.contains(classUri)) { // TODO: we may want to handle String subtypes in the future
 					try {
 						boolean isAbstract = isAbstract(ontClass);
-						String createString = generateJavaClass(dir, classUri, name, propertyShapes, classShape, comment, superClassUri, 
-								superClasses, isAbstract);
+						String createString = generateJavaClass(dir, classUri, name, new ArrayList<>(propertyShapes.values()),
+								classShape, comment, superClassUri, superClasses, isAbstract);
 						if (!isAbstract) {
 							createBuilderList.add(createString);
 						}
@@ -1064,7 +1070,6 @@ public class OwlToJava {
 		writeMustacheFile(JAVA_CLASS_TEMPLATE, sourceFile, mustacheMap);
 		writeMustacheFile(UNIT_TEST_TEMPLATE, unitTestFile, mustacheMap);
 		return mustacheToString(CREATE_CLASS_TEMPLATE, mustacheMap);
-		
 	}
 	
 

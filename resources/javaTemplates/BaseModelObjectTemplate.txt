@@ -82,7 +82,7 @@ public abstract class ModelObjectV3 extends CoreModelObject {
 		if (verifiedElementUris.contains(this.objectUri)) {
 			return new ArrayList<>();
 		} else {
-			// The verifiedElementId is added in the SpdxElement._verify method
+			verifiedElementUris.add(getObjectUri());
 			return _verify(verifiedElementUris, specVersion, profiles);
 		}
 	}

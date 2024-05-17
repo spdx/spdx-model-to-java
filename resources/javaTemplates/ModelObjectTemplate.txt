@@ -214,7 +214,6 @@ public {{#abstract}}abstract{{/abstract}} class {{{className}}} extends {{{super
 	{{/superSetter}}
 	{{/objectPropertyValueSet}}
 	{{#elementProperties}}
-	{{^superSetter}}
 	{{#nonOptional}}
 	/**
 	 * @return the {{{propertyName}}}
@@ -244,25 +243,17 @@ public {{#abstract}}abstract{{/abstract}} class {{{className}}} extends {{{super
 			throw new InvalidSPDXAnalysisException("{{{propertyName}}} is a required property");
 		}
 		{{/required}}
+		{{#isSpecVersion}}
+		super.{{{propertyName}}} = {{{propertyName}}};
+		{{/isSpecVersion}}
 		{{#superSetter}}
 		super.{{{setter}}}({{{propertyName}}});
 		{{/superSetter}}
+		{{^superSetter}}
 		setPropertyValue(SpdxConstantsV3.{{{propertyConstant}}}, {{{propertyName}}});
+		{{/superSetter}}
 		return this;
-	}	
-	{{/superSetter}}
-	{{#superSetter}}
-	/**
-	 * @param {{{propertyName}}} the {{{propertyName}}} to set
-	 * @return this to chain setters
-	 * @throws InvalidSPDXAnalysisException 
-	 */
-	 @Override
-	public {{{className}}} {{{setter}}}(@Nullable Element {{{propertyName}}}) throws InvalidSPDXAnalysisException {
-		super.{{{setter}}}({{{propertyName}}});
-		return this;
-	}	
-	{{/superSetter}}
+	}
 	{{/elementProperties}}
 	
 	{{#objectProperties}}
@@ -974,7 +965,7 @@ public {{#abstract}}abstract{{/abstract}} class {{{className}}} extends {{{super
 		{{^superSetter}}
 		{{#pattern}}
 		for (String {{{propertyName}}}:{{{propertyName}}}s) {
-			if (!Pattern.matches("{{{pattern}}}", {{{propertyName}}}) {
+			if (!Pattern.matches("{{{pattern}}}", {{{propertyName}}})) {
 				retval.add("{{{propertyName}}} value '" + {{{propertyName}}} + 
 					"' does not match the pattern '{{{pattern}}}'");
 			}
@@ -1045,37 +1036,59 @@ public {{#abstract}}abstract{{/abstract}} class {{{className}}} extends {{{super
 		}
 		
 		{{#objectPropertyValueCollection}}
-		Collection<{{{type}}}> {{{propertyName}}}s = new ArrayList<>();
+		{{^superSetter}}
+		protected Collection<{{{type}}}> {{{propertyName}}}s = new ArrayList<>();
+		{{/superSetter}}
 		{{/objectPropertyValueCollection}}
 		{{#enumPropertyValueCollection}}
-		Collection<{{{type}}}> {{{propertyName}}}s = new ArrayList<>();
+		{{^superSetter}}
+		protected Collection<{{{type}}}> {{{propertyName}}}s = new ArrayList<>();
+		{{/superSetter}}
 		{{/enumPropertyValueCollection}}
 		{{#stringCollection}}
-		Collection<String> {{{propertyName}}}s = new ArrayList<>();
+		{{^superSetter}}
+		protected Collection<String> {{{propertyName}}}s = new ArrayList<>();
+		{{/superSetter}}
 		{{/stringCollection}}
 		{{#objectPropertyValueSet}}
-		Collection<{{{type}}}> {{{propertyName}}}s = new ArrayList<>();
+		{{^superSetter}}
+		protected Collection<{{{type}}}> {{{propertyName}}}s = new ArrayList<>();
+		{{/superSetter}}
 		{{/objectPropertyValueSet}}
 		{{#elementProperties}}
-		{{{type}}} {{{propertyName}}} = null;
+		{{^superSetter}}
+		protected {{{type}}} {{{propertyName}}} = null;
+		{{/superSetter}}
 		{{/elementProperties}}
 		{{#objectProperties}}
-		{{{type}}} {{{propertyName}}} = null;
+		{{^superSetter}}
+		protected {{{type}}} {{{propertyName}}} = null;
+		{{/superSetter}}
 		{{/objectProperties}}
 		{{#anyLicenseInfoProperties}}
-		AnyLicenseInfo {{{propertyName}}} = null;
+		{{^superSetter}}
+		protected AnyLicenseInfo {{{propertyName}}} = null;
+		{{/superSetter}}
 		{{/anyLicenseInfoProperties}}
 		{{#enumerationProperties}}
-		{{{type}}} {{{propertyName}}} = null;
+		{{^superSetter}}
+		protected {{{type}}} {{{propertyName}}} = null;
+		{{/superSetter}}
 		{{/enumerationProperties}}
 		{{#booleanProperties}}
-		Boolean {{{propertyName}}} = null;
+		{{^superSetter}}
+		protected Boolean {{{propertyName}}} = null;
+		{{/superSetter}}
 		{{/booleanProperties}}
 		{{#integerProperties}}
-		Integer {{{propertyName}}} = null;
+		{{^superSetter}}
+		protected Integer {{{propertyName}}} = null;
+		{{/superSetter}}
 		{{/integerProperties}}
 		{{#stringProperties}}
-		String {{{propertyName}}} = null;
+		{{^superSetter}}
+		protected String {{{propertyName}}} = null;
+		{{/superSetter}}
 		{{/stringProperties}}
 		
 		{{#objectPropertyValueCollection}}
@@ -1087,7 +1100,7 @@ public {{#abstract}}abstract{{/abstract}} class {{{className}}} extends {{{super
 		**/
 		public {{{className}}}Builder {{{adder}}}({{{type}}} {{{propertyName}}}) {
 			if (Objects.nonNull({{{propertyName}}})) {
-				{{{propertyName}}}s.add({{{propertyName}}});
+				{{#superSetter}}super.{{/superSetter}}{{{propertyName}}}s.add({{{propertyName}}});
 			}
 			return this;
 		}
@@ -1099,7 +1112,7 @@ public {{#abstract}}abstract{{/abstract}} class {{{className}}} extends {{{super
 		**/
 		public {{{className}}}Builder {{{addAller}}}(Collection<{{{type}}}> {{{propertyName}}}Collection) {
 			if (Objects.nonNull({{{propertyName}}}Collection)) {
-				{{{propertyName}}}s.addAll({{{propertyName}}}Collection);
+				{{#superSetter}}super.{{/superSetter}}{{{propertyName}}}s.addAll({{{propertyName}}}Collection);
 			}
 			return this;
 		}
@@ -1113,7 +1126,7 @@ public {{#abstract}}abstract{{/abstract}} class {{{className}}} extends {{{super
 		**/
 		public {{{className}}}Builder {{{adder}}}({{{type}}} {{{propertyName}}}) {
 			if (Objects.nonNull({{{propertyName}}})) {
-				{{{propertyName}}}s.add({{{propertyName}}});
+				{{#superSetter}}super.{{/superSetter}}{{{propertyName}}}s.add({{{propertyName}}});
 			}
 			return this;
 		}
@@ -1125,7 +1138,7 @@ public {{#abstract}}abstract{{/abstract}} class {{{className}}} extends {{{super
 		**/
 		public {{{className}}}Builder {{{addAller}}}(Collection<{{{type}}}> {{{propertyName}}}Collection) {
 			if (Objects.nonNull({{{propertyName}}}Collection)) {
-				{{{propertyName}}}s.addAll({{{propertyName}}}Collection);
+				{{#superSetter}}super.{{/superSetter}}{{{propertyName}}}s.addAll({{{propertyName}}}Collection);
 			}
 			return this;
 		}
@@ -1139,7 +1152,7 @@ public {{#abstract}}abstract{{/abstract}} class {{{className}}} extends {{{super
 		**/
 		public {{{className}}}Builder {{{adder}}}(String {{{propertyName}}}) {
 			if (Objects.nonNull({{{propertyName}}})) {
-				{{{propertyName}}}s.add({{{propertyName}}});
+				{{#superSetter}}super.{{/superSetter}}{{{propertyName}}}s.add({{{propertyName}}});
 			}
 			return this;
 		}
@@ -1151,7 +1164,7 @@ public {{#abstract}}abstract{{/abstract}} class {{{className}}} extends {{{super
 		**/
 		public {{{className}}}Builder {{{addAller}}}(Collection<String> {{{propertyName}}}Collection) {
 			if (Objects.nonNull({{{propertyName}}}Collection)) {
-				{{{propertyName}}}s.addAll({{{propertyName}}}Collection);
+				{{#superSetter}}super.{{/superSetter}}{{{propertyName}}}s.addAll({{{propertyName}}}Collection);
 			}
 			return this;
 		}
@@ -1165,7 +1178,7 @@ public {{#abstract}}abstract{{/abstract}} class {{{className}}} extends {{{super
 		**/
 		public {{{className}}}Builder {{{adder}}}({{{type}}} {{{propertyName}}}) {
 			if (Objects.nonNull({{{propertyName}}})) {
-				{{{propertyName}}}s.add({{{propertyName}}});
+				{{#superSetter}}super.{{/superSetter}}{{{propertyName}}}s.add({{{propertyName}}});
 			}
 			return this;
 		}
@@ -1177,7 +1190,7 @@ public {{#abstract}}abstract{{/abstract}} class {{{className}}} extends {{{super
 		**/
 		public {{{className}}}Builder {{{addAller}}}(Collection<{{{type}}}> {{{propertyName}}}Collection) {
 			if (Objects.nonNull({{{propertyName}}}Collection)) {
-				{{{propertyName}}}s.addAll({{{propertyName}}}Collection);
+				{{#superSetter}}super.{{/superSetter}}{{{propertyName}}}s.addAll({{{propertyName}}}Collection);
 			}
 			return this;
 		}
@@ -1190,7 +1203,7 @@ public {{#abstract}}abstract{{/abstract}} class {{{className}}} extends {{{super
 		 * @return this for chaining
 		**/
 		public {{{className}}}Builder {{{setter}}}({{{type}}} {{{propertyName}}}) {
-			this.{{{propertyName}}} = {{{propertyName}}};
+			{{#superSetter}}super.{{/superSetter}}{{^superSetter}}this.{{/superSetter}}{{{propertyName}}} = {{{propertyName}}};
 			return this;
 		}
 		{{/elementProperties}}
@@ -1202,7 +1215,7 @@ public {{#abstract}}abstract{{/abstract}} class {{{className}}} extends {{{super
 		 * @return this for chaining
 		**/
 		public {{{className}}}Builder {{{setter}}}({{{type}}} {{{propertyName}}}) {
-			this.{{{propertyName}}} = {{{propertyName}}};
+			{{#superSetter}}super.{{/superSetter}}{{^superSetter}}this.{{/superSetter}}{{{propertyName}}} = {{{propertyName}}};
 			return this;
 		}
 		{{/objectProperties}}
@@ -1214,7 +1227,7 @@ public {{#abstract}}abstract{{/abstract}} class {{{className}}} extends {{{super
 		 * @return this for chaining
 		**/
 		public {{{className}}}Builder {{{setter}}}({{{type}}} {{{propertyName}}}) {
-			this.{{{propertyName}}} = {{{propertyName}}};
+			{{#superSetter}}super.{{/superSetter}}{{^superSetter}}this.{{/superSetter}}{{{propertyName}}} = {{{propertyName}}};
 			return this;
 		}
 		{{/anyLicenseInfoProperties}}
@@ -1226,7 +1239,7 @@ public {{#abstract}}abstract{{/abstract}} class {{{className}}} extends {{{super
 		 * @return this for chaining
 		**/
 		public {{{className}}}Builder {{{setter}}}({{{type}}} {{{propertyName}}}) {
-			this.{{{propertyName}}} = {{{propertyName}}};
+			{{#superSetter}}super.{{/superSetter}}{{^superSetter}}this.{{/superSetter}}{{{propertyName}}} = {{{propertyName}}};
 			return this;
 		}
 		{{/enumerationProperties}}
@@ -1238,7 +1251,7 @@ public {{#abstract}}abstract{{/abstract}} class {{{className}}} extends {{{super
 		 * @return this for chaining
 		**/
 		public {{{className}}}Builder {{{setter}}}({{{type}}} {{{propertyName}}}) {
-			this.{{{propertyName}}} = {{{propertyName}}};
+			{{#superSetter}}super.{{/superSetter}}{{^superSetter}}this.{{/superSetter}}{{{propertyName}}} = {{{propertyName}}};
 			return this;
 		}
 		{{/booleanProperties}}
@@ -1250,7 +1263,7 @@ public {{#abstract}}abstract{{/abstract}} class {{{className}}} extends {{{super
 		 * @return this for chaining
 		**/
 		public {{{className}}}Builder {{{setter}}}({{{type}}} {{{propertyName}}}) {
-			this.{{{propertyName}}} = {{{propertyName}}};
+			{{#superSetter}}super.{{/superSetter}}{{^superSetter}}this.{{/superSetter}}{{{propertyName}}} = {{{propertyName}}};
 			return this;
 		}
 		{{/integerProperties}}
@@ -1262,7 +1275,7 @@ public {{#abstract}}abstract{{/abstract}} class {{{className}}} extends {{{super
 		 * @return this for chaining
 		**/
 		public {{{className}}}Builder {{{setter}}}(String {{{propertyName}}}) {
-			this.{{{propertyName}}} = {{{propertyName}}};
+			{{#superSetter}}super.{{/superSetter}}{{^superSetter}}this.{{/superSetter}}{{{propertyName}}} = {{{propertyName}}};
 			return this;
 		}
 		{{/stringProperties}}
