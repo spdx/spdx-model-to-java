@@ -453,10 +453,7 @@ public class OwlToJava {
 			String comment = ontClass.getComment(null);
 			String classUri = ontClass.getURI();
 			classUris.add(classUri);
-			String name = ontClass.getLocalName();
-			if (RESERVED_JAVA_WORDS.containsKey(name)) {
-				name = RESERVED_JAVA_WORDS.get(name);
-			}
+			String name = uriToClassName(classUri);
 			Shape classShape = shapeMap.get(ontClass.asNode());
 			Map<String, PropertyShape> propertyShapes = new HashMap<>();
 			
@@ -572,8 +569,9 @@ public class OwlToJava {
 		mustacheMap.put("createBuilder", createBuilderList);
 		List<String> imports = new ArrayList<>();
 		for (String classUri:classUris) {
+			//TODO: Don't add abstract classes
 			if (!enumClassUris.contains(classUri) && !enumerationTypes.contains(classUri)) {
-				imports.add("import "+uriToPkg(classUri) + "." + uriToName(classUri) +";");
+				imports.add("import "+uriToPkg(classUri) + "." + uriToClassName(classUri) +";");
 			}
 		}
 		imports.add("import org.spdx.library.model.v3.core.ProfileIdentifierType;");
@@ -707,7 +705,7 @@ public class OwlToJava {
 			List<Map<String, Object>> propMustacheList = new ArrayList<>();
 			for (String propUri:propertyUris) {
 				Map<String, Object> propMustacheMap = new HashMap<>();
-				String propertyName = uriToName(propUri);
+				String propertyName = uriToPropertyName(propUri);
 				String propertyConstantName = propertyNameToPropertyConstant(propertyName, namespaceName);
 				propMustacheMap.put("propertyConstantName", propertyConstantName);
 				propMustacheMap.put("propertyConstantValue", propertyName);
@@ -720,7 +718,7 @@ public class OwlToJava {
 		List<String> classConstantDefinitions = new ArrayList<>();
 		List<String> classConstants = new ArrayList<>();
 		for (String classUri:classUris) {
-			String className = uriToName(classUri);
+			String className = uriToClassName(classUri);
 			String profile = uriToProfile(classUri);
 			String constName = camelCaseToConstCase(profile) + "_" + camelCaseToConstCase(className);
 			classConstantDefinitions.add("static final String " + constName + " = \"" + profile + "." + className + "\";");
@@ -763,7 +761,7 @@ public class OwlToJava {
 		
 		List<Map<String, String>> typeToClasses = new ArrayList<>();
 		for (String classUri:classUris) {
-			String className = uriToName(classUri);
+			String className = uriToClassName(classUri);
 			String profile = uriToProfile(classUri);
 			String packageName = uriToPkg(classUri);
 			String classConstant = camelCaseToConstCase(profile) + "_" + camelCaseToConstCase(className);
@@ -1132,10 +1130,7 @@ public class OwlToJava {
 		String nameSpace = uriToNamespaceUri(classUri);
 		String propertyUri = propertyShape.getPath().toString().replaceAll("<", "").replaceAll(">", "");
 		
-		String name = uriToName(propertyUri);
-		if (RESERVED_JAVA_WORDS.containsKey(name)) {
-			name = RESERVED_JAVA_WORDS.get(name);
-		}
+		String name = uriToPropertyName(propertyUri);
 		retval.put("propertyName", name);
 		retval.put("propertyNameUpper", camelCaseToConstCase(name));
 		String getSetName = name.substring(0, 1).toUpperCase() + name.substring(1);
@@ -1202,7 +1197,7 @@ public class OwlToJava {
 		} else if (INTEGER_TYPES.contains(typeUri)) {
 			type = "Integer";
 		} else {
-			type = uriToName(typeUri);
+			type = uriToClassName(typeUri);
 			if (!typeUri.startsWith(nameSpace) && 
 					(PropertyType.ENUM.equals(propertyType) || PropertyType.OBJECT.equals(propertyType) ||
 							PropertyType.OBJECT_COLLECTION.equals(propertyType) || 
@@ -1210,7 +1205,7 @@ public class OwlToJava {
 							PropertyType.OBJECT_SET.equals(propertyType) ||
 							PropertyType.ANY_LICENSE_INFO.equals(propertyType) ||
 							PropertyType.ELEMENT.equals(propertyType))) {				
-				requiredImports.add("import "+uriToPkg(typeUri) + "." + uriToName(typeUri) +";");
+				requiredImports.add("import "+uriToPkg(typeUri) + "." + uriToClassName(typeUri) +";");
 			}
 		}
 		
@@ -1376,7 +1371,33 @@ public class OwlToJava {
 		}
 		return RESERVED_JAVA_WORDS.containsKey(retval) ? RESERVED_JAVA_WORDS.get(retval) : retval;
 	}
+	
+	/**
+	 * @param uri
+	 * @return the class name associated with the class URI
+	 */
+	private String uriToClassName(String uri) {
+		String retval = uriToName(uri);
+		String profile = uriToProfile(uri);
+		if (!"Core".equalsIgnoreCase(profile) && !"Software".equalsIgnoreCase(profile)) {
+			retval = profile + retval.substring(0, 1).toUpperCase() + retval.substring(1);
+		}
+		return retval;
+	}
 
+	/**
+	 * @param uri
+	 * @return the property name associated with the class URI
+	 */
+	private String uriToPropertyName(String uri) {
+		String retval = uriToName(uri);
+		String profile = uriToProfile(uri);
+		if (!"Core".equalsIgnoreCase(profile) && !"Software".equalsIgnoreCase(profile)) {
+			retval = profile + retval.substring(0, 1).toUpperCase() + retval.substring(1);
+		}
+		return retval;
+	}
+	
 	/**
 	 * @param superClassUri URI for the superclass
 	 * @param requiredImport set of required imports - updated if the superClass adds a new import statement
@@ -1389,9 +1410,9 @@ public class OwlToJava {
 		}
 		String classNameSpace = uriToNamespaceUri(classUri);
 		if (!superClassUri.startsWith(classNameSpace)) {
-			requiredImports.add("import " + uriToPkg(superClassUri) + "." + uriToName(superClassUri) + ";");
+			requiredImports.add("import " + uriToPkg(superClassUri) + "." + uriToClassName(superClassUri) + ";");
 		}
-		return uriToName(superClassUri);
+		return uriToClassName(superClassUri);
 	}
 
 	/**
@@ -1534,8 +1555,7 @@ public class OwlToJava {
 			path = path.resolve(parts[i].toLowerCase());
 		}
 		Files.createDirectories(path);
-		String fileName = (RESERVED_JAVA_WORDS.containsKey(parts[parts.length-1]) ? 
-				RESERVED_JAVA_WORDS.get(parts[parts.length-1]) : parts[parts.length-1]) + "Test";
+		String fileName = uriToClassName(classUri);
 		File retval = path.resolve(fileName + ".java").toFile();
 		retval.createNewFile();
 		return retval;
@@ -1556,8 +1576,7 @@ public class OwlToJava {
 			path = path.resolve(parts[i].toLowerCase());
 		}
 		Files.createDirectories(path);
-		String fileName = RESERVED_JAVA_WORDS.containsKey(parts[parts.length-1]) ? 
-				RESERVED_JAVA_WORDS.get(parts[parts.length-1]) : parts[parts.length-1];
+		String fileName = uriToClassName(classUri);
 		File retval = path.resolve(fileName + ".java").toFile();
 		retval.createNewFile();
 		return retval;

@@ -339,7 +339,7 @@ public {{#abstract}}abstract{{/abstract}} class {{{className}}} extends {{{super
 	 * @return the {{{propertyName}}}
 	 */
 	public @Nullable {{{type}}} {{{getter}}}() throws InvalidSPDXAnalysisException {
-		Optional<AnyLicenseInfo> retval = getAnyLicenseInfoPropertyValue(SpdxConstantsV3.{{{propertyConstant}}});
+		Optional<SimpleLicensingAnyLicenseInfo> retval = getAnyLicenseInfoPropertyValue(SpdxConstantsV3.{{{propertyConstant}}});
 		return retval.isPresent() ? retval.get() : null;
 	}
 	{{/nonOptional}}
@@ -1067,7 +1067,7 @@ public {{#abstract}}abstract{{/abstract}} class {{{className}}} extends {{{super
 		{{/objectProperties}}
 		{{#anyLicenseInfoProperties}}
 		{{^superSetter}}
-		protected AnyLicenseInfo {{{propertyName}}} = null;
+		protected SimpleLicensingAnyLicenseInfo {{{propertyName}}} = null;
 		{{/superSetter}}
 		{{/anyLicenseInfoProperties}}
 		{{#enumerationProperties}}
