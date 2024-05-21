@@ -1018,11 +1018,16 @@ public {{#abstract}}abstract{{/abstract}} class {{{className}}} extends {{{super
 		 * Create an {{{className}}}Builder from another model object copying the modelStore and copyManager
 		 * @param from model object to copy the model store and copyManager from
 		 * @param objectUri URI for the object
-		 * @param objectUri
+		 * @throws InvalidSPDXAnalysisException if creationInfo can not be fetched from the from
 		 */
-		public {{{className}}}Builder(ModelObjectV3 from, String objectUri) {
+		public {{{className}}}Builder(ModelObjectV3 from, String objectUri) throws InvalidSPDXAnalysisException {
 			this(from.getModelStore(), objectUri, from.getCopyManager());
 			setStrict(from.isStrict());
+			{{#hasCreationInfo}}
+			if (from instanceof Element) {
+				setCreationInfo(((Element)from).getCreationInfo());
+			}
+			{{/hasCreationInfo}}
 		}
 		
 		/**
@@ -1286,11 +1291,11 @@ public {{#abstract}}abstract{{/abstract}} class {{{className}}} extends {{{super
 		 * @throws InvalidSPDXAnalysisException on any errors during build
 		 */
 		public {{{className}}} build() throws InvalidSPDXAnalysisException {
-			IModelStoreLock lock = modelStore.enterCriticalSection(false);
+			IModelStoreLock lock = getModelStore().enterCriticalSection(false);
 			try {
 				return new {{{className}}}(this);
 			} finally {
-				modelStore.leaveCriticalSection(lock);
+				getModelStore().leaveCriticalSection(lock);
 			}
 		}
 		{{/abstract}}

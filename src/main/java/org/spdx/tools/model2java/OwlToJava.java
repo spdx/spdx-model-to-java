@@ -1056,6 +1056,17 @@ public class OwlToJava {
 		if (!this.uriToNamespaceUri(classUri).endsWith("Core")) {
 			requiredImports.add("import org.spdx.library.model.v3.core.ProfileIdentifierType;");
 		}
+		boolean hasCreationInfo = false;
+		for (Map<String, Object> property:propertyMap.get(PropertyType.OBJECT)) {
+			if (property.get("propertyName").equals("creationInfo")) {
+				hasCreationInfo = true;
+				break;
+			}
+		}
+		mustacheMap.put("hasCreationInfo", hasCreationInfo);
+		if (hasCreationInfo && !"Element".equals(name)) {
+			requiredImports.add("import org.spdx.library.model.v3.core.Element;");
+		}
 		List<String> imports = buildImports(new ArrayList<String>(requiredImports));
 		mustacheMap.put("imports", imports.toArray(new String[imports.size()]));
 		//TODO: Implement

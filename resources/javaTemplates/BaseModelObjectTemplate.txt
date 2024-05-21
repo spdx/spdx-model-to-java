@@ -117,6 +117,12 @@ public abstract class ModelObjectV3 extends CoreModelObject {
 		return verify(new HashSet<String>(), specVersion, profiles);
 	}
 	
+	@Override
+	protected boolean isNoAssertion(Object value) {
+		return value instanceof ExpandedLicensingIndividualLicensingInfo && 
+				((ExpandedLicensingIndividualLicensingInfo)value).getObjectUri() == "https://spdx.org/rdf/3.0.0/terms/Licensing/NoAssertion";
+	}
+	
 	/**
 	 * Converts property values to an AnyLicenseInfo if possible - if NONE or NOASSERTION URI value, convert to the appropriate license
 	 * @param propertyDescriptor descriptor for the property
