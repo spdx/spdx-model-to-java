@@ -338,7 +338,7 @@ public class OwlToJava {
 	
 	static final String TEMPLATE_CLASS_PATH = "resources" + "/" + "javaTemplates";
 	static final String TEMPLATE_ROOT_PATH = "resources" + File.separator + "javaTemplates";
-	private static final String JAVA_CLASS_TEMPLATE = "ModelObjectTemplate.txt";
+	private static final String JAVA_CLASS_TEMPLATE = "JavaClassTemplate.txt";
 	private static final String ENUM_CLASS_TEMPLATE = "EnumTemplate.txt";
 	private static final String SPDX_CONSTANTS_TEMPLATE = "SpdxConstantsTemplate.txt";
 	private static final String UNIT_TEST_TEMPLATE = "UnitTestTemplate.txt";
@@ -1066,6 +1066,7 @@ public class OwlToJava {
 		mustacheMap.put("hasCreationInfo", hasCreationInfo);
 		if (hasCreationInfo && !"Element".equals(name)) {
 			requiredImports.add("import org.spdx.library.model.v3.core.Element;");
+			requiredImports.add("import org.spdx.library.model.v3.core.CreationInfo;");
 		}
 		List<String> imports = buildImports(new ArrayList<String>(requiredImports));
 		mustacheMap.put("imports", imports.toArray(new String[imports.size()]));
@@ -1390,7 +1391,7 @@ public class OwlToJava {
 	private String uriToClassName(String uri) {
 		String retval = uriToName(uri);
 		String profile = uriToProfile(uri);
-		if (!"Core".equalsIgnoreCase(profile) && !"Software".equalsIgnoreCase(profile)) {
+		if (!"Core".equalsIgnoreCase(profile)) {
 			retval = profile + retval.substring(0, 1).toUpperCase() + retval.substring(1);
 		}
 		return retval;
@@ -1403,7 +1404,7 @@ public class OwlToJava {
 	private String uriToPropertyName(String uri) {
 		String retval = uriToName(uri);
 		String profile = uriToProfile(uri);
-		if (!"Core".equalsIgnoreCase(profile) && !"Software".equalsIgnoreCase(profile)) {
+		if (!"Core".equalsIgnoreCase(profile)) {
 			retval = profile + retval.substring(0, 1).toUpperCase() + retval.substring(1);
 		}
 		return retval;
@@ -1524,7 +1525,7 @@ public class OwlToJava {
 	 * @return property constant name
 	 */
 	private String propertyNameToPropertyConstant(String propName, String namespaceName) {
-		return   camelCaseToConstCase(namespaceName) + "_PROP_" + camelCaseToConstCase(propName);
+		return   "PROP_" + camelCaseToConstCase(propName);
 	}
 
 	/**

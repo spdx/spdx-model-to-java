@@ -15,21 +15,28 @@
  *   See the License for the specific language governing permissions and
  *   limitations under the License.
  */
-
-package org.spdx.library.model.v3;
+ 
+ package org.spdx.library.model.v3;
 
 import org.spdx.core.IModelCopyManager;
 import org.spdx.core.InvalidSPDXAnalysisException;
+import org.spdx.library.model.v3.core.CreationInfo;
 import org.spdx.storage.IModelStore;
+import org.spdx.storage.IModelStore.IdType;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Modifier;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
+
+import javax.annotation.Nullable;
 
 
 /**
@@ -72,7 +79,7 @@ public class SpdxModelClassFactory {
 	 * @throws InvalidSPDXAnalysisException
 	 */
 	public static ModelObjectV3 getModelObject(IModelStore modelStore, String objectUri,
-			String type, IModelCopyManager copyManager, boolean create) throws InvalidSPDXAnalysisException {
+			String type, @Nullable IModelCopyManager copyManager, boolean create) throws InvalidSPDXAnalysisException {
 		Objects.requireNonNull(modelStore, "Model store can not be null");
 		Objects.requireNonNull(objectUri, "The object URI most not be null");
 		
@@ -103,5 +110,31 @@ public class SpdxModelClassFactory {
 				throw new InvalidSPDXAnalysisException("Unexpected invocation target exception for SPDX version 2 type: "+type, e);
 			}
 		}
+	}
+	
+	/**
+	 * Creates a new CreationInfo including a new createdBy Agent - this can be used as a starting point for
+	 * building new SPDX data
+	 * @param modelStore model store where the creationInfo and Agent is to be created
+	 * @param createdByUri The URI for the Agent who is the creator of the SPDX data
+	 * @param createdByName The name of the Agent who is the creator of the SPDX data
+	 * @param copyManager if non-null, allows for copying of properties from other model stores or document URI's when referenced
+	 * @return a new CreationInfo
+	 * @throws InvalidSPDXAnalysisException on error
+	 */
+	public static CreationInfo createCreationInfo(IModelStore modelStore, String createdByUri,
+			String createdByName, @Nullable IModelCopyManager copyManager) throws InvalidSPDXAnalysisException {
+		Objects.requireNonNull(modelStore, "Model store can not be null");
+		Objects.requireNonNull(createdByUri, "The Agent object URI most not be null");
+		DateFormat format = new SimpleDateFormat(SpdxConstantsV3.SPDX_DATE_FORMAT);
+		String now = format.format(new Date());
+		CreationInfo retval = new CreationInfo.CreationInfoBuilder(modelStore, modelStore.getNextId(IdType.Anonymous), copyManager)
+				.setCreated(now)
+				.setSpecVersion(SpdxConstantsV3.MODEL_SPEC_VERSION)
+				.build();
+		retval.getCreatedBys().add(retval.createAgent(createdByUri)
+											.setName(createdByName)
+											.build());
+		return retval;
 	}
 }

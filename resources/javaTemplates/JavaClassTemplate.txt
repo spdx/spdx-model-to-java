@@ -1026,6 +1026,8 @@ public {{#abstract}}abstract{{/abstract}} class {{{className}}} extends {{{super
 			{{#hasCreationInfo}}
 			if (from instanceof Element) {
 				setCreationInfo(((Element)from).getCreationInfo());
+			} else if (from instanceof CreationInfo) {
+				setCreationInfo((CreationInfo)from);
 			}
 			{{/hasCreationInfo}}
 		}

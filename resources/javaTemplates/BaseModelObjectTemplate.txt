@@ -182,7 +182,7 @@ public abstract class ModelObjectV3 extends CoreModelObject {
 	 * @return true if the object is "to" part of a relationship
 	 */
 	public boolean isRelatedElement(PropertyDescriptor propertyDescriptor) {
-		return SpdxConstantsV3.CORE_PROP_TO.equals(propertyDescriptor);
+		return SpdxConstantsV3.PROP_TO.equals(propertyDescriptor);
 	}
 	
 	{{#createBuilder}}
