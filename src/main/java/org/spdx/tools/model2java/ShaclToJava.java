@@ -82,7 +82,7 @@ import com.github.mustachejava.Mustache;
  * @author Gary O'Neall
  *
  */
-public class OwlToJava {
+public class ShaclToJava {
 	
 	class ConstraintCollector implements ConstraintVisitor {
 		
@@ -426,7 +426,7 @@ public class OwlToJava {
 	/**
 	 * @param model model to use to generate the java files
 	 */
-	public OwlToJava(OntModel model) {
+	public ShaclToJava(OntModel model) {
 		this.model = model;
 		shapes = Shapes.parse(model);
 		shapeMap = shapes.getShapeMap();
@@ -437,9 +437,9 @@ public class OwlToJava {
 	 * @param dir Directory to hold the java source
 	 * @return list of warnings - if empty, all files were generated successfully
 	 * @throws IOException for any issues storing the files
-	 * @throws OwlToJavaException errors in the ontology
+	 * @throws ShaclToJavaException errors in the ontology
 	 */
-	public List<String> generate(File dir) throws IOException, OwlToJavaException {
+	public List<String> generate(File dir) throws IOException, ShaclToJavaException {
 		List<String> warnings = new ArrayList<>();
 		List<Individual> allIndividuals = model.listIndividuals().toList();
 		List<OntClass> allClasses = model.listClasses().toList();
@@ -493,7 +493,7 @@ public class OwlToJava {
 						if (!isAbstract) {
 							createBuilderList.add(createString);
 						}
-					} catch (OwlToJavaException e) {
+					} catch (ShaclToJavaException e) {
 						warnings.add("Error generating Java class for "+name+":" + e.getMessage());
 					}
 				}
@@ -830,9 +830,9 @@ public class OwlToJava {
 	 * @param allClasses classes in the schema
 	 * @param allIndividuals Individuals to determine enum class types
 	 * @param allDataProperties any data type propoerties
-	 * @throws OwlToJavaException 
+	 * @throws ShaclToJavaException 
 	 */
-	private void collectTypeInformation(List<OntClass> allClasses, List<Individual> allIndividuals, List<DatatypeProperty> allDataProperties) throws OwlToJavaException {
+	private void collectTypeInformation(List<OntClass> allClasses, List<Individual> allIndividuals, List<DatatypeProperty> allDataProperties) throws ShaclToJavaException {
 		for (Individual individual:allIndividuals) {
 			this.enumClassUris.add(individual.getOntClass(true).getURI());
 		}
@@ -855,10 +855,10 @@ public class OwlToJava {
 	 * @param classTypeRestriction class restriction if any
 	 * @param dataTypeRestriction data restriction if any
 	 * @return The URI for the type of a property based on it's range and restrictions
-	 * @throws OwlToJavaException 
+	 * @throws ShaclToJavaException 
 	 */
 	private String getTypeUri(@Nullable Node classTypeRestriction,
-			@Nullable Node dataTypeRestriction) throws OwlToJavaException {
+			@Nullable Node dataTypeRestriction) throws ShaclToJavaException {
 		// precedence - class restrictions, data restriction
 		if (Objects.nonNull(classTypeRestriction) && Objects.nonNull(classTypeRestriction.getURI())) {
 			return classTypeRestriction.getURI();
@@ -872,7 +872,7 @@ public class OwlToJava {
 				return dataTypeRestriction.getURI();
 			}
 		} else {
-			throw new OwlToJavaException("Unable to determine type URI");
+			throw new ShaclToJavaException("Unable to determine type URI");
 		}
 	}
 	
@@ -882,10 +882,10 @@ public class OwlToJava {
 	 * @param minRestriction minimum cardinality restriction if any
 	 * @param maxRextriction maximum cardinality restriction if any
 	 * @return the property type based on the range and restrictions
-	 * @throws OwlToJavaException 
+	 * @throws ShaclToJavaException 
 	 */
 	private PropertyType determinePropertyType(@Nullable Node classTypeRestriction,
-			@Nullable Node dataTypeRestriction, @Nullable Integer minRestriction, @Nullable Integer maxRestriction) throws OwlToJavaException {
+			@Nullable Node dataTypeRestriction, @Nullable Integer minRestriction, @Nullable Integer maxRestriction) throws ShaclToJavaException {
 		String typeUri = getTypeUri(classTypeRestriction, dataTypeRestriction);
 		if (enumerationTypes.contains(typeUri)) {
 			if (Objects.isNull(maxRestriction) || maxRestriction > 1) {
@@ -1008,12 +1008,12 @@ public class OwlToJava {
 	 * @param abstractClass if true, the class is abstract
 	 * @return Code to create the Java object to be appended to the model object source file
 	 * @throws IOException 
-	 * @throws OwlToJavaException 
+	 * @throws ShaclToJavaException 
 	 */
 	private String generateJavaClass(File dir, String classUri, String name,
 			List<PropertyShape> propertyShapes, Shape classShape, String comment, 
 			@Nullable String superClassUri, List<OntClass> superClasses,
-			boolean abstractClass) throws IOException, OwlToJavaException {
+			boolean abstractClass) throws IOException, ShaclToJavaException {
 		String pkgName = uriToPkg(classUri);
 		File sourceFile = createJavaSourceFile(classUri, dir);
 		File unitTestFile = createUnitTestFile(classUri, dir);
@@ -1108,10 +1108,10 @@ public class OwlToJava {
 	 * @param classUri URI for the class containing the properties
 	 * @param superClasses all superclasses for the class
 	 * @return map of mustache strings to properties for any properties returning a type of Element
-	 * @throws OwlToJavaException 
+	 * @throws ShaclToJavaException 
 	 */
 	private Map<PropertyType, List<Map<String, Object>>> findProperties(List<PropertyShape> propertyShapes, Shape classShape, 
-			Set<String> requiredImports, Set<String> propertyUrisForConstants, String classUri, List<OntClass> superClasses) throws OwlToJavaException {
+			Set<String> requiredImports, Set<String> propertyUrisForConstants, String classUri, List<OntClass> superClasses) throws ShaclToJavaException {
 		Map<PropertyType, List<Map<String, Object>>> retval = new HashMap<>();
 		for (PropertyType value:PropertyType.values()) {
 			retval.put(value, new ArrayList<Map<String, Object>>());
@@ -1134,10 +1134,10 @@ public class OwlToJava {
 	 * @param classUri URI of the class using the property
 	 * @param superClasses all superclasses for the class
 	 * @return map of Mustache strings to values for a give ontology property
-	 * @throws OwlToJavaException 
+	 * @throws ShaclToJavaException 
 	 */
 	private Map<String, Object> propertyToMustachMap(PropertyShape propertyShape,
-			Set<String> requiredImports, Set<String> propertyUrisForConstants, String classUri, List<OntClass> superClasses) throws OwlToJavaException {
+			Set<String> requiredImports, Set<String> propertyUrisForConstants, String classUri, List<OntClass> superClasses) throws ShaclToJavaException {
 		Map<String, Object> retval = new HashMap<>();
 		String nameSpace = uriToNamespaceUri(classUri);
 		String propertyUri = propertyShape.getPath().toString().replaceAll("<", "").replaceAll(">", "");

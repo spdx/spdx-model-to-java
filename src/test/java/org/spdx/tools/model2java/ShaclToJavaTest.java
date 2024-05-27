@@ -24,7 +24,7 @@ import junit.framework.TestCase;
  * @author gary
  *
  */
-public class OwlToJavaTest extends TestCase {
+public class ShaclToJavaTest extends TestCase {
 	
 	static final String MODEL_FILE_PATH = "testResources" + File.separator + "model.ttl";
 
@@ -36,14 +36,14 @@ public class OwlToJavaTest extends TestCase {
 		super.tearDown();
 	}
 	
-	public void testConvertToJava() throws IOException, XmlSchemaSerializerException, OwlToJavaException {
-		OwlToJava otj = null;
+	public void testConvertToJava() throws IOException, XmlSchemaSerializerException, ShaclToJavaException {
+		ShaclToJava otj = null;
 		File tempDir = Files.createTempDirectory("spdx_test").toFile();
 		try {
 			try (InputStream is = new FileInputStream(new File(MODEL_FILE_PATH))) {
 				OntModel model = ModelFactory.createOntologyModel(OntModelSpec.OWL_MEM);
 				model.read(is, "", "Turtle");
-				otj = new OwlToJava(model);
+				otj = new ShaclToJava(model);
 				List<String> warnings = otj.generate(tempDir);
 				assertTrue(warnings.isEmpty());
 				Path aIPath = tempDir.toPath().resolve("src")

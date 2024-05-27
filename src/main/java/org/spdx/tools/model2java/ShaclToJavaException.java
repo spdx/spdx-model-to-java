@@ -11,7 +11,7 @@ package org.spdx.tools.model2java;
  * @author gary
  *
  */
-public class OwlToJavaException extends Exception {
+public class ShaclToJavaException extends Exception {
 
 	/**
 	 * 
@@ -22,7 +22,7 @@ public class OwlToJavaException extends Exception {
 	/**
 	 * @param String msg
 	 */
-	public OwlToJavaException(String msg) {
+	public ShaclToJavaException(String msg) {
 		super(msg);
 	}
 
@@ -33,7 +33,7 @@ public class OwlToJavaException extends Exception {
 	 * @param enableSuppression
 	 * @param writableStackTrace
 	 */
-	public OwlToJavaException(String message, Throwable cause,
+	public ShaclToJavaException(String message, Throwable cause,
 			boolean enableSuppression, boolean writableStackTrace) {
 		super(message, cause, enableSuppression, writableStackTrace);
 		// TODO Auto-generated constructor stub
@@ -44,7 +44,7 @@ public class OwlToJavaException extends Exception {
 	 * @param message
 	 * @param cause
 	 */
-	public OwlToJavaException(String message, Throwable cause) {
+	public ShaclToJavaException(String message, Throwable cause) {
 		super(message, cause);
 		// TODO Auto-generated constructor stub
 	}
@@ -53,7 +53,7 @@ public class OwlToJavaException extends Exception {
 	/**
 	 * @param cause
 	 */
-	public OwlToJavaException(Throwable cause) {
+	public ShaclToJavaException(Throwable cause) {
 		super(cause);
 		// TODO Auto-generated constructor stub
 	}
