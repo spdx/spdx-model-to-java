@@ -22,6 +22,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.spdx.core.InvalidSPDXAnalysisException;
 import org.spdx.library.model.v3.core.Element;
 
 {{#imports}}
@@ -43,9 +44,13 @@ public class SpdxIndividualFactory {
 	
 	static {
 		Map<String, Element> map = new HashMap<>();
-		{{#individual}}
-		map.put({{{individualUri}}}, new {{{className}}}());
-		{{/individual}}
+		try {
+			{{#individuals}}
+			map.put("{{{individualUri}}}", new {{{className}}}());
+			{{/individuals}}
+		} catch (InvalidSPDXAnalysisException ex) {
+			throw new RuntimeException("Unable to load individuals", ex);
+		}
 		uriToIndividual = Collections.unmodifiableMap(map);
 	}
 

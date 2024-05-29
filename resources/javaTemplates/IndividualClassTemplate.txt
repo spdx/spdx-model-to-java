@@ -1,0 +1,284 @@
+/**
+ * Copyright (c) {{{year}}} Source Auditor Inc.
+ *
+ * SPDX-License-Identifier: Apache-2.0
+ * 
+ *   Licensed under the Apache License, Version 2.0 (the "License");
+ *   you may not use this file except in compliance with the License.
+ *   You may obtain a copy of the License at
+ *
+ *       http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *   Unless required by applicable law or agreed to in writing, software
+ *   distributed under the License is distributed on an "AS IS" BASIS,
+ *   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *   See the License for the specific language governing permissions and
+ *   limitations under the License.
+ */
+ 
+package {{{pkgName}}};
+
+{{#imports}}
+{{.}}
+{{/imports}}
+
+{{{classComments}}}
+public class {{{className}}} extends {{{superClass}}} implements IndividualUriValue {
+
+	/**
+	 * @throws InvalidSPDXAnalysisException when unable to create the {{{className}}}
+	 */
+	public {{{className}}}() throws InvalidSPDXAnalysisException {
+		super(DefaultModelStore.getDefaultModelStore(), "{{{individualUri}}}", DefaultModelStore.getDefaultCopyManager(), true);
+	}
+
+	/* (non-Javadoc)
+	 * @see org.spdx.library.core.CoreModelObject#getType()
+	 */
+	@Override
+	public String getType() {
+		return "{{{classProfile}}}.{{{className}}}";
+	}
+	
+	// Getters and Setters
+	{{#objectPropertyValueCollection}}
+	public Collection<{{{type}}}> {{{getter}}}s() {
+		return new ArrayList<{{{type}}}>();
+	}
+	{{/objectPropertyValueCollection}}
+	{{#enumPropertyValueCollection}}
+	public Collection<{{{type}}}> {{{getter}}}s() {
+		return new ArrayList<{{{type}}}>();
+	}
+	{{/enumPropertyValueCollection}}
+	{{#stringCollection}}
+	public Collection<String> {{{getter}}}s() {
+		return new ArrayList<String>();
+	}
+	{{/stringCollection}}
+	{{#objectPropertyValueSet}}
+	public Set<{{{type}}}> {{{getter}}}s() {
+		throw new InvalidSPDXAnalysisException("Can not set or modify a property of an Individual type");
+	}
+	{{/objectPropertyValueSet}}
+	{{#elementProperties}}
+	{{#nonOptional}}
+	/**
+	 * @return the {{{propertyName}}}
+	 */
+	public @Nullable Element {{{getter}}}() throws InvalidSPDXAnalysisException {
+		return null;
+	}
+	{{/nonOptional}}
+	{{^nonOptional}}
+	/**
+	 * @return the {{{propertyName}}}
+	 */
+	public Optional<Element> {{{getter}}}() throws InvalidSPDXAnalysisException {
+		return Optional.empty();
+	}
+	{{/nonOptional}}
+	
+	/**
+	 * @param {{{propertyName}}} the {{{propertyName}}} to set
+	 * @return this to chain setters
+	 * @throws InvalidSPDXAnalysisException 
+	 */
+	public {{{className}}} {{{setter}}}(@Nullable Element {{{propertyName}}}) throws InvalidSPDXAnalysisException {
+		throw new InvalidSPDXAnalysisException("Can not set or modify a property of an Individual type");
+	}
+	{{/elementProperties}}
+	
+	{{#objectProperties}}
+	{{#nonOptional}}
+	/**
+	 * @return the {{{propertyName}}}
+	 */
+	 @SuppressWarnings("unchecked")
+	public @Nullable {{{type}}} {{{getter}}}() throws InvalidSPDXAnalysisException {
+		return null;
+	}
+	{{/nonOptional}}	
+	{{^nonOptional}}
+	/**
+	 * @return the {{{propertyName}}}
+	 */
+	 @SuppressWarnings("unchecked")
+	public Optional<{{{type}}}> {{{getter}}}() throws InvalidSPDXAnalysisException {
+		return Optional.empty();
+	}
+	{{/nonOptional}}
+	
+	/**
+	 * @param {{{propertyName}}} the {{{propertyName}}} to set
+	 * @return this to chain setters
+	 * @throws InvalidSPDXAnalysisException 
+	 */
+	public {{{className}}} {{{setter}}}(@Nullable {{{type}}} {{{propertyName}}}) throws InvalidSPDXAnalysisException {
+		throw new InvalidSPDXAnalysisException("Can not set or modify a property of an Individual type");
+	}
+	{{/objectProperties}}
+	{{#anyLicenseInfoProperties}}
+	{{^nonOptional}}
+	/**
+	 * @return the {{{propertyName}}}
+	 */
+	public Optional<{{{type}}}> {{{getter}}}() throws InvalidSPDXAnalysisException {
+		Optional.empty();
+	}
+	{{/nonOptional}}
+	{{#nonOptional}}
+	/**
+	 * @return the {{{propertyName}}}
+	 */
+	public @Nullable {{{type}}} {{{getter}}}() throws InvalidSPDXAnalysisException {
+		return null;
+	}
+	{{/nonOptional}}
+		
+	/**
+	 * @param {{{propertyName}}} the {{{propertyName}}} to set
+	 * @return this to chain setters
+	 * @throws InvalidSPDXAnalysisException 
+	 */
+	public {{{className}}} {{{setter}}}(@Nullable {{{type}}} {{{propertyName}}}) throws InvalidSPDXAnalysisException {
+		throw new InvalidSPDXAnalysisException("Can not set or modify a property of an Individual type");
+	}
+	{{/anyLicenseInfoProperties}}
+	{{#enumerationProperties}}
+	{{#nonOptional}}
+	/**
+	 * @return the {{{propertyName}}}
+	 */
+	public @Nullable {{{type}}} {{{getter}}}() throws InvalidSPDXAnalysisException {
+		Optional<Enum<?>> retval = getEnumPropertyValue(SpdxConstantsV3.{{{propertyConstant}}});
+		return null;
+	}
+	{{/nonOptional}}
+	{{^nonOptional}}
+	/**
+	 * @return the {{{propertyName}}}
+	 */
+	 @SuppressWarnings("unchecked")
+	public Optional<{{{type}}}> {{{getter}}}() throws InvalidSPDXAnalysisException {
+		return Optional.empty();
+	}
+	{{/nonOptional}}
+	/**
+	 * @param {{{propertyName}}} the {{{propertyName}}} to set
+	 * @return this to chain setters
+	 * @throws InvalidSPDXAnalysisException 
+	 */
+	public {{{className}}} {{{setter}}}(@Nullable {{{type}}} {{{propertyName}}}) throws InvalidSPDXAnalysisException {
+		throw new InvalidSPDXAnalysisException("Can not set or modify a property of an Individual type");
+	}
+	{{/enumerationProperties}}
+	{{#booleanProperties}}
+	{{#nonOptional}}
+	/**
+	 * @return the {{{propertyName}}}
+	 */
+	public @Nullable Boolean {{{getter}}}() throws InvalidSPDXAnalysisException {
+		return null;
+	}
+	{{/nonOptional}}	
+	{{^nonOptional}}
+	/**
+	 * @return the {{{propertyName}}}
+	 */
+	public Optional<{{{type}}}> {{{getter}}}() throws InvalidSPDXAnalysisException {
+		return Optional.empty();
+	}
+	{{/nonOptional}}
+	
+	/**
+	 * @param {{{propertyName}}} the {{{propertyName}}} to set
+	 * @return this to chain setters
+	 * @throws InvalidSPDXAnalysisException 
+	 */
+	public {{{className}}} {{{setter}}}(@Nullable {{{type}}} {{{propertyName}}}) throws InvalidSPDXAnalysisException {
+		throw new InvalidSPDXAnalysisException("Can not set or modify a property of an Individual type");
+	}
+	{{/booleanProperties}}
+	{{#integerProperties}}
+	{{#nonOptional}}
+	/**
+	 * @return the {{{propertyName}}}
+	 */
+	public @Nullable Integer {{{getter}}}() throws InvalidSPDXAnalysisException {
+		return null;
+	}
+	{{/nonOptional}}
+	{{^nonOptional}}
+	/**
+	 * @return the {{{propertyName}}}
+	 */
+	public Optional<{{{type}}}> {{{getter}}}() throws InvalidSPDXAnalysisException {
+		return Optional.empty();
+	}
+	{{/nonOptional}}
+	
+	/**
+	 * @param {{{propertyName}}} the {{{propertyName}}} to set
+	 * @return this to chain setters
+	 * @throws InvalidSPDXAnalysisException 
+	 */
+	public {{{className}}} {{{setter}}}(@Nullable {{{type}}} {{{propertyName}}}) throws InvalidSPDXAnalysisException {
+		throw new InvalidSPDXAnalysisException("Can not set or modify a property of an Individual type");
+	}
+	{{/integerProperties}}
+	{{#stringProperties}}
+	{{#nonOptional}}
+	/**
+	 * @return the {{{propertyName}}}
+	 */
+	public @Nullable String {{{getter}}}() throws InvalidSPDXAnalysisException {
+		return null;
+	}
+	{{/nonOptional}}	
+	{{^nonOptional}}
+	/**
+	 * @return the {{{propertyName}}}
+	 */
+	public Optional<String> {{{getter}}}() throws InvalidSPDXAnalysisException {
+		return Optional.empty();
+	}
+	{{/nonOptional}}
+	/**
+	 * @param {{{propertyName}}} the {{{propertyName}}} to set
+	 * @return this to chain setters
+	 * @throws InvalidSPDXAnalysisException 
+	 */
+	public {{{className}}} {{{setter}}}(@Nullable String {{{propertyName}}}) throws InvalidSPDXAnalysisException {
+		throw new InvalidSPDXAnalysisException("Can not set or modify a property of an Individual type");
+	}
+	{{/stringProperties}}
+	
+	@Override
+	public String toString() {
+		return "{{{className}}}";
+	}
+	
+	/* (non-Javadoc)
+	 * @see org.spdx.library.model.v3.ModelObjectV3#_verify(java.util.List)
+	 */
+	@Override
+	public List<String> _verify(Set<String> verifiedIds, String specVersionForVerify, List<IndividualUriValue> profiles) {
+		return new ArrayList<>();
+	}
+	
+	@Override
+	public boolean equals(Object o) {
+		return o instanceof {{{className}}};
+	}
+	
+	@Override
+	public int hashCode() {
+		return "{{{individualUri}}}".hashCode();
+	}
+	
+	@Override
+	public String getIndividualURI() {
+		return "{{{individualUri}}}";
+	}
+}

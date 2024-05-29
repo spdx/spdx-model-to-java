@@ -30,7 +30,15 @@ import org.apache.jena.ontology.DatatypeProperty;
 import org.apache.jena.ontology.Individual;
 import org.apache.jena.ontology.OntClass;
 import org.apache.jena.ontology.OntProperty;
+import org.apache.jena.query.Query;
+import org.apache.jena.query.QueryExecution;
+import org.apache.jena.query.QueryExecutionFactory;
+import org.apache.jena.query.QueryFactory;
+import org.apache.jena.query.QuerySolution;
+import org.apache.jena.query.ResultSet;
 import org.apache.jena.rdf.model.Resource;
+import org.apache.jena.rdf.model.Statement;
+import org.apache.jena.rdf.model.StmtIterator;
 import org.apache.commons.text.StringEscapeUtils;
 import org.apache.jena.graph.Node;
 import org.apache.jena.shacl.Shapes;
@@ -324,6 +332,11 @@ public class ShaclToJava {
 	static final String SPDX_URI_PREFIX = "https://spdx.org/rdf/";
 	static final String INDENT = "\t";
 	private static final int COMMENT_LINE_LEN = 72;
+	private static final String TYPE_PRED = "http://www.w3.org/1999/02/22-rdf-syntax-ns#type";
+	private static final String COMMENT_URI = "http://www.w3.org/2000/01/rdf-schema#comment";
+	private static final String NAMED_INDIVIDUAL = "http://www.w3.org/2002/07/owl#NamedIndividual";
+	private static final String LABEL_URI = "http://www.w3.org/2000/01/rdf-schema#label";
+	private static final String RANGE_URI = "http://www.w3.org/2000/01/rdf-schema#range";
 	private static final String BOOLEAN_TYPE = "http://www.w3.org/2001/XMLSchema#boolean";
 	private static final String STRING_TYPE = "http://www.w3.org/2001/XMLSchema#string";
 	private static final String ELEMENT_TYPE_URI = "https://spdx.org/rdf/Core/Element";
@@ -351,6 +364,7 @@ public class ShaclToJava {
 	private static final String MODEL_INFO_TEMPLATE = "ModelInfoTemplate.txt";
 	private static final String PACKAGE_INFO_TEMPLATE = "PackageInfoTemplate.txt";
 	private static final String POM_TEMPLATE = "PomTemplate.txt";
+	private static final String INDIVIDUAL_CLASS_TEMPLATE = "IndividualClassTemplate.txt";
 	private static Set<String> INTEGER_TYPES = new HashSet<>();
 	static {
 		INTEGER_TYPES.add(XSD_POSITIVE_INTEGER);
@@ -387,6 +401,7 @@ public class ShaclToJava {
 	Map<Node, Shape> shapeMap = null;
 	
 	Set<String> enumClassUris = new HashSet<>(); // Set of enum URI's
+	Map<String, List<String>> classUriToIndividualUris = new HashMap<>(); // set of all non-enum individual URI's
 	Set<String> propertyUrisForConstants = new HashSet<>(); // Map of property URI's to be included in the SPDX Constants file
 	Set<String> enumerationTypes = new HashSet<>(); // Set of URI's for enumeration types
 	Set<String> anyLicenseInfoTypes = new HashSet<>(); // Set of URI's for AnyLicenseInfo types
@@ -444,7 +459,18 @@ public class ShaclToJava {
 		List<Individual> allIndividuals = model.listIndividuals().toList();
 		List<OntClass> allClasses = model.listClasses().toList();
 		List<DatatypeProperty> allDataProperties = model.listDatatypeProperties().toList();
-		collectTypeInformation(allClasses, allIndividuals, allDataProperties);
+		List<Resource> objectIndividuals = new ArrayList<>();
+
+		Query asIndividualQuery = QueryFactory.create(String.format(
+				"select ?oi where {?oi <%s> <%s>}", TYPE_PRED, NAMED_INDIVIDUAL));
+		try (QueryExecution qexec = QueryExecutionFactory.create(asIndividualQuery, model)) {
+			ResultSet results = qexec.execSelect();
+			for ( ; results.hasNext() ; ) {
+				QuerySolution soln = results.nextSolution();
+				objectIndividuals.add(soln.getResource("oi"));
+			}
+		}
+		collectTypeInformation(allClasses, allIndividuals, allDataProperties, objectIndividuals);
 		collectRelationshipRestrictions();
 		List<String> classUris = new ArrayList<>();
 		List<Map<String, Object>> enumMustacheMaps = new ArrayList<>();
@@ -483,6 +509,18 @@ public class ShaclToJava {
 			
 			String superClassUri = superClasses.isEmpty() ? null : superClasses.get(0).getURI();
 			try {
+				if (this.classUriToIndividualUris.containsKey(ontClass.getURI())) {
+					// Generate the individuals
+					for (String individualUri:this.classUriToIndividualUris.get(ontClass.getURI())) {
+						try {
+							generateIndividualClass(dir, individualUri, uriToClassName(individualUri),
+									new ArrayList<>(propertyShapes.values()), getIndividualComment(individualUri),
+									classUri, classShape, superClasses);
+						} catch (ShaclToJavaException e) {
+							warnings.add("Error generating Individual Java class for "+individualUri+":" + e.getMessage());
+						}
+					}
+				}
 				if (isEnumClass(ontClass)) {
 					enumMustacheMaps.add(generateJavaEnum(dir, classUri, name, allIndividuals, comment));
 				} else if (!stringTypes.contains(classUri)) { // TODO: we may want to handle String subtypes in the future
@@ -509,11 +547,23 @@ public class ShaclToJava {
 		generateSpdxModelInfo(dir);
 		generatePackageInfo(dir);
 		generatePomFile(dir);
-		//TODO: Implement Individual Maps
-		generateIndividualFactory(dir, new ArrayList<Map<String, Object>>());
+		generateIndividualFactory(dir);
 		return warnings;
 	}
 	
+
+	/**
+	 * @param individualUri
+	 * @return
+	 */
+	private String getIndividualComment(String individualUri) {
+		Resource individualResource = model.getResource(individualUri);
+		Statement stmt = individualResource.getProperty(model.getProperty(COMMENT_URI));
+		if (Objects.isNull(stmt) || !stmt.getObject().isLiteral()) {
+			return "";
+		}
+		return stmt.getObject().asLiteral().getString();
+	}
 
 	/**
 	 * @param dir
@@ -649,21 +699,27 @@ public class ShaclToJava {
 	 * @param individualMustacheMaps list of mustache maps for the individual vocabulariess
 	 * @throws IOException thrown if any IO errors occurs
 	 */
-	private void generateIndividualFactory(File dir,
-			List<Map<String, Object>> individualMustacheMaps) throws IOException {
+	private void generateIndividualFactory(File dir) throws IOException {
 		Map<String, Object> mustacheMap = new HashMap<>();
-		mustacheMap.put("individuals", individualMustacheMaps);
-		Set<String> pkgs = new HashSet<>();
-		for (Map<String, Object> map:individualMustacheMaps) {
-			pkgs.add((String)map.get("pkgName") + "." + (String)map.get("name"));
-		}
+		List<Map<String, String>> individualMustacheMaps = new ArrayList<>();
 		List<String> imports = new ArrayList<>();
-		for (String pkg:pkgs) {
-			imports.add("import "+pkg+";");
+		for (List<String> individuals:this.classUriToIndividualUris.values()) {
+			for (String individualUri:individuals) {
+				String className = uriToClassName(individualUri);
+				String pkg = uriToPkg(individualUri);
+				Map<String, String> individualMustacheMap = new HashMap<>();
+				individualMustacheMap.put("individualUri", individualUri);
+				individualMustacheMap.put("className", className);
+				individualMustacheMaps.add(individualMustacheMap);
+				String importStr = "import "+pkg+"."+className + ";";
+				if (!imports.contains(importStr)) {
+					imports.add(importStr);
+				}
+			}
 		}
 		Collections.sort(imports);
 		mustacheMap.put("imports", imports);
-		
+		mustacheMap.put("individuals", individualMustacheMaps);
 		Path path = dir.toPath().resolve("src").resolve("main").resolve("java").resolve("org")
 				.resolve("spdx").resolve("library").resolve("model").resolve("v3");
 		Files.createDirectories(path);
@@ -830,12 +886,49 @@ public class ShaclToJava {
 	 * @param allClasses classes in the schema
 	 * @param allIndividuals Individuals to determine enum class types
 	 * @param allDataProperties any data type propoerties
+	 * @param objectIndividuals 
 	 * @throws ShaclToJavaException 
 	 */
-	private void collectTypeInformation(List<OntClass> allClasses, List<Individual> allIndividuals, List<DatatypeProperty> allDataProperties) throws ShaclToJavaException {
-		for (Individual individual:allIndividuals) {
-			this.enumClassUris.add(individual.getOntClass(true).getURI());
+	private void collectTypeInformation(List<OntClass> allClasses, List<Individual> allIndividuals, List<DatatypeProperty> allDataProperties, List<Resource> objectIndividuals) throws ShaclToJavaException {
+		for (Resource individual:objectIndividuals) {
+			boolean hasLabel = false;
+			String individualClassUri = null;
+			String rangeUri = null;
+			StmtIterator propertyIter = individual.listProperties();
+			for ( ; propertyIter.hasNext() ; ) {
+				Statement stmt = propertyIter.next();
+				if (stmt.getPredicate().getURI().equals(TYPE_PRED) && stmt.getObject().isURIResource() &&
+						!stmt.getObject().asResource().getURI().equals(NAMED_INDIVIDUAL)) {
+					individualClassUri = stmt.getObject().asResource().getURI();
+				}
+				if (stmt.getPredicate().getURI().equals(RANGE_URI) && stmt.getObject().isURIResource()) {
+					rangeUri = stmt.getObject().asResource().getURI();
+				}
+				if (stmt.getPredicate().getURI().equals(LABEL_URI)) {
+					hasLabel = true;
+				}
+			}
+			if (hasLabel && Objects.nonNull(individualClassUri)) {
+				// TODO: This is a bit of a hack, maybe there is a better way to see if this is a class
+				this.enumClassUris.add(individualClassUri);
+			} else if (Objects.nonNull(rangeUri)) {
+				List<String> individualsForRange = classUriToIndividualUris.get(rangeUri);
+				if (Objects.isNull(individualsForRange)) {
+					individualsForRange = new ArrayList<>();
+					classUriToIndividualUris.put(rangeUri, individualsForRange);
+				}
+				individualsForRange.add(individual.getURI());
+			}
 		}
+		
+//		for (Individual individual:allIndividuals) {
+//			if (Objects.nonNull(individual.getLabel(null))) {
+//				// TODO: This is a bit of a hack, maybe there is a better way to see if this is a class
+//				this.enumClassUris.add(individual.getOntClass(true).getURI());
+//			} else {
+//				this.individuals.add(individual);
+//			}
+//		}
 		allClasses.forEach(ontClass -> {
 			List<OntClass> superClasses = new ArrayList<>();
 			addAllSuperClasses(ontClass, superClasses);
@@ -1080,6 +1173,63 @@ public class ShaclToJava {
 		writeMustacheFile(JAVA_CLASS_TEMPLATE, sourceFile, mustacheMap);
 		writeMustacheFile(UNIT_TEST_TEMPLATE, unitTestFile, mustacheMap);
 		return mustacheToString(CREATE_CLASS_TEMPLATE, mustacheMap);
+	}
+	
+	/**
+	 * @param dir Directory to store the source files in
+	 * @param individualUri URI for the individual
+	 * @param name local name for the individual
+	 * @param propertyShapes properties for the individual inherited from superclasses
+	 * @param comment Description of the individual
+	 * @param superClassUri URI of the superclass
+	 * @param superClassShape shape for the supper class
+	 * @param superClasses all superclasses for the class
+	 * @throws IOException 
+	 * @throws ShaclToJavaException 
+	 */
+	private void generateIndividualClass(File dir, String individualUri, String name,
+			List<PropertyShape> propertyShapes, String comment, 
+			String superClassUri, Shape superClassShape, List<OntClass> superClasses) throws IOException, ShaclToJavaException {
+		String pkgName = uriToPkg(individualUri);
+		File sourceFile = createJavaSourceFile(individualUri, dir);
+		Set<String> requiredImports = new HashSet<>();
+		Map<String, Object> mustacheMap = new HashMap<>();
+		mustacheMap.put("individualUri", individualUri);
+		mustacheMap.put("className", name);
+		mustacheMap.put("classProfile", uriToProfile(individualUri));
+		Map<PropertyType, List<Map<String, Object>>> propertyMap = findProperties(propertyShapes, superClassShape, 
+				requiredImports, propertyUrisForConstants, superClassUri, superClasses);
+		int numProperties = 0;
+		for (List<Map<String, Object>> props:propertyMap.values()) {
+			numProperties += props.size();
+		}
+		if (numProperties > 0) {
+			requiredImports.add("import org.spdx.library.model.v3.SpdxConstantsV3;");
+			requiredImports.add("import java.util.Optional;");
+		}
+		mustacheMap.put("elementProperties", propertyMap.get(PropertyType.ELEMENT));
+		mustacheMap.put("objectProperties", propertyMap.get(PropertyType.OBJECT));
+		mustacheMap.put("anyLicenseInfoProperties", propertyMap.get(PropertyType.ANY_LICENSE_INFO));
+		mustacheMap.put("enumerationProperties", propertyMap.get(PropertyType.ENUM));
+		mustacheMap.put("booleanProperties", propertyMap.get(PropertyType.BOOLEAN));
+		mustacheMap.put("integerProperties", propertyMap.get(PropertyType.INTEGER));
+		mustacheMap.put("stringProperties", propertyMap.get(PropertyType.STRING));
+		mustacheMap.put("objectPropertyValueCollection", propertyMap.get(PropertyType.OBJECT_COLLECTION));
+		mustacheMap.put("stringCollection", propertyMap.get(PropertyType.STRING_COLLECTION));
+		mustacheMap.put("objectPropertyValueSet", propertyMap.get(PropertyType.OBJECT_SET));
+		mustacheMap.put("enumPropertyValueCollection", propertyMap.get(PropertyType.ENUM_COLLECTION));
+		mustacheMap.put("suppressUnchecked", !(propertyMap.get(PropertyType.OBJECT_COLLECTION).isEmpty() &&
+				propertyMap.get(PropertyType.OBJECT_SET).isEmpty() &&
+				propertyMap.get(PropertyType.STRING_COLLECTION).isEmpty()));
+		mustacheMap.put("year", YEAR);
+		mustacheMap.put("pkgName", pkgName);
+		
+		mustacheMap.put("classComments", toClassComment(comment));
+		String superClass = getSuperClass(superClassUri, requiredImports, individualUri);
+		mustacheMap.put("superClass", superClass);
+		List<String> imports = buildImports(new ArrayList<String>(requiredImports));
+		mustacheMap.put("imports", imports.toArray(new String[imports.size()]));
+		writeMustacheFile(INDIVIDUAL_CLASS_TEMPLATE, sourceFile, mustacheMap);
 	}
 	
 
