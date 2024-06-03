@@ -1,0 +1,26 @@
+	@Override
+	public boolean equals(Object compare) {
+		if (!(compare instanceof {{{className}}})) {
+			return false;
+		}
+		ExpandedLicensingLicense cLic;
+		try {
+			cLic = (({{{className}}})compare).{{{subjectLicenseGetter}}}();
+			return Objects.equals(this.{{{subjectLicenseGetter}}}(), cLic);
+		} catch (InvalidSPDXAnalysisException e) {
+			throw new RuntimeException(e);
+		}
+	}
+	
+	@Override 
+	public int hashCode() {
+		int licHashCode = 101;
+		try {
+			if (this.{{{subjectLicenseGetter}}}() != null) {
+				licHashCode = this.{{{subjectLicenseGetter}}}().hashCode() ^ 101;
+			}
+		} catch (InvalidSPDXAnalysisException e) {
+			// Ignore - use the null value
+		}
+		return licHashCode;
+	}

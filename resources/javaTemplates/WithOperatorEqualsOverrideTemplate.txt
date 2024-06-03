@@ -1,0 +1,61 @@
+	/* (non-Javadoc)
+	 * @see org.spdx.library.model.compat.v2.compat.v2.ModelObject#equals(java.lang.Object)
+	 */
+	@Override
+	public boolean equals(Object o) {
+		if (!(o instanceof {{{className}}})) {
+			return false;
+		}
+		{{{className}}} comp = ({{{className}}})o;
+		ExpandedLicensingExtendableLicense myLicense = null;
+		ExpandedLicensingExtendableLicense compLicense = null;
+		ExpandedLicensingLicenseAddition myException = null;
+		ExpandedLicensingLicenseAddition compException = null;
+		try {
+			myLicense = this.{{{extendableLicenseGetter}}}();
+		} catch (InvalidSPDXAnalysisException e) {
+			// Likely caused by missing required field - leave the value as null
+		}
+		try {
+			compLicense = comp.{{{extendableLicenseGetter}}}();
+		} catch (InvalidSPDXAnalysisException e) {
+			// Likely caused by missing required field - leave the value as null
+		}
+		try {
+			myException = this.{{{subjectAdditionGetter}}}();
+		} catch (InvalidSPDXAnalysisException e) {
+			// Likely caused by missing required field - leave the value as null
+		}
+		try {
+			compException = comp.{{{subjectAdditionGetter}}}();
+		} catch (InvalidSPDXAnalysisException e) {
+			// Likely caused by missing required field - leave the value as null
+		}
+		if (!Objects.equals(myLicense, compLicense)) {
+			return false;
+		}
+		if (!Objects.equals(myException, compException)) {
+			return false;
+		}
+		return true;	
+	}
+	
+	/* (non-Javadoc)
+	 * @see org.spdx.library.model.compat.v2.compat.v2.ModelObject#hashCode()
+	 */
+	@Override
+	public int hashCode() {
+		int licHashCode = 0;
+		int exceptionHashCode = 0;
+		try {
+			licHashCode = this.{{{extendableLicenseGetter}}}().hashCode();
+		} catch (InvalidSPDXAnalysisException e) {
+			// Likely caused by missing required field - leave the value as 0
+		}
+		try {
+			exceptionHashCode = this.{{{subjectAdditionGetter}}}().hashCode();
+		} catch (InvalidSPDXAnalysisException e) {
+			// Likely caused by missing required field - leave the value as 0
+		}
+		return 977 ^ licHashCode ^ exceptionHashCode;
+	}

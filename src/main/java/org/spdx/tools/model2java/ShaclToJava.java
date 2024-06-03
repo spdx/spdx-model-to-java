@@ -42,39 +42,8 @@ import org.apache.jena.rdf.model.StmtIterator;
 import org.apache.commons.text.StringEscapeUtils;
 import org.apache.jena.graph.Node;
 import org.apache.jena.shacl.Shapes;
-import org.apache.jena.shacl.engine.constraint.ClassConstraint;
-import org.apache.jena.shacl.engine.constraint.ClosedConstraint;
-import org.apache.jena.shacl.engine.constraint.ConstraintComponentSPARQL;
-import org.apache.jena.shacl.engine.constraint.DatatypeConstraint;
-import org.apache.jena.shacl.engine.constraint.DisjointConstraint;
-import org.apache.jena.shacl.engine.constraint.EqualsConstraint;
-import org.apache.jena.shacl.engine.constraint.HasValueConstraint;
-import org.apache.jena.shacl.engine.constraint.InConstraint;
-import org.apache.jena.shacl.engine.constraint.JLogConstraint;
-import org.apache.jena.shacl.engine.constraint.JViolationConstraint;
-import org.apache.jena.shacl.engine.constraint.LessThanConstraint;
-import org.apache.jena.shacl.engine.constraint.LessThanOrEqualsConstraint;
-import org.apache.jena.shacl.engine.constraint.MaxCount;
-import org.apache.jena.shacl.engine.constraint.MinCount;
-import org.apache.jena.shacl.engine.constraint.NodeKindConstraint;
-import org.apache.jena.shacl.engine.constraint.PatternConstraint;
-import org.apache.jena.shacl.engine.constraint.QualifiedValueShape;
-import org.apache.jena.shacl.engine.constraint.ShAnd;
-import org.apache.jena.shacl.engine.constraint.ShNode;
-import org.apache.jena.shacl.engine.constraint.ShNot;
-import org.apache.jena.shacl.engine.constraint.ShOr;
-import org.apache.jena.shacl.engine.constraint.ShXone;
 import org.apache.jena.shacl.engine.constraint.SparqlConstraint;
-import org.apache.jena.shacl.engine.constraint.StrLanguageIn;
-import org.apache.jena.shacl.engine.constraint.StrMaxLengthConstraint;
-import org.apache.jena.shacl.engine.constraint.StrMinLengthConstraint;
-import org.apache.jena.shacl.engine.constraint.UniqueLangConstraint;
-import org.apache.jena.shacl.engine.constraint.ValueMaxExclusiveConstraint;
-import org.apache.jena.shacl.engine.constraint.ValueMaxInclusiveConstraint;
-import org.apache.jena.shacl.engine.constraint.ValueMinExclusiveConstraint;
-import org.apache.jena.shacl.engine.constraint.ValueMinInclusiveConstraint;
 import org.apache.jena.shacl.parser.Constraint;
-import org.apache.jena.shacl.parser.ConstraintVisitor;
 import org.apache.jena.shacl.parser.PropertyShape;
 import org.apache.jena.shacl.parser.Shape;
 import org.apache.jena.sparql.syntax.Element;
@@ -92,310 +61,6 @@ import com.github.mustachejava.Mustache;
  */
 public class ShaclToJava {
 	
-	class ConstraintCollector implements ConstraintVisitor {
-		
-		private Integer minCardinality = null;
-		private Integer maxCardinality = null;
-		private String pattern = null;
-		private Node dataType = null;
-		private Integer strMinLengh = null;
-		private Integer strMaxLenght = null;
-		private Node expectedClass = null;
-		private SparqlConstraint sparqlConstraint = null;
-		
-
-		@Override
-		public void visit(ClassConstraint constraint) {
-			expectedClass = constraint.getExpectedClass();
-		}
-
-		@Override
-		public void visit(DatatypeConstraint constraint) {
-			dataType = constraint.getDatatype();
-		}
-
-		@Override
-		public void visit(NodeKindConstraint constraint) {
-			// ignore
-		}
-
-		@Override
-		public void visit(MinCount constraint) {
-			minCardinality = constraint.getMinCount();
-		}
-
-		@Override
-		public void visit(MaxCount constraint) {
-			maxCardinality = constraint.getMaxCount();
-		}
-
-		@Override
-		public void visit(ValueMinExclusiveConstraint constraint) {
-			// ignore
-		}
-
-		@Override
-		public void visit(ValueMinInclusiveConstraint constraint) {
-			// ignore
-		}
-
-		@Override
-		public void visit(ValueMaxInclusiveConstraint constraint) {
-			// ignore
-		}
-
-		@Override
-		public void visit(ValueMaxExclusiveConstraint constraint) {
-			// ignore
-		}
-
-		@Override
-		public void visit(StrMinLengthConstraint constraint) {
-			strMinLengh = constraint.getMinLength();
-		}
-
-		@Override
-		public void visit(StrMaxLengthConstraint constraint) {
-			strMaxLenght = constraint.getMaxLength();
-		}
-
-		@Override
-		public void visit(PatternConstraint constraint) {
-			pattern = constraint.getPattern();
-		}
-
-		@Override
-		public void visit(StrLanguageIn constraint) {
-			// ignore
-		}
-
-		@Override
-		public void visit(UniqueLangConstraint constraint) {
-			// ignore
-		}
-
-		@Override
-		public void visit(EqualsConstraint constraint) {
-			// ignore
-		}
-
-		@Override
-		public void visit(DisjointConstraint constraint) {
-			// ignore
-		}
-
-		@Override
-		public void visit(LessThanConstraint constraint) {
-			// ignore
-		}
-
-		@Override
-		public void visit(LessThanOrEqualsConstraint constraint) {
-			// ignore
-			
-		}
-
-		@Override
-		public void visit(ShNot constraint) {
-			// ignore
-			
-		}
-
-		@Override
-		public void visit(ShAnd constraint) {
-			// ignore
-			
-		}
-
-		@Override
-		public void visit(ShOr constraint) {
-			// ignore
-			
-		}
-
-		@Override
-		public void visit(ShXone constraint) {
-			// ignore
-			
-		}
-
-		@Override
-		public void visit(ShNode constraint) {
-			// ignore
-			
-		}
-
-		@Override
-		public void visit(QualifiedValueShape constraint) {
-			// ignore
-			
-		}
-
-		@Override
-		public void visit(ClosedConstraint constraint) {
-			// ignore
-			
-		}
-
-		@Override
-		public void visit(HasValueConstraint constraint) {
-			// ignore
-			
-		}
-
-		@Override
-		public void visit(InConstraint constraint) {
-			// ignore
-			
-		}
-
-		@Override
-		public void visit(ConstraintComponentSPARQL constraint) {
-			// ignore
-			
-		}
-
-		@Override
-		public void visit(SparqlConstraint constraint) {
-			this.sparqlConstraint = constraint;
-		}
-
-		@Override
-		public void visit(JViolationConstraint constraint) {
-			// ignore
-			
-		}
-
-		@Override
-		public void visit(JLogConstraint constraint) {
-			// ignore
-			
-		}
-
-		/**
-		 * @return minimum constraint
-		 */
-		public Integer getMinCardinality() {
-			return minCardinality;
-		}
-
-		/**
-		 * @return the maxCardinality
-		 */
-		public Integer getMaxCardinality() {
-			return maxCardinality;
-		}
-
-		/**
-		 * @return the pattern
-		 */
-		public String getPattern() {
-			return pattern;
-		}
-
-		/**
-		 * @return the dataType
-		 */
-		public Node getDataType() {
-			return dataType;
-		}
-
-		/**
-		 * @return the strMinLengh
-		 */
-		public Integer getStrMinLengh() {
-			return strMinLengh;
-		}
-
-		/**
-		 * @return the strMaxLenght
-		 */
-		public Integer getStrMaxLenght() {
-			return strMaxLenght;
-		}
-
-		/**
-		 * @return the expectedClass
-		 */
-		public Node getExpectedClass() {
-			return expectedClass;
-		}
-
-		/**
-		 * @return the sparqlConstraint
-		 */
-		public SparqlConstraint getSparqlConstraint() {
-			return sparqlConstraint;
-		}
-	}
-	
-	static final String SPDX_URI_PREFIX = "https://spdx.org/rdf/";
-	static final String INDENT = "\t";
-	private static final int COMMENT_LINE_LEN = 72;
-	private static final String TYPE_PRED = "http://www.w3.org/1999/02/22-rdf-syntax-ns#type";
-	private static final String COMMENT_URI = "http://www.w3.org/2000/01/rdf-schema#comment";
-	private static final String NAMED_INDIVIDUAL = "http://www.w3.org/2002/07/owl#NamedIndividual";
-	private static final String LABEL_URI = "http://www.w3.org/2000/01/rdf-schema#label";
-	private static final String RANGE_URI = "http://www.w3.org/2000/01/rdf-schema#range";
-	private static final String BOOLEAN_TYPE = "http://www.w3.org/2001/XMLSchema#boolean";
-	private static final String STRING_TYPE = "http://www.w3.org/2001/XMLSchema#string";
-	private static final String ELEMENT_TYPE_URI = "https://spdx.org/rdf/Core/Element";
-	private static final String ELEMENT_TYPE_ANY_LICENSE_INFO = "https://spdx.org/rdf/Licensing/AnyLicenseInfo";
-	private static final String DATE_TIME_TYPE = "http://www.w3.org/2001/XMLSchema#dateTimeStamp";
-	private static final String ANY_URI_TYPE = "http://www.w3.org/2001/XMLSchema#anyURI";
-	private static final String OWL_THING_URI = "http://www.w3.org/2002/07/owl#Thing";
-	private static final String XSD_INTEGER = "http://www.w3.org/2001/XMLSchema#integer";
-	private static final String XSD_POSITIVE_INTEGER = "http://www.w3.org/2001/XMLSchema#positiveInteger";
-	private static final String XSD_NON_NEGATIVE_INTEGER = "http://www.w3.org/2001/XMLSchema#nonNegativeInteger";
-	private static final String ABSTRACT_TYPE_URI = "http://spdx.invalid./AbstractClass";
-	
-	static final String TEMPLATE_CLASS_PATH = "resources" + "/" + "javaTemplates";
-	static final String TEMPLATE_ROOT_PATH = "resources" + File.separator + "javaTemplates";
-	private static final String JAVA_CLASS_TEMPLATE = "JavaClassTemplate.txt";
-	private static final String ENUM_CLASS_TEMPLATE = "EnumTemplate.txt";
-	private static final String SPDX_CONSTANTS_TEMPLATE = "SpdxConstantsTemplate.txt";
-	private static final String UNIT_TEST_TEMPLATE = "UnitTestTemplate.txt";
-	private static final String ENUM_FACTORY_TEMPLATE = "SpdxEnumFactoryTemplate.txt";
-	private static final String INDIVIDUALS_FACTORY_TEMPLATE = "SpdxIndividualFactoryTemplate.txt";
-	private static final String MODEL_CLASS_FACTORY_TEMPLATE = "ModelClassFactoryTemplate.txt";
-	private static final String CREATE_CLASS_TEMPLATE = "CreateClassTemplate.txt";
-	private static final String EXTERNAL_ELEMENT_TEMPLATE = "ExternalElementTemplate.txt";
-	private static final String BASE_MODEL_OBJECT_TEMPLATE = "BaseModelObjectTemplate.txt";
-	private static final String MODEL_INFO_TEMPLATE = "ModelInfoTemplate.txt";
-	private static final String PACKAGE_INFO_TEMPLATE = "PackageInfoTemplate.txt";
-	private static final String POM_TEMPLATE = "PomTemplate.txt";
-	private static final String INDIVIDUAL_CLASS_TEMPLATE = "IndividualClassTemplate.txt";
-	private static Set<String> INTEGER_TYPES = new HashSet<>();
-	static {
-		INTEGER_TYPES.add(XSD_POSITIVE_INTEGER);
-		INTEGER_TYPES.add(XSD_NON_NEGATIVE_INTEGER);
-		INTEGER_TYPES.add(XSD_INTEGER);
-		INTEGER_TYPES.add("http://www.w3.org/2001/XMLSchema#byte");
-		INTEGER_TYPES.add("http://www.w3.org/2001/XMLSchema#int");
-		INTEGER_TYPES.add("http://www.w3.org/2001/XMLSchema#long");
-		INTEGER_TYPES.add("http://www.w3.org/2001/XMLSchema#negativeInteger");
-		INTEGER_TYPES.add("http://www.w3.org/2001/XMLSchema#nonPositiveInteger");
-		INTEGER_TYPES.add("http://www.w3.org/2001/XMLSchema#positiveInteger");
-		INTEGER_TYPES.add("http://www.w3.org/2001/XMLSchema#short");
-		INTEGER_TYPES.add("http://www.w3.org/2001/XMLSchema#unsignedLong");
-		INTEGER_TYPES.add("http://www.w3.org/2001/XMLSchema#unsignedInt");
-		INTEGER_TYPES.add("http://www.w3.org/2001/XMLSchema#unsignedShort");
-		INTEGER_TYPES.add("http://www.w3.org/2001/XMLSchema#unsignedByte");
-		INTEGER_TYPES.add("http://www.w3.org/2001/XMLSchema#decimal");
-	}
-	
-	private static Map<String, String> RESERVED_JAVA_WORDS = new HashMap<>();
-	static {
-		RESERVED_JAVA_WORDS.put("Package", "SpdxPackage");
-		RESERVED_JAVA_WORDS.put("package", "spdxPackage");
-		RESERVED_JAVA_WORDS.put("File", "SpdxFile");
-		RESERVED_JAVA_WORDS.put("file", "spdxFile");
-	}
-	
-	private static Set<String> SET_TYPE_URIS = new HashSet<>(); // set of URI's for types should be treated as sets
-	static {
-		// Currently, there are no sets - all are treated as collections
-	}
 	OntModel model = null;
 	Shapes shapes = null;
 	Map<Node, Shape> shapeMap = null;
@@ -462,7 +127,7 @@ public class ShaclToJava {
 		List<Resource> objectIndividuals = new ArrayList<>();
 
 		Query asIndividualQuery = QueryFactory.create(String.format(
-				"select ?oi where {?oi <%s> <%s>}", TYPE_PRED, NAMED_INDIVIDUAL));
+				"select ?oi where {?oi <%s> <%s>}", ShaclToJavaConstants.TYPE_PRED, ShaclToJavaConstants.NAMED_INDIVIDUAL));
 		try (QueryExecution qexec = QueryExecutionFactory.create(asIndividualQuery, model)) {
 			ResultSet results = qexec.execSelect();
 			for ( ; results.hasNext() ; ) {
@@ -543,6 +208,8 @@ public class ShaclToJava {
 		generateEnumFactory(dir, enumMustacheMaps);
 		generateModelClassFactory(dir, classUris);
 		generateExternalElement(dir);
+		generateExternalLicense(dir);
+		generateExternalLicenseAddition(dir);
 		generateModelObject(dir, createBuilderList, classUris);
 		generateSpdxModelInfo(dir);
 		generatePackageInfo(dir);
@@ -558,7 +225,7 @@ public class ShaclToJava {
 	 */
 	private String getIndividualComment(String individualUri) {
 		Resource individualResource = model.getResource(individualUri);
-		Statement stmt = individualResource.getProperty(model.getProperty(COMMENT_URI));
+		Statement stmt = individualResource.getProperty(model.getProperty(ShaclToJavaConstants.COMMENT_URI));
 		if (Objects.isNull(stmt) || !stmt.getObject().isLiteral()) {
 			return "";
 		}
@@ -574,7 +241,7 @@ public class ShaclToJava {
 		Files.createDirectories(path);
 		File file = path.resolve("pom.xml").toFile();
 		file.createNewFile();
-		writeMustacheFile(POM_TEMPLATE, file, new HashMap<>());
+		writeMustacheFile(ShaclToJavaConstants.POM_TEMPLATE, file, new HashMap<>());
 	}
 
 	/**
@@ -587,7 +254,7 @@ public class ShaclToJava {
 		Files.createDirectories(path);
 		File file = path.resolve("package-info.java").toFile();
 		file.createNewFile();
-		writeMustacheFile(PACKAGE_INFO_TEMPLATE, file, new HashMap<>());
+		writeMustacheFile(ShaclToJavaConstants.PACKAGE_INFO_TEMPLATE, file, new HashMap<>());
 	}
 
 	/**
@@ -600,7 +267,7 @@ public class ShaclToJava {
 		Files.createDirectories(path);
 		File file = path.resolve("SpdxModelInfoV3_0.java").toFile();
 		file.createNewFile();
-		writeMustacheFile(MODEL_INFO_TEMPLATE, file, new HashMap<>());
+		writeMustacheFile(ShaclToJavaConstants.MODEL_INFO_TEMPLATE, file, new HashMap<>());
 	}
 
 	/**
@@ -627,7 +294,7 @@ public class ShaclToJava {
 		imports.add("import org.spdx.library.model.v3.core.ProfileIdentifierType;");
 		Collections.sort(imports);
 		mustacheMap.put("imports", imports);
-		writeMustacheFile(BASE_MODEL_OBJECT_TEMPLATE, file, mustacheMap);
+		writeMustacheFile(ShaclToJavaConstants.BASE_MODEL_OBJECT_TEMPLATE, file, mustacheMap);
 	}
 
 	/**
@@ -641,7 +308,35 @@ public class ShaclToJava {
 		Files.createDirectories(path);
 		File file = path.resolve("ExternalElement.java").toFile();
 		file.createNewFile();
-		writeMustacheFile(EXTERNAL_ELEMENT_TEMPLATE, file, new HashMap<>());
+		writeMustacheFile(ShaclToJavaConstants.EXTERNAL_ELEMENT_TEMPLATE, file, new HashMap<>());
+	}
+	
+	/**
+	 * Generate the ExternalElement.java file
+	 * @param dir top level directory for the project
+	 * @throws IOException 
+	 */
+	private void generateExternalLicense(File dir) throws IOException {
+		Path path = dir.toPath().resolve("src").resolve("main").resolve("java").resolve("org")
+				.resolve("spdx").resolve("library").resolve("model").resolve("v3");
+		Files.createDirectories(path);
+		File file = path.resolve("ExternalCustomLicense.java").toFile();
+		file.createNewFile();
+		writeMustacheFile(ShaclToJavaConstants.EXTERNAL_CUSTOM_LICENSE_TEMPLATE, file, new HashMap<>());
+	}
+	
+	/**
+	 * Generate the ExternalElement.java file
+	 * @param dir top level directory for the project
+	 * @throws IOException 
+	 */
+	private void generateExternalLicenseAddition(File dir) throws IOException {
+		Path path = dir.toPath().resolve("src").resolve("main").resolve("java").resolve("org")
+				.resolve("spdx").resolve("library").resolve("model").resolve("v3");
+		Files.createDirectories(path);
+		File file = path.resolve("ExternalCustomLicenseAddition.java").toFile();
+		file.createNewFile();
+		writeMustacheFile(ShaclToJavaConstants.EXTERNAL_CUSTOM_LICENSE_ADDITION_TEMPLATE, file, new HashMap<>());
 	}
 
 	/**
@@ -690,7 +385,7 @@ public class ShaclToJava {
 		Files.createDirectories(path);
 		File enumFactoryFile = path.resolve("SpdxEnumFactory.java").toFile();
 		enumFactoryFile.createNewFile();	
-		writeMustacheFile(ENUM_FACTORY_TEMPLATE, enumFactoryFile, mustacheMap);
+		writeMustacheFile(ShaclToJavaConstants.ENUM_FACTORY_TEMPLATE, enumFactoryFile, mustacheMap);
 	}
 	
 	/**
@@ -725,7 +420,7 @@ public class ShaclToJava {
 		Files.createDirectories(path);
 		File individualsFile = path.resolve("SpdxIndividualFactory.java").toFile();
 		individualsFile.createNewFile();	
-		writeMustacheFile(INDIVIDUALS_FACTORY_TEMPLATE, individualsFile, mustacheMap);
+		writeMustacheFile(ShaclToJavaConstants.INDIVIDUALS_FACTORY_TEMPLATE, individualsFile, mustacheMap);
 	}
 
 	/**
@@ -780,6 +475,26 @@ public class ShaclToJava {
 			classConstantDefinitions.add("static final String " + constName + " = \"" + profile + "." + className + "\";");
 			classConstants.add(constName);
 		}
+		// Add class constants for the individuals
+		for (List<String> individualUris:this.classUriToIndividualUris.values()) {
+			for (String individualUri:individualUris) {
+				String className = uriToClassName(individualUri);
+				String profile = uriToProfile(individualUri);
+				String constName = camelCaseToConstCase(profile) + "_" + camelCaseToConstCase(className);
+				classConstantDefinitions.add("static final String " + constName + " = \"" + profile + "." + className + "\";");
+				classConstants.add(constName);
+			}
+		}
+		// Add in constants for the external classes
+		classConstantDefinitions.add("static final String " + "EXTERNAL_ELEMENT" + " = \"Core.ExternalElement\";");
+		classConstants.add("EXTERNAL_ELEMENT");
+		
+		classConstantDefinitions.add("static final String " + "EXTERNAL_CUSTOM_LICENSE" + " = \"ExpandedLicensing.ExternalCustomLicense\";");
+		classConstants.add("EXTERNAL_CUSTOM_LICENSE");
+		
+		classConstantDefinitions.add("static final String " + "EXTERNAL_CUSTOM_LICENSE_ADDITION" + " = \"ExpandedLicensing.ExternalCustomLicenseAddition\";");
+		classConstants.add("EXTERNAL_CUSTOM_LICENSE_ADDITION");
+		
 		StringBuilder classConstantString = new StringBuilder("static final String[] ALL_SPDX_CLASSES = {");
 		int lineLen = classConstantString.length();
 		if (classConstants.size() > 0) {
@@ -803,7 +518,7 @@ public class ShaclToJava {
 		Files.createDirectories(path);
 		File constantsFile = path.resolve("SpdxConstantsV3.java").toFile();
 		constantsFile.createNewFile();	
-		writeMustacheFile(SPDX_CONSTANTS_TEMPLATE, constantsFile, mustacheMap);
+		writeMustacheFile(ShaclToJavaConstants.SPDX_CONSTANTS_TEMPLATE, constantsFile, mustacheMap);
 	}
 	
 	/**
@@ -827,20 +542,52 @@ public class ShaclToJava {
 			typeToClassMap.put("classPath", classPath);
 			typeToClasses.add(typeToClassMap);
 		}
+		// Add individual types
+		
+		for (List<String> individualUris:this.classUriToIndividualUris.values()) {
+			for (String individualUri:individualUris) {
+				String className = uriToClassName(individualUri);
+				String profile = uriToProfile(individualUri);
+				String packageName = uriToPkg(individualUri);
+				String classConstant = camelCaseToConstCase(profile) + "_" + camelCaseToConstCase(className);
+				String classPath = packageName + "." + className;
+				Map<String, String> typeToClassMap = new HashMap<>();
+				typeToClassMap.put("classConstant", classConstant);
+				typeToClassMap.put("classPath", classPath);
+				typeToClasses.add(typeToClassMap);
+			}
+		}
+		
+		// Add external element types
+		Map<String, String> externalElementTypeMap = new HashMap<>();
+		externalElementTypeMap.put("classConstant", "EXTERNAL_ELEMENT");
+		externalElementTypeMap.put("classPath", "org.spdx.library.model.v3.ExternalElement");
+		typeToClasses.add(externalElementTypeMap);
+		
+		Map<String, String> externalCustomLicenseTypeMap = new HashMap<>();
+		externalCustomLicenseTypeMap.put("classConstant", "EXTERNAL_CUSTOM_LICENSE");
+		externalCustomLicenseTypeMap.put("classPath", "org.spdx.library.model.v3.ExternalCustomLicense");
+		typeToClasses.add(externalCustomLicenseTypeMap);
+
+		Map<String, String> externalCustomLicenseAdditionTypeMap = new HashMap<>();
+		externalCustomLicenseAdditionTypeMap.put("classConstant", "EXTERNAL_CUSTOM_LICENSE_ADDITION");
+		externalCustomLicenseAdditionTypeMap.put("classPath", "org.spdx.library.model.v3.ExternalCustomLicenseAddition");
+		typeToClasses.add(externalCustomLicenseAdditionTypeMap);
+		
 		mustacheMap.put("typeToClass", typeToClasses);
 		Path path = dir.toPath().resolve("src").resolve("main").resolve("java").resolve("org")
 				.resolve("spdx").resolve("library").resolve("model").resolve("v3");
 		Files.createDirectories(path);
 		File modelClassFactoryFile = path.resolve("SpdxModelClassFactory.java").toFile();
 		modelClassFactoryFile.createNewFile();	
-		writeMustacheFile(MODEL_CLASS_FACTORY_TEMPLATE, modelClassFactoryFile, mustacheMap);
+		writeMustacheFile(ShaclToJavaConstants.MODEL_CLASS_FACTORY_TEMPLATE, modelClassFactoryFile, mustacheMap);
 	}
 	
 	private String mustacheToString(String templateName, Map<String, Object> mustacheMap) throws IOException {
-		String templateDirName = TEMPLATE_ROOT_PATH;
+		String templateDirName = ShaclToJavaConstants.TEMPLATE_ROOT_PATH;
 		File templateDirectoryRoot = new File(templateDirName);
 		if (!(templateDirectoryRoot.exists() && templateDirectoryRoot.isDirectory())) {
-			templateDirName = TEMPLATE_CLASS_PATH;
+			templateDirName = ShaclToJavaConstants.TEMPLATE_CLASS_PATH;
 		}
 		DefaultMustacheFactory builder = new DefaultMustacheFactory(templateDirName);
 		Mustache mustache = builder.compile(templateName);
@@ -856,10 +603,10 @@ public class ShaclToJava {
 	}
 	
 	private void writeMustacheFile(String templateName, File file, Map<String, Object> mustacheMap) throws IOException {
-		String templateDirName = TEMPLATE_ROOT_PATH;
+		String templateDirName = ShaclToJavaConstants.TEMPLATE_ROOT_PATH;
 		File templateDirectoryRoot = new File(templateDirName);
 		if (!(templateDirectoryRoot.exists() && templateDirectoryRoot.isDirectory())) {
-			templateDirName = TEMPLATE_CLASS_PATH;
+			templateDirName = ShaclToJavaConstants.TEMPLATE_CLASS_PATH;
 		}
 		DefaultMustacheFactory builder = new DefaultMustacheFactory(templateDirName);
 		Mustache mustache = builder.compile(templateName);
@@ -897,14 +644,14 @@ public class ShaclToJava {
 			StmtIterator propertyIter = individual.listProperties();
 			for ( ; propertyIter.hasNext() ; ) {
 				Statement stmt = propertyIter.next();
-				if (stmt.getPredicate().getURI().equals(TYPE_PRED) && stmt.getObject().isURIResource() &&
-						!stmt.getObject().asResource().getURI().equals(NAMED_INDIVIDUAL)) {
+				if (stmt.getPredicate().getURI().equals(ShaclToJavaConstants.TYPE_PRED) && stmt.getObject().isURIResource() &&
+						!stmt.getObject().asResource().getURI().equals(ShaclToJavaConstants.NAMED_INDIVIDUAL)) {
 					individualClassUri = stmt.getObject().asResource().getURI();
 				}
-				if (stmt.getPredicate().getURI().equals(RANGE_URI) && stmt.getObject().isURIResource()) {
+				if (stmt.getPredicate().getURI().equals(ShaclToJavaConstants.RANGE_URI) && stmt.getObject().isURIResource()) {
 					rangeUri = stmt.getObject().asResource().getURI();
 				}
-				if (stmt.getPredicate().getURI().equals(LABEL_URI)) {
+				if (stmt.getPredicate().getURI().equals(ShaclToJavaConstants.LABEL_URI)) {
 					hasLabel = true;
 				}
 			}
@@ -956,11 +703,11 @@ public class ShaclToJava {
 		if (Objects.nonNull(classTypeRestriction) && Objects.nonNull(classTypeRestriction.getURI())) {
 			return classTypeRestriction.getURI();
 		} else if (Objects.nonNull(dataTypeRestriction) && Objects.nonNull(dataTypeRestriction.getURI())) {
-			if (dataTypeRestriction.getURI().startsWith(SPDX_URI_PREFIX)) {
+			if (dataTypeRestriction.getURI().startsWith(ShaclToJavaConstants.SPDX_URI_PREFIX)) {
 				//TODO: Currently, all data type restrictions have a base type of String
 				// Once the spec parser produces the type information for data types, this should be updated
 				// to use the specified base type and the pattern
-				return STRING_TYPE;
+				return ShaclToJavaConstants.STRING_TYPE;
 			} else {
 				return dataTypeRestriction.getURI();
 			}
@@ -986,19 +733,19 @@ public class ShaclToJava {
 			} else {
 				return PropertyType.ENUM;
 			}
-		} else if (BOOLEAN_TYPE.equals(typeUri)) {
+		} else if (ShaclToJavaConstants.BOOLEAN_TYPE.equals(typeUri)) {
 			return PropertyType.BOOLEAN;
-		} else if  (INTEGER_TYPES.contains(typeUri)) {
+		} else if  (ShaclToJavaConstants.INTEGER_TYPES.contains(typeUri)) {
 			return PropertyType.INTEGER;
-		} else if  (STRING_TYPE.equals(typeUri) || DATE_TIME_TYPE.equals(typeUri) ||
-				ANY_URI_TYPE.equals(typeUri) || stringTypes.contains(typeUri)) {
+		} else if  (ShaclToJavaConstants.STRING_TYPE.equals(typeUri) || ShaclToJavaConstants.DATE_TIME_TYPE.equals(typeUri) ||
+				ShaclToJavaConstants.ANY_URI_TYPE.equals(typeUri) || stringTypes.contains(typeUri)) {
 			if (Objects.isNull(maxRestriction) || maxRestriction > 1) {
 				return PropertyType.STRING_COLLECTION;
 			} else {
 				return PropertyType.STRING;
 			}
 			// If we get here, we're dealing with objects
-		} else if (SET_TYPE_URIS.contains(typeUri)) {
+		} else if (ShaclToJavaConstants.SET_TYPE_URIS.contains(typeUri)) {
 			return PropertyType.OBJECT_SET;
 		} else if (Objects.isNull(maxRestriction) || maxRestriction > 1) {
 			return PropertyType.OBJECT_COLLECTION;
@@ -1032,11 +779,11 @@ public class ShaclToJava {
 	 */
 	private boolean isStringClass(OntClass ontClass,
 			List<OntClass> superClasses) {
-		if (STRING_TYPE.equals(ontClass.getURI())) {
+		if (ShaclToJavaConstants.STRING_TYPE.equals(ontClass.getURI())) {
 			return true;
 		}
 		for (OntClass superClass:superClasses) {
-			if (STRING_TYPE.equals(superClass.getURI())) {
+			if (ShaclToJavaConstants.STRING_TYPE.equals(superClass.getURI())) {
 				return true;
 			}
 		}
@@ -1050,11 +797,11 @@ public class ShaclToJava {
 	 */
 	private boolean isElementClass(OntClass ontClass,
 			List<OntClass> superClasses) {
-		if (ELEMENT_TYPE_URI.equals(ontClass.getURI())) {
+		if (ShaclToJavaConstants.ELEMENT_TYPE_URI.equals(ontClass.getURI())) {
 			return true;
 		}
 		for (OntClass superClass:superClasses) {
-			if (ELEMENT_TYPE_URI.equals(superClass.getURI())) {
+			if (ShaclToJavaConstants.ELEMENT_TYPE_URI.equals(superClass.getURI())) {
 				return true;
 			}
 		}
@@ -1068,7 +815,7 @@ public class ShaclToJava {
 	 */
 	private boolean isAnyLicenseInfoClass(OntClass ontClass,
 			List<OntClass> superClasses) {
-		if (ELEMENT_TYPE_ANY_LICENSE_INFO.equals(ontClass.getURI())) {
+		if (ShaclToJavaConstants.ELEMENT_TYPE_ANY_LICENSE_INFO.equals(ontClass.getURI())) {
 			return true;
 		}
 		// We don't include superclasses for AnyLicenseInfo types
@@ -1161,6 +908,7 @@ public class ShaclToJava {
 			requiredImports.add("import org.spdx.library.model.v3.core.Element;");
 			requiredImports.add("import org.spdx.library.model.v3.core.CreationInfo;");
 		}
+		String equalsHashOverride = getEqualsHashOverride(classUri, superClasses, requiredImports);
 		List<String> imports = buildImports(new ArrayList<String>(requiredImports));
 		mustacheMap.put("imports", imports.toArray(new String[imports.size()]));
 		//TODO: Implement
@@ -1169,12 +917,63 @@ public class ShaclToJava {
 		//TODO: Implement
 		mustacheMap.put("usePropertiesForToString", false); // use properties to implement toString
 		mustacheMap.put("toStringProperties", new ArrayList<Map<String, Object>>()); // List of property mustache maps to use in compare
+		if (Objects.nonNull(equalsHashOverride)) {
+			mustacheMap.put("equalsHashOverride", equalsHashOverride);
+		}
 		//TODO: Figure out how to handle version specific verify
-		writeMustacheFile(JAVA_CLASS_TEMPLATE, sourceFile, mustacheMap);
-		writeMustacheFile(UNIT_TEST_TEMPLATE, unitTestFile, mustacheMap);
-		return mustacheToString(CREATE_CLASS_TEMPLATE, mustacheMap);
+		writeMustacheFile(ShaclToJavaConstants.JAVA_CLASS_TEMPLATE, sourceFile, mustacheMap);
+		writeMustacheFile(ShaclToJavaConstants.UNIT_TEST_TEMPLATE, unitTestFile, mustacheMap);
+		return mustacheToString(ShaclToJavaConstants.CREATE_CLASS_TEMPLATE, mustacheMap);
 	}
 	
+	/**
+	 * @param classUri URI of the class
+	 * @param requiredImports 
+	 * @return code for equals and hashcode if the Java class should override
+	 * null if it should not be override
+	 * @throws IOException 
+	 */
+	private @Nullable String getEqualsHashOverride(String classUri, List<OntClass> superClasses, Set<String> requiredImports) throws IOException {
+		// License classes need to override equals so that the license sets work properly
+		// NOTE: This needs to be checked first since licenses are subclasses of elements
+		if ("https://spdx.org/rdf/3.0.0/terms/ExpandedLicensing/ConjunctiveLicenseSet".equals(classUri)) {
+			Map<String, Object> mustacheMap = new HashMap<>();
+			mustacheMap.put("className", uriToClassName(classUri));
+			mustacheMap.put("primeNumber", "1381");
+			requiredImports.add("import java.util.HashSet;");
+			requiredImports.add("import java.util.Iterator;");
+			return mustacheToString(ShaclToJavaConstants.LICENSE_SET_EQUALS_OVERRIDE_TEMPLATE, mustacheMap);
+		}
+		if ("https://spdx.org/rdf/3.0.0/terms/ExpandedLicensing/DisjunctiveLicenseSet".equals(classUri)) {
+			Map<String, Object> mustacheMap = new HashMap<>();
+			mustacheMap.put("className", uriToClassName(classUri));
+			mustacheMap.put("primeNumber", "41");
+			requiredImports.add("import java.util.HashSet;");
+			requiredImports.add("import java.util.Iterator;");
+			return mustacheToString(ShaclToJavaConstants.LICENSE_SET_EQUALS_OVERRIDE_TEMPLATE, mustacheMap);
+		}
+		if ("https://spdx.org/rdf/3.0.0/terms/ExpandedLicensing/OrLaterOperator".equals(classUri)) {
+			Map<String, Object> mustacheMap = new HashMap<>();
+			mustacheMap.put("className", uriToClassName(classUri));
+			String subjectPropertyName = uriToPropertyName("https://spdx.org/rdf/3.0.0/terms/ExpandedLicensing/subjectLicense");
+			String subjectLicenseGetter = "get" + subjectPropertyName.substring(0, 1).toUpperCase() + subjectPropertyName.substring(1);
+			mustacheMap.put("subjectLicenseGetter", subjectLicenseGetter);
+			return mustacheToString(ShaclToJavaConstants.OR_LATER_EQUALS_OVERRIDE_TEMPLATE, mustacheMap);
+		}
+		if ("https://spdx.org/rdf/3.0.0/terms/ExpandedLicensing/WithAdditionOperator".equals(classUri)) {
+			Map<String, Object> mustacheMap = new HashMap<>();
+			mustacheMap.put("className", uriToClassName(classUri));
+			String subjectAdditionPropertyName = uriToPropertyName("https://spdx.org/rdf/3.0.0/terms/ExpandedLicensing/subjectAddition");
+			String subjectLicenseGetter = "get" + subjectAdditionPropertyName.substring(0, 1).toUpperCase() + subjectAdditionPropertyName.substring(1);
+			mustacheMap.put("subjectAdditionGetter", subjectLicenseGetter);
+			String subjectExtendablePropertyName = uriToPropertyName("https://spdx.org/rdf/3.0.0/terms/ExpandedLicensing/subjectExtendableLicense");
+			String extendableLicenseGetter = "get" + subjectExtendablePropertyName.substring(0, 1).toUpperCase() + subjectExtendablePropertyName.substring(1);
+			mustacheMap.put("extendableLicenseGetter", extendableLicenseGetter);
+			return mustacheToString(ShaclToJavaConstants.WITH_EQUALS_OVERRIDE_TEMPLATE, mustacheMap);
+		}
+		return null;
+	}
+
 	/**
 	 * @param dir Directory to store the source files in
 	 * @param individualUri URI for the individual
@@ -1229,7 +1028,7 @@ public class ShaclToJava {
 		mustacheMap.put("superClass", superClass);
 		List<String> imports = buildImports(new ArrayList<String>(requiredImports));
 		mustacheMap.put("imports", imports.toArray(new String[imports.size()]));
-		writeMustacheFile(INDIVIDUAL_CLASS_TEMPLATE, sourceFile, mustacheMap);
+		writeMustacheFile(ShaclToJavaConstants.INDIVIDUAL_CLASS_TEMPLATE, sourceFile, mustacheMap);
 	}
 	
 
@@ -1243,7 +1042,7 @@ public class ShaclToJava {
 		}
 		ExtendedIterator<Resource> iter = ontClass.listRDFTypes(true);
 		while (iter.hasNext()) {
-			if (ABSTRACT_TYPE_URI.equals(iter.next().getURI())) {
+			if (ShaclToJavaConstants.ABSTRACT_TYPE_URI.equals(iter.next().getURI())) {
 				return true;
 			}
 		}
@@ -1342,7 +1141,7 @@ public class ShaclToJava {
 			}
 		}
 		
-		PropertyType propertyType = determinePropertyType(classRestriction, dataTypeRestriction, 
+		PropertyType propertyType = ShaclToJavaConstants.SET_PROPERTY_URIS.contains(propertyUri) ? PropertyType.OBJECT_SET : determinePropertyType(classRestriction, dataTypeRestriction, 
 				minCardinality, maxCardinality);
 		if (PropertyType.OBJECT_COLLECTION.equals(propertyType) || PropertyType.STRING_COLLECTION.equals(propertyType) ||
 				PropertyType.ENUM_COLLECTION.equals(propertyType)) {
@@ -1352,11 +1151,11 @@ public class ShaclToJava {
  		retval.put("propertyType", propertyType);
 		String typeUri = getTypeUri(classRestriction, dataTypeRestriction);
 		String type;
-		if (BOOLEAN_TYPE.equals(typeUri)) {
+		if (ShaclToJavaConstants.BOOLEAN_TYPE.equals(typeUri)) {
 			type = "Boolean";
-		} else if (STRING_TYPE.equals(typeUri) || DATE_TIME_TYPE.equals(typeUri)) {
+		} else if (ShaclToJavaConstants.STRING_TYPE.equals(typeUri) || ShaclToJavaConstants.DATE_TIME_TYPE.equals(typeUri)) {
 			type = "String";
-		} else if (INTEGER_TYPES.contains(typeUri)) {
+		} else if (ShaclToJavaConstants.INTEGER_TYPES.contains(typeUri)) {
 			type = "Integer";
 		} else {
 			type = uriToClassName(typeUri);
@@ -1398,10 +1197,10 @@ public class ShaclToJava {
 		if (Objects.nonNull(minStringLength)) {
 			retval.put("min", minStringLength.toString());
 			hasConstraint = true;
-		} else if (XSD_NON_NEGATIVE_INTEGER.equals(typeUri)) {
+		} else if (ShaclToJavaConstants.XSD_NON_NEGATIVE_INTEGER.equals(typeUri)) {
 			retval.put("min", "0");
 			hasConstraint = true;
-		} else if (XSD_POSITIVE_INTEGER.equals(typeUri)) {
+		} else if (ShaclToJavaConstants.XSD_POSITIVE_INTEGER.equals(typeUri)) {
 			retval.put("min", "1");
 			hasConstraint = true;
 		}
@@ -1531,7 +1330,7 @@ public class ShaclToJava {
 		} else {
 			retval = uri;
 		}
-		return RESERVED_JAVA_WORDS.containsKey(retval) ? RESERVED_JAVA_WORDS.get(retval) : retval;
+		return ShaclToJavaConstants.RESERVED_JAVA_WORDS.containsKey(retval) ? ShaclToJavaConstants.RESERVED_JAVA_WORDS.get(retval) : retval;
 	}
 	
 	/**
@@ -1567,7 +1366,7 @@ public class ShaclToJava {
 	 * @return superClass for the class
 	 */
 	private String getSuperClass(String superClassUri, Set<String> requiredImports, String classUri) {
-		if (Objects.isNull(superClassUri) || OWL_THING_URI.equals(superClassUri)) {
+		if (Objects.isNull(superClassUri) || ShaclToJavaConstants.OWL_THING_URI.equals(superClassUri)) {
 			return "ModelObjectV3";
 		}
 		String classNameSpace = uriToNamespaceUri(classUri);
@@ -1639,7 +1438,7 @@ public class ShaclToJava {
 		}
 		mustacheMap.put("enumValues", enumValues);
 		File sourceFile = createJavaSourceFile(classUri, dir);
-		writeMustacheFile(ENUM_CLASS_TEMPLATE, sourceFile, mustacheMap);
+		writeMustacheFile(ShaclToJavaConstants.ENUM_CLASS_TEMPLATE, sourceFile, mustacheMap);
 		return mustacheMap;
 	}
 	
@@ -1692,7 +1491,7 @@ public class ShaclToJava {
 		while (i < tokens.length) {
 			int len = 4;
 			sb.append(" * ");
-			while (len < COMMENT_LINE_LEN && i < tokens.length) {
+			while (len < ShaclToJavaConstants.COMMENT_LINE_LEN && i < tokens.length) {
 				len += tokens[i].length();
 				sb.append(tokens[i++].trim());
 				sb.append(' ');
@@ -1712,7 +1511,7 @@ public class ShaclToJava {
 	private File createUnitTestFile(String classUri, File dir) throws IOException {		
 		Path path = dir.toPath().resolve("src").resolve("test").resolve("java").resolve("org")
 				.resolve("spdx").resolve("library").resolve("model").resolve("v3");
-		String[] parts = classUri.substring(SPDX_URI_PREFIX.length()).split("/");
+		String[] parts = classUri.substring(ShaclToJavaConstants.SPDX_URI_PREFIX.length()).split("/");
 		for (int i = 2; i < parts.length-1; i++) {
 			path = path.resolve(parts[i].toLowerCase());
 		}
@@ -1732,7 +1531,7 @@ public class ShaclToJava {
 	private File createJavaSourceFile(String classUri, File dir) throws IOException {		
 		Path path = dir.toPath().resolve("src").resolve("main").resolve("java").resolve("org")
 				.resolve("spdx").resolve("library").resolve("model").resolve("v3");
-		String[] parts = classUri.substring(SPDX_URI_PREFIX.length()).split("/");
+		String[] parts = classUri.substring(ShaclToJavaConstants.SPDX_URI_PREFIX.length()).split("/");
 		// [0] is version, [1] is "terms"
 		for (int i = 2; i < parts.length-1; i++) {
 			path = path.resolve(parts[i].toLowerCase());
@@ -1749,7 +1548,7 @@ public class ShaclToJava {
 	 * @return
 	 */
 	private String uriToPkg(String classUri) {
-		String[] parts = classUri.substring(SPDX_URI_PREFIX.length()).split("/");
+		String[] parts = classUri.substring(ShaclToJavaConstants.SPDX_URI_PREFIX.length()).split("/");
 		StringBuilder sb = new StringBuilder("org.spdx.library.model.v3");
 		for (int i = 2; i < parts.length-1; i++) {
 			sb.append(".");

@@ -77,7 +77,7 @@ public {{#abstract}}abstract{{/abstract}} class {{{className}}} extends {{{super
 		{{{propertyName}}}s = (Collection<String>)(Collection<?>)this.getObjectPropertyValueCollection(SpdxConstantsV3.{{{propertyConstant}}}, String.class);
 		{{/stringCollection}}
 		{{#objectPropertyValueSet}}
-		{{{propertyName}}}s = (Collection<{{{type}}}>)(Collection<?>)this.getObjectPropertyValueSet(SpdxConstantsV3.{{{propertyConstant}}}, {{{type}}}.class);
+		{{{propertyName}}}s = (Set<{{{type}}}>)(Set<?>)this.getObjectPropertyValueSet(SpdxConstantsV3.{{{propertyConstant}}}, {{{type}}}.class);
 		{{/objectPropertyValueSet}}
 		{{#stringProperty}}
 		{{#isSpecVersion}}
@@ -116,7 +116,7 @@ public {{#abstract}}abstract{{/abstract}} class {{{className}}} extends {{{super
 		{{/stringCollection}}
 		{{#objectPropertyValueSet}}
 		{{^superSetter}}
-		{{{propertyName}}}s = (Collection<{{{type}}}>)(Collection<?>)this.getObjectPropertyValueSet(SpdxConstantsV3.{{{propertyConstant}}}, {{{type}}}.class);
+		{{{propertyName}}}s = (Set<{{{type}}}>)(Set<?>)this.getObjectPropertyValueSet(SpdxConstantsV3.{{{propertyConstant}}}, {{{type}}}.class);
 		{{/superSetter}}
 		{{/objectPropertyValueSet}}
 		{{#objectPropertyValueCollection}}
@@ -1003,6 +1003,8 @@ public {{#abstract}}abstract{{/abstract}} class {{{className}}} extends {{{super
 		return retval;
 	}
 	
+	{{{equalsHashOverride}}}
+	
 	public static {{#abstract}}abstract {{/abstract}}class {{{className}}}Builder extends {{{superClass}}}Builder {
 	
 		/**
@@ -1059,7 +1061,7 @@ public {{#abstract}}abstract{{/abstract}} class {{{className}}} extends {{{super
 		{{/stringCollection}}
 		{{#objectPropertyValueSet}}
 		{{^superSetter}}
-		protected Collection<{{{type}}}> {{{propertyName}}}s = new ArrayList<>();
+		protected Set<{{{type}}}> {{{propertyName}}}s = new HashSet<>();
 		{{/superSetter}}
 		{{/objectPropertyValueSet}}
 		{{#elementProperties}}
@@ -1195,9 +1197,9 @@ public {{#abstract}}abstract{{/abstract}} class {{{className}}} extends {{{super
 		 * @parameter {{{propertyName}}}Collection collection to initialize the {{{propertyName}}}
 		 * @return this for chaining
 		**/
-		public {{{className}}}Builder {{{addAller}}}(Collection<{{{type}}}> {{{propertyName}}}Collection) {
-			if (Objects.nonNull({{{propertyName}}}Collection)) {
-				{{#superSetter}}super.{{/superSetter}}{{{propertyName}}}s.addAll({{{propertyName}}}Collection);
+		public {{{className}}}Builder {{{addAller}}}(Set<{{{type}}}> {{{propertyName}}}Set) {
+			if (Objects.nonNull({{{propertyName}}}Set)) {
+				{{#superSetter}}super.{{/superSetter}}{{{propertyName}}}s.addAll({{{propertyName}}}Set);
 			}
 			return this;
 		}
