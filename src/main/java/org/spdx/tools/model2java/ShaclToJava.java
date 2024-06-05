@@ -914,18 +914,87 @@ public class ShaclToJava {
 		//TODO: Implement
 		mustacheMap.put("compareUsingProperties", false); // use properties to implement compareTo
 		mustacheMap.put("compareProperties", new ArrayList<Map<String, Object>>()); // List of property mustache maps to use in compare
-		//TODO: Implement
-		mustacheMap.put("usePropertiesForToString", false); // use properties to implement toString
-		mustacheMap.put("toStringProperties", new ArrayList<Map<String, Object>>()); // List of property mustache maps to use in compare
+		String toStringString = generateToString(classUri, superClasses, propertyMap, requiredImports);
+		if (Objects.nonNull(toStringString)) {
+			mustacheMap.put("toString", toStringString); // use properties to implement toString
+		}
 		if (Objects.nonNull(equalsHashOverride)) {
 			mustacheMap.put("equalsHashOverride", equalsHashOverride);
 		}
-		//TODO: Figure out how to handle version specific verify
 		writeMustacheFile(ShaclToJavaConstants.JAVA_CLASS_TEMPLATE, sourceFile, mustacheMap);
 		writeMustacheFile(ShaclToJavaConstants.UNIT_TEST_TEMPLATE, unitTestFile, mustacheMap);
 		return mustacheToString(ShaclToJavaConstants.CREATE_CLASS_TEMPLATE, mustacheMap);
 	}
 	
+	/**
+	 * @param classUri
+	 * @param superClasses
+	 * @param propertyMap
+	 * @param requiredImports
+	 * @return toString override method
+	 * @throws IOException 
+	 */
+	private String generateToString(String classUri,
+			List<OntClass> superClasses,
+			Map<PropertyType, List<Map<String, Object>>> propertyMap,
+			Set<String> requiredImports) throws IOException {
+		if ("https://spdx.org/rdf/3.0.0/terms/ExpandedLicensing/WithAdditionOperator".equals(classUri)) {
+			Map<String, Object> mustacheMap = new HashMap<>();
+			mustacheMap.put("className", uriToClassName(classUri));
+			String subjectAdditionPropertyName = uriToPropertyName("https://spdx.org/rdf/3.0.0/terms/ExpandedLicensing/subjectAddition");
+			String subjectLicenseGetter = "get" + subjectAdditionPropertyName.substring(0, 1).toUpperCase() + subjectAdditionPropertyName.substring(1);
+			mustacheMap.put("subjectAdditionGetter", subjectLicenseGetter);
+			String subjectExtendablePropertyName = uriToPropertyName("https://spdx.org/rdf/3.0.0/terms/ExpandedLicensing/subjectExtendableLicense");
+			String extendableLicenseGetter = "get" + subjectExtendablePropertyName.substring(0, 1).toUpperCase() + subjectExtendablePropertyName.substring(1);
+			mustacheMap.put("extendableLicenseGetter", extendableLicenseGetter);
+			return mustacheToString(ShaclToJavaConstants.WITH_OPERATOR_TO_STRING_TEMPLATE, mustacheMap);
+		} else if ("https://spdx.org/rdf/3.0.0/terms/ExpandedLicensing/OrLaterOperator".equals(classUri)) {
+			Map<String, Object> mustacheMap = new HashMap<>();
+			mustacheMap.put("className", uriToClassName(classUri));
+			String subjectPropertyName = uriToPropertyName("https://spdx.org/rdf/3.0.0/terms/ExpandedLicensing/subjectLicense");
+			String subjectLicenseGetter = "get" + subjectPropertyName.substring(0, 1).toUpperCase() + subjectPropertyName.substring(1);
+			mustacheMap.put("subjectLicenseGetter", subjectLicenseGetter);
+			return mustacheToString(ShaclToJavaConstants.OR_LATER_TO_STRING_TEMPLATE, mustacheMap);
+		} else if ("https://spdx.org/rdf/3.0.0/terms/ExpandedLicensing/ListedLicense".equals(classUri) ||
+				"https://spdx.org/rdf/3.0.0/terms/ExpandedLicensing/ListedLicenseException".equals(classUri)) {
+			return "\t\treturn this.getObjectUri().substring(SpdxConstantsV3.SPDX_LISTED_LICENSE_NAMESPACE.length());";
+		} else if ("https://spdx.org/rdf/3.0.0/terms/ExpandedLicensing/CustomLicense".equals(classUri) ||
+				"https://spdx.org/rdf/3.0.0/terms/ExpandedLicensing/CustomLicenseAddition".equals(classUri)) {
+			return "\t\tif (this.getObjectUri().contains(\"LicenseRef-\")) {\n"
+					+ "\t\t\treturn (this.getObjectUri().substring(this.getObjectUri().lastIndexOf(\"LicenseRef-\")));\n"
+					+ "\t\t} else {\n"
+					+ "\t\t\treturn this.getObjectUri();\n"
+					+ "\t\t}";
+		} else if ("https://spdx.org/rdf/3.0.0/terms/ExpandedLicensing/ConjunctiveLicenseSet".equals(classUri) ||
+				"https://spdx.org/rdf/3.0.0/terms/ExpandedLicensing/DisjunctiveLicenseSet".equals(classUri)) {
+			Map<String, Object> mustacheMap = new HashMap<>();
+			String licenseMemberPropName = uriToPropertyName("https://spdx.org/rdf/3.0.0/terms/ExpandedLicensing/member") + "s";
+			String licenseMemberGetter = "get" + licenseMemberPropName.substring(0, 1).toUpperCase() + licenseMemberPropName.substring(1);
+			mustacheMap.put("licenseMembersGetter", licenseMemberGetter);
+			mustacheMap.put("operator", 
+					"https://spdx.org/rdf/3.0.0/terms/ExpandedLicensing/DisjunctiveLicenseSet".equals(classUri) ? "OR" : "AND");
+			return mustacheToString(ShaclToJavaConstants.LICENSE_SET_TO_STRING_TEMPLATE, mustacheMap);
+		}  else if ("https://spdx.org/rdf/3.0.0/terms/Core/Element".equals(classUri)) {
+			Map<String, Object> mustacheMap = new HashMap<>();
+			String nameProp = uriToPropertyName("https://spdx.org/rdf/3.0.0/terms/Core/name");
+			String nameGetter = "get" + nameProp.substring(0, 1).toUpperCase() + nameProp.substring(1);
+			mustacheMap.put("nameGetter", nameGetter);
+			return mustacheToString(ShaclToJavaConstants.ELEMENT_TO_STRING_TEMPLATE, mustacheMap);
+		}
+		boolean elementSubclass = false;
+		for (OntClass superClass:superClasses) {
+			if ("https://spdx.org/rdf/3.0.0/terms/Core/Element".equals(superClass.getURI())) {
+				elementSubclass = true;
+				break;
+			}
+		}
+		if (elementSubclass) {
+			return "\t\treturn super.toString();";
+		} else {
+			return null;
+		}
+	}
+
 	/**
 	 * @param classUri URI of the class
 	 * @param requiredImports 
@@ -942,6 +1011,9 @@ public class ShaclToJava {
 			mustacheMap.put("primeNumber", "1381");
 			requiredImports.add("import java.util.HashSet;");
 			requiredImports.add("import java.util.Iterator;");
+			String licenseMemberPropName = uriToPropertyName("https://spdx.org/rdf/3.0.0/terms/ExpandedLicensing/member") + "s";
+			String licenseMemberGetter = "get" + licenseMemberPropName.substring(0, 1).toUpperCase() + licenseMemberPropName.substring(1);
+			mustacheMap.put("licenseMembersGetter", licenseMemberGetter);
 			return mustacheToString(ShaclToJavaConstants.LICENSE_SET_EQUALS_OVERRIDE_TEMPLATE, mustacheMap);
 		}
 		if ("https://spdx.org/rdf/3.0.0/terms/ExpandedLicensing/DisjunctiveLicenseSet".equals(classUri)) {
@@ -950,6 +1022,9 @@ public class ShaclToJava {
 			mustacheMap.put("primeNumber", "41");
 			requiredImports.add("import java.util.HashSet;");
 			requiredImports.add("import java.util.Iterator;");
+			String licenseMemberPropName = uriToPropertyName("https://spdx.org/rdf/3.0.0/terms/ExpandedLicensing/member") + "s";
+			String licenseMemberGetter = "get" + licenseMemberPropName.substring(0, 1).toUpperCase() + licenseMemberPropName.substring(1);
+			mustacheMap.put("licenseMembersGetter", licenseMemberGetter);
 			return mustacheToString(ShaclToJavaConstants.LICENSE_SET_EQUALS_OVERRIDE_TEMPLATE, mustacheMap);
 		}
 		if ("https://spdx.org/rdf/3.0.0/terms/ExpandedLicensing/OrLaterOperator".equals(classUri)) {
@@ -1028,6 +1103,8 @@ public class ShaclToJava {
 		mustacheMap.put("superClass", superClass);
 		List<String> imports = buildImports(new ArrayList<String>(requiredImports));
 		mustacheMap.put("imports", imports.toArray(new String[imports.size()]));
+		mustacheMap.put("toStringName", name.startsWith("NoAssertion") ? "NOASSERTION" :
+			name.startsWith("None") ? "NONE" : name);
 		writeMustacheFile(ShaclToJavaConstants.INDIVIDUAL_CLASS_TEMPLATE, sourceFile, mustacheMap);
 	}
 	

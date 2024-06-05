@@ -1,0 +1,5 @@
+		try {
+			return this.{{{subjectLicenseGetter}}}().toString() + "+";
+		} catch (InvalidSPDXAnalysisException e) {
+			return "Error: "+e.getMessage();
+		}

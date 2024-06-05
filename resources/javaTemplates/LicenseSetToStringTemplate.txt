@@ -1,0 +1,13 @@
+		StringBuilder sb = new StringBuilder("(");
+		boolean moreThanOne = false;
+		Iterator<SimpleLicensingAnyLicenseInfo> iter;
+		iter = this.{{{licenseMembersGetter}}}().iterator();
+		while (iter.hasNext()) {
+			if (moreThanOne) {
+				sb.append(" {{{operator}}} ");
+			}
+			moreThanOne = true;
+			sb.append(iter.next().toString());
+		}
+		sb.append(')');
+		return sb.toString();

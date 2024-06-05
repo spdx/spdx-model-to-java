@@ -7,6 +7,7 @@ package org.spdx.library.model.v3;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 
@@ -18,6 +19,8 @@ import org.spdx.core.InvalidSPDXAnalysisException;
 import org.spdx.library.model.v3.core.CreationInfo;
 import org.spdx.library.model.v3.core.ExternalIdentifier;
 import org.spdx.library.model.v3.core.ExternalRef;
+import org.spdx.library.model.v3.core.NamespaceMap;
+import org.spdx.library.model.v3.core.SpdxDocument;
 import org.spdx.library.model.v3.expandedlicensing.ExpandedLicensingCustomLicenseAddition;
 import org.spdx.storage.IModelStore;
 
@@ -31,6 +34,8 @@ import org.spdx.storage.IModelStore;
  */
 public class ExternalCustomLicenseAddition extends ExpandedLicensingCustomLicenseAddition  implements IndividualUriValue {
 
+	@Nullable SpdxDocument enclosingSpdxDocument = null;
+	
 	/**
 	 * @param store store to use for the inflated object
 	 * @param copyManager if non-null, implicitly copy any referenced properties from other model stores
@@ -124,9 +129,46 @@ public class ExternalCustomLicenseAddition extends ExpandedLicensingCustomLicens
 	}
 	
 	
+
+	/**
+	 * @return the enclosingSpdxDocument
+	 */
+	public SpdxDocument getEnclosingSpdxDocument() {
+		return enclosingSpdxDocument;
+	}
+
+	/**
+	 * @param enclosingSpdxDocument the enclosingSpdxDocument to set
+	 */
+	public void setEnclosingSpdxDocument(SpdxDocument enclosingSpdxDocument) {
+		this.enclosingSpdxDocument = enclosingSpdxDocument;
+	}
+
 	@Override
 	public String toString() {
-		return "External Custom License Addition: "+getObjectUri();
+		if (Objects.nonNull(enclosingSpdxDocument)) {
+			try {
+				String nameSpace = null;
+				String prefix = null;
+				for (NamespaceMap ns:enclosingSpdxDocument.getNamespaceMaps()) {
+					if (this.getObjectUri().startsWith(ns.getNamespace())) {
+						if (Objects.isNull(nameSpace) || ns.getNamespace().length() > nameSpace.length()) {
+							nameSpace = ns.getNamespace();
+							prefix = ns.getPrefix();
+						}
+					}
+				}
+				if (Objects.nonNull(nameSpace)) {
+					return prefix + getObjectUri().substring(nameSpace.length());
+				} else {
+					return getObjectUri();
+				}
+			} catch (InvalidSPDXAnalysisException ex) {
+				return getObjectUri();
+			}
+		} else {
+			return getObjectUri();
+		}
 	}
 	
 	/* (non-Javadoc)

@@ -41,6 +41,8 @@ public class SpdxConstantsV3 {
 	// Date format - NOTE: This format does not handle milliseconds.  Use Instant.parse for full ISO 8601 parsing
 	public static final String SPDX_DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ss'Z'";
 	
+	public static final String SPDX_LISTED_LICENSE_NAMESPACE = "http://spdx.org/licenses/";
+	
 	{{#namespaces}}
 	
 	/**

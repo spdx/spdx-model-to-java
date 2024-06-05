@@ -1,0 +1,6 @@
+		try {
+			return this.{{{extendableLicenseGetter}}}().toString() + 
+					" WITH " + this.{{{subjectAdditionGetter}}}().toString();
+		} catch (InvalidSPDXAnalysisException e) {
+			return "Error: "+e.getMessage();
+		}

@@ -1,0 +1,17 @@
+		try {
+			StringBuilder sb = new StringBuilder();
+			Optional<String> name = getName();
+			if (name.isPresent()) {
+				sb.append(name.get());
+			} else {
+				sb.append("[Name Missing]");
+			}
+			sb.append(":");
+			sb.append(getType());
+			sb.append('(');
+			sb.append(getObjectUri());
+			sb.append(')');
+			return sb.toString();
+		} catch (InvalidSPDXAnalysisException e) {
+			return "Error: "+e.getMessage();
+		}

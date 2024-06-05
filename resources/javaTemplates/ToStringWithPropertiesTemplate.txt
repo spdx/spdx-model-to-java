@@ -1,0 +1,27 @@
+		try {
+			StringBuilder sb = new StringBuilder(getType());
+			sb.append(":");
+			{{#toStringProperties}}
+			{{#nonOptional}}
+			{{type}}} {{{name}}} = {{{getter}}}();
+			if (Objects.nonNull({{{name}}})) {
+				sb.append({{{name}}}.toString());
+			} else {
+				sb.append("[{{{type}}}-Missing]");
+			}
+			{{/nonOptional}}
+			{{^nonOptional}}
+			Optional<{{{type}}}> {{{name}}} = {{{getter}}}();
+			if ({{{name}}}.isPresent()) {
+				sb.append({{{name}}}.get().toString());
+			} else {
+				sb.append("[{{{type}}}-Missing]");
+			}
+			{{/nonOptional}}
+			sb.append(" ");
+			{{/toStringProperties}}
+			sb.setLenght(sb.length() == 0 ? 0 : sb.length()-1);
+			return sb.toString();
+		} catch (InvalidSPDXAnalysisException e) {
+			return "Error: "+e.getMessage();
+		}

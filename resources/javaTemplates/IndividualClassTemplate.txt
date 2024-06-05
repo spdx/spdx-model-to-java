@@ -256,7 +256,7 @@ public class {{{className}}} extends {{{superClass}}} implements IndividualUriVa
 	
 	@Override
 	public String toString() {
-		return "{{{className}}}";
+		return "{{{toStringName}}}";
 	}
 	
 	/* (non-Javadoc)

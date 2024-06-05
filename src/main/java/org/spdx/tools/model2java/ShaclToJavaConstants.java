@@ -59,6 +59,10 @@ public class ShaclToJavaConstants {
 	public static final String LICENSE_SET_EQUALS_OVERRIDE_TEMPLATE = "LicenseSetEqualsOverrideTemplate.txt";
 	public static final String OR_LATER_EQUALS_OVERRIDE_TEMPLATE = "OrLaterEqualsOverrideTemplate.txt";
 	public static final String WITH_EQUALS_OVERRIDE_TEMPLATE = "WithOperatorEqualsOverrideTemplate.txt";
+	public static final String WITH_OPERATOR_TO_STRING_TEMPLATE = "WithOperatorToStringTemplate.txt";
+	public static final String OR_LATER_TO_STRING_TEMPLATE = "OrLaterToStringTemplate.txt";
+	public static final String LICENSE_SET_TO_STRING_TEMPLATE = "LicenseSetToStringTemplate.txt";
+	public static final String ELEMENT_TO_STRING_TEMPLATE = "ElementToStringTemplate.txt";
 	
 	public static Set<String> INTEGER_TYPES = new HashSet<>();
 	static {

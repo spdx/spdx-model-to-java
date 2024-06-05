@@ -7,7 +7,7 @@
 	 */
 	public List<SimpleLicensingAnyLicenseInfo> getFlattenedMembers() throws InvalidSPDXAnalysisException {
 		HashSet<SimpleLicensingAnyLicenseInfo> retval = new HashSet<>();	// Use a set since any duplicated elements would be still considered equal
-		Iterator<SimpleLicensingAnyLicenseInfo> iter = this.getExpandedLicensingMembers().iterator();
+		Iterator<SimpleLicensingAnyLicenseInfo> iter = this.{{{licenseMembersGetter}}}().iterator();
 		while (iter.hasNext()) {
 			SimpleLicensingAnyLicenseInfo li = iter.next();
 			if (li instanceof {{{className}}}) {

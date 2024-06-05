@@ -26,16 +26,24 @@ package {{{pkgName}}};
 public {{#abstract}}abstract{{/abstract}} class {{{className}}} extends {{{superClass}}} {{#compareUsingProperties}}implements Comparable<{{{className}}}>{{/compareUsingProperties}} {
 
 	{{#objectPropertyValueCollection}}
+	{{^superSetter}}
 	Collection<{{{type}}}> {{{propertyName}}}s;
+	{{/superSetter}}
 	{{/objectPropertyValueCollection}}
 	{{#stringCollection}}
+	{{^superSetter}}
 	Collection<String> {{{propertyName}}}s;
+	{{/superSetter}}
 	{{/stringCollection}}
 	{{#objectPropertyValueSet}}
+	{{^superSetter}}
 	Set<{{{type}}}> {{{propertyName}}}s;
+	{{/superSetter}}
 	{{/objectPropertyValueSet}}
 	{{#enumPropertyValueCollection}}
+	{{^superSetter}}
 	Collection<{{{type}}}> {{{propertyName}}}s;
+	{{/superSetter}}
 	{{/enumPropertyValueCollection}}
 	
 	/**
@@ -68,16 +76,24 @@ public {{#abstract}}abstract{{/abstract}} class {{{className}}} extends {{{super
 			boolean create)	throws InvalidSPDXAnalysisException {
 		super(modelStore, objectUri, copyManager, create);
 		{{#objectPropertyValueCollection}}
+		{{^superSetter}}
 		{{{propertyName}}}s = (Collection<{{{type}}}>)(Collection<?>)this.getObjectPropertyValueCollection(SpdxConstantsV3.{{{propertyConstant}}}, {{{type}}}.class);
+		{{/superSetter}}
 		{{/objectPropertyValueCollection}}
 		{{#enumPropertyValueCollection}}
+		{{^superSetter}}
 		{{{propertyName}}}s = (Collection<{{{type}}}>)(Collection<?>)this.getObjectPropertyValueCollection(SpdxConstantsV3.{{{propertyConstant}}}, {{{type}}}.class);
+		{{/superSetter}}
 		{{/enumPropertyValueCollection}}
 		{{#stringCollection}}
+		{{^superSetter}}
 		{{{propertyName}}}s = (Collection<String>)(Collection<?>)this.getObjectPropertyValueCollection(SpdxConstantsV3.{{{propertyConstant}}}, String.class);
+		{{/superSetter}}
 		{{/stringCollection}}
 		{{#objectPropertyValueSet}}
+		{{^superSetter}}
 		{{{propertyName}}}s = (Set<{{{type}}}>)(Set<?>)this.getObjectPropertyValueSet(SpdxConstantsV3.{{{propertyConstant}}}, {{{type}}}.class);
+		{{/superSetter}}
 		{{/objectPropertyValueSet}}
 		{{#stringProperty}}
 		{{#isSpecVersion}}
@@ -649,38 +665,10 @@ public {{#abstract}}abstract{{/abstract}} class {{{className}}} extends {{{super
 	
 	@Override
 	public String toString() {
-		{{^usePropertiesForToString}}
+		{{^toString}}
 		return "{{{className}}}: "+getObjectUri();
-		{{/usePropertiesForToString}}
-		{{#usePropertiesForToString}}
-		try {
-			StringBuilder sb = new StringBuilder();
-			{{#toStringProperties}}
-			{{#nonOptional}}
-			{{type}}} {{{name}}} = {{{getter}}}();
-			if (Objects.nonNull({{{name}}})) {
-				sb.append({{{name}}}.toString());
-			} else {
-				sb.append("[{{{type}}}-Missing]");
-			}
-			{{/nonOptional}}
-			{{^nonOptional}}
-			Optional<{{{type}}}> {{{name}}} = {{{getter}}}();
-			if ({{{name}}}.isPresent()) {
-				sb.append({{{name}}}.get().toString());
-			} else {
-				sb.append("[{{{type}}}-Missing]");
-			}
-			{{/nonOptional}}
-			sb.append(" ");
-			{{/toStringProperties}}
-			sb.setLenght(sb.length() == 0 ? 0 : sb.length()-1);
-			return sb.toString();
-		} catch (InvalidSPDXAnalysisException e) {
-			logger.error("Error in toString: ",e);
-			return "Error: "+e.getMessage();
-		}
-		{{/usePropertiesForToString}}
+		{{/toString}}
+		{{{toString}}}
 	}
 	
 	/* (non-Javadoc)
