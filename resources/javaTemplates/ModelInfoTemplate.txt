@@ -8,6 +8,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
+import javax.annotation.Nullable;
+
 import org.spdx.core.CoreModelObject;
 import org.spdx.core.IModelCopyManager;
 import org.spdx.core.ISpdxModelInfo;
@@ -34,12 +36,12 @@ public class SpdxModelInfoV3_0 implements ISpdxModelInfo {
 	public CoreModelObject createExternalElement(IModelStore store, String uri,
 			IModelCopyManager copyManager, String specVersion)
 			throws InvalidSPDXAnalysisException {
-		return new ExternalElement(store, uri, copyManager, true);
+		return new ExternalElement(store, uri, copyManager, true, null);
 	}
 
 	@Override
-	public Map<String, Object> getUriToIndividualMap() {
-		return SpdxIndividualFactory.uriToIndividual;
+	public @Nullable Object uriToIndividual(String uri) {
+		return SpdxIndividualFactory.uriToIndividual.get(uri);
 	}
 
 	@Override

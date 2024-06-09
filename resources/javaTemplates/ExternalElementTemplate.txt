@@ -52,7 +52,7 @@ public class ExternalElement extends Element implements IndividualUriValue {
 	 * @throws InvalidSPDXAnalysisException 
 	 */
 	public ExternalElement(IModelStore store, String objectUri, IModelCopyManager copyManager) throws InvalidSPDXAnalysisException {
-		this(store, objectUri, copyManager, true);
+		this(store, objectUri, copyManager, true, null);
 	}
 
 	/**
@@ -61,10 +61,12 @@ public class ExternalElement extends Element implements IndividualUriValue {
 	 * @param objectUri URI or anonymous ID for the Element
 	 * @param external Information about the external map
 	 * @param create if true, create if it does not already exist
+	 * @param idPrefix - prefix to be used when generating new SPDX IDs
 	 * @throws InvalidSPDXAnalysisException 
 	 */
-	public ExternalElement(IModelStore store, String objectUri, IModelCopyManager copyManager, boolean create) throws InvalidSPDXAnalysisException {
-		super(store, objectUri, copyManager, create);
+	public ExternalElement(IModelStore store, String objectUri, IModelCopyManager copyManager, 
+			boolean create, String idPrefix) throws InvalidSPDXAnalysisException {
+		super(store, objectUri, copyManager, create, idPrefix);
 	}
 
 	/* (non-Javadoc)

@@ -59,7 +59,8 @@ public {{#abstract}}abstract{{/abstract}} class {{{className}}} extends {{{super
 	 * @throws InvalidSPDXAnalysisException when unable to create the {{{className}}}
 	 */
 	public {{{className}}}(String objectUri) throws InvalidSPDXAnalysisException {
-		this(DefaultModelStore.getDefaultModelStore(), objectUri, DefaultModelStore.getDefaultCopyManager(), true);
+		this(DefaultModelStore.getDefaultModelStore(), objectUri, DefaultModelStore.getDefaultCopyManager(), 
+				true, DefaultModelStore.getDefaultDocumentUri() + "#");
 	}
 
 	/**
@@ -67,14 +68,15 @@ public {{#abstract}}abstract{{/abstract}} class {{{className}}} extends {{{super
 	 * @param objectUri URI or anonymous ID for the {{{className}}}
 	 * @param copyManager Copy manager for the {{{className}}} - can be null if copying is not required
 	 * @param create true if {{{className}}} is to be created
+	 * @param idPrefix - prefix to be used when generating new SPDX IDs
 	 * @throws InvalidSPDXAnalysisException when unable to create the {{{className}}}
 	 */
 	 {{#suppressUnchecked}}
 	 @SuppressWarnings("unchecked")
 	 {{/suppressUnchecked}}
 	public {{{className}}}(IModelStore modelStore, String objectUri, @Nullable IModelCopyManager copyManager,
-			boolean create)	throws InvalidSPDXAnalysisException {
-		super(modelStore, objectUri, copyManager, create);
+			boolean create, String idPrefix) throws InvalidSPDXAnalysisException {
+		super(modelStore, objectUri, copyManager, create, idPrefix);
 		{{#objectPropertyValueCollection}}
 		{{^superSetter}}
 		{{{propertyName}}}s = (Collection<{{{type}}}>)(Collection<?>)this.getObjectPropertyValueCollection(SpdxConstantsV3.{{{propertyConstant}}}, {{{type}}}.class);
@@ -1013,6 +1015,7 @@ public {{#abstract}}abstract{{/abstract}} class {{{className}}} extends {{{super
 		public {{{className}}}Builder(ModelObjectV3 from, String objectUri) throws InvalidSPDXAnalysisException {
 			this(from.getModelStore(), objectUri, from.getCopyManager());
 			setStrict(from.isStrict());
+			setIdPrefix(from.getIdPrefix());
 			{{#hasCreationInfo}}
 			if (from instanceof Element) {
 				setCreationInfo(((Element)from).getCreationInfo());

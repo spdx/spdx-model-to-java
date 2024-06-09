@@ -42,10 +42,12 @@ public class ExternalCustomLicenseAddition extends ExpandedLicensingCustomLicens
 	 * @param objectUri URI or anonymous ID for the Element
 	 * @param external Information about the external map
 	 * @param create if true, create the object
+	 * @param idPrefix - prefix to be used when generating new SPDX IDs
 	 * @throws InvalidSPDXAnalysisException 
 	 */
-	public ExternalCustomLicenseAddition(IModelStore store, String objectUri, IModelCopyManager copyManager, boolean create) throws InvalidSPDXAnalysisException {
-		super(store, objectUri, copyManager, create);
+	public ExternalCustomLicenseAddition(IModelStore store, String objectUri, IModelCopyManager copyManager, 
+			boolean create, String idPrefix) throws InvalidSPDXAnalysisException {
+		super(store, objectUri, copyManager, create, idPrefix);
 	}
 	
 	/**
@@ -56,7 +58,7 @@ public class ExternalCustomLicenseAddition extends ExpandedLicensingCustomLicens
 	 * @throws InvalidSPDXAnalysisException 
 	 */
 	public ExternalCustomLicenseAddition(IModelStore store, String objectUri, IModelCopyManager copyManager) throws InvalidSPDXAnalysisException {
-		this(store, objectUri, copyManager, true);
+		this(store, objectUri, copyManager, true, null);
 	}
 	
 	/* (non-Javadoc)

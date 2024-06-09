@@ -48,7 +48,7 @@ public class SpdxConstantsV3 {
 	/**
 	 * {{{namespaceName}}} namespace
 	 */
-	public static final String {{{namespaceConstantName}}} = "{{{namespaceUri}}}";
+	public static final String {{{namespaceConstantName}}} = "{{{namespaceUri}}}/";
 	{{#propertyDescriptors}}
 	public static final PropertyDescriptor {{{propertyConstantName}}} = new PropertyDescriptor("{{{propertyConstantValue}}}", {{{namespaceConstantName}}});
 	{{/propertyDescriptors}}

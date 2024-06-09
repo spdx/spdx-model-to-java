@@ -11,6 +11,8 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 
+import javax.annotation.Nullable;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.spdx.core.CoreModelObject;
@@ -54,12 +56,13 @@ public abstract class ModelObjectV3 extends CoreModelObject {
 	 * @param objectUri
 	 * @param copyManager
 	 * @param create
+	 * @param idPrefix - prefix to be used when generating new SPDX IDs
 	 * @throws InvalidSPDXAnalysisException
 	 */
 	public ModelObjectV3(IModelStore modelStore, String objectUri,
-			IModelCopyManager copyManager, boolean create)
+			IModelCopyManager copyManager, boolean create, @Nullable String idPrefix)
 			throws InvalidSPDXAnalysisException {
-		super(modelStore, objectUri, copyManager, create, SpdxConstantsV3.MODEL_SPEC_VERSION);
+		super(modelStore, objectUri, copyManager, create, SpdxConstantsV3.MODEL_SPEC_VERSION, idPrefix);
 	}
 
 	/**
