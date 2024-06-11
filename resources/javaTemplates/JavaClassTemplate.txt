@@ -159,37 +159,86 @@ public {{#abstract}}abstract{{/abstract}} class {{{className}}} extends {{{super
 		{{/objectPropertyValueSet}}
 		{{#elementProperties}}
 		{{^superSetter}}
+		{{#nonOptional}}
+		if (Objects.nonNull(builder.{{{propertyName}}})) {
+			{{{setter}}}(builder.{{{propertyName}}});
+		}
+		{{/nonOptional}}
+		{{^nonOptional}}
 		{{{setter}}}(builder.{{{propertyName}}});
+		{{/nonOptional}}
 		{{/superSetter}}
 		{{/elementProperties}}
 		{{#objectProperties}}
 		{{^superSetter}}
+		{{#nonOptional}}
+		if (Objects.nonNull(builder.{{{propertyName}}})) {
+			{{{setter}}}(builder.{{{propertyName}}});
+		}
+		{{/nonOptional}}
+		{{^nonOptional}}
 		{{{setter}}}(builder.{{{propertyName}}});
+		{{/nonOptional}}
 		{{/superSetter}}
 		{{/objectProperties}}
 		{{#anyLicenseInfoProperties}}
 		{{^superSetter}}
+		{{#nonOptional}}
+		if (Objects.nonNull(builder.{{{propertyName}}})) {
+			{{{setter}}}(builder.{{{propertyName}}});
+		}
+		{{/nonOptional}}
+		{{^nonOptional}}
 		{{{setter}}}(builder.{{{propertyName}}});
+		{{/nonOptional}}
 		{{/superSetter}}
 		{{/anyLicenseInfoProperties}}
 		{{#enumerationProperties}}
 		{{^superSetter}}
+		{{#nonOptional}}
+		if (Objects.nonNull(builder.{{{propertyName}}})) {
+			{{{setter}}}(builder.{{{propertyName}}});
+		}
+		{{/nonOptional}}
+		{{^nonOptional}}
 		{{{setter}}}(builder.{{{propertyName}}});
+		{{/nonOptional}}
 		{{/superSetter}}
 		{{/enumerationProperties}}
 		{{#booleanProperties}}
 		{{^superSetter}}
+		{{#nonOptional}}
+		if (Objects.nonNull(builder.{{{propertyName}}})) {
+			{{{setter}}}(builder.{{{propertyName}}});
+		}
+		{{/nonOptional}}
+		{{^nonOptional}}
 		{{{setter}}}(builder.{{{propertyName}}});
+		{{/nonOptional}}
 		{{/superSetter}}
 		{{/booleanProperties}}
 		{{#integerProperties}}
 		{{^superSetter}}
+		{{#nonOptional}}
+		if (Objects.nonNull(builder.{{{propertyName}}})) {
+			{{{setter}}}(builder.{{{propertyName}}});
+		}
+		{{/nonOptional}}
+		{{^nonOptional}}
 		{{{setter}}}(builder.{{{propertyName}}});
+		{{/nonOptional}}
 		{{/superSetter}}
 		{{/integerProperties}}
 		{{#stringProperties}}
 		{{^superSetter}}
+		{{#nonOptional}}
+		if (Objects.nonNull(builder.{{{propertyName}}})) {
+			{{{setter}}}(builder.{{{propertyName}}});
+		}
+		{{/nonOptional}}
+		{{^nonOptional}}
 		{{{setter}}}(builder.{{{propertyName}}});
+		{{/nonOptional}}
 		{{/superSetter}}
 		{{/stringProperties}}
 	}

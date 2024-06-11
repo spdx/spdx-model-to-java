@@ -1,6 +1,9 @@
-		try {
-			return this.{{{extendableLicenseGetter}}}().toString() + 
-					" WITH " + this.{{{subjectAdditionGetter}}}().toString();
+try {
+			String extendableLicenseStr = Objects.nonNull(this.{{{extendableLicenseGetter}}}()) ?
+						this.{{{extendableLicenseGetter}}}().toString() : "[Missing extendableLicense]";
+			String subjectAdditionStr = Objects.nonNull(this.{{{extendableLicenseGetter}}}()) ?
+						this.{{{extendableLicenseGetter}}}().toString() : "[Missing subjectAddition]";
+			return extendableLicenseStr + " WITH " + subjectAdditionStr;
 		} catch (InvalidSPDXAnalysisException e) {
 			return "Error: "+e.getMessage();
 		}

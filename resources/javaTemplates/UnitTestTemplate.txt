@@ -18,22 +18,9 @@
  
 package {{{pkgName}}};
 
-import javax.annotation.Nullable;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
-
-import org.spdx.core.InvalidSPDXAnalysisException;
-import org.spdx.core.IModelCopyManager;
-import {{{pkgName}}}.{{{className}}}.{{{className}}}Builder;
-import org.spdx.library.model.v3.core.CreationInfo;
-import org.spdx.storage.IModelStore;
-import org.spdx.storage.simple.InMemSpdxStore;
-import org.spdx.utility.compare.UnitTestHelper;
-
-import junit.framework.TestCase;
+{{#imports}}
+{{.}}
+{{/imports}}
 
 public class {{{className}}}Test extends TestCase {
 
@@ -42,22 +29,36 @@ public class {{{className}}}Test extends TestCase {
 
 	IModelStore modelStore;
 	IModelCopyManager copyManager;
+	{{#hasCreationInfo}}
 	CreationInfo creationInfo;
+	{{/hasCreationInfo}}
 
 	{{#integerProperties}}
 	static final Integer {{{propertyNameUpper}}}_TEST_VALUE = 55;
 	{{/integerProperties}}
 	{{#stringProperties}}
+	{{^pattern}}
 	static final String {{{propertyNameUpper}}}_TEST_VALUE = "test {{{propertyName}}}";
+	{{/pattern}}
+	{{#pattern}}
+	static final String {{{propertyNameUpper}}}_TEST_VALUE = UnitTestHelper.genRandPattern("{{{pattern}}}");
+	{{/pattern}}
 	{{/stringProperties}}
 	{{#enumerationProperties}}
 	static final {{{type}}} {{{propertyNameUpper}}}_TEST_VALUE1 = {{{type}}}.values()[0];
 	static final {{{type}}} {{{propertyNameUpper}}}_TEST_VALUE2 = {{{type}}}.values()[1];
 	{{/enumerationProperties}}
 	{{#stringCollection}}
+	{{^pattern}}
 	static final String {{{propertyNameUpper}}}_TEST_VALUE1 = "test 1 {{{propertyName}}}";
 	static final String {{{propertyNameUpper}}}_TEST_VALUE2 = "test 2 {{{propertyName}}}";
 	static final String {{{propertyNameUpper}}}_TEST_VALUE3 = "test 3 {{{propertyName}}}";
+	{{/pattern}}
+	{{#pattern}}
+	static final String {{{propertyNameUpper}}}_TEST_VALUE1 = UnitTestHelper.genRandPattern("{{{pattern}}}");
+	static final String {{{propertyNameUpper}}}_TEST_VALUE2 = UnitTestHelper.genRandPattern("{{{pattern}}}");
+	static final String {{{propertyNameUpper}}}_TEST_VALUE3 = UnitTestHelper.genRandPattern("{{{pattern}}}");
+	{{/pattern}}
 	static final List<String> {{{propertyNameUpper}}}_TEST_LIST1 = Arrays.asList(new String[] { {{{propertyNameUpper}}}_TEST_VALUE1, {{{propertyNameUpper}}}_TEST_VALUE2 });
 	static final List<String> {{{propertyNameUpper}}}_TEST_LIST2 = Arrays.asList(new String[] { {{{propertyNameUpper}}}_TEST_VALUE3 });
 	{{/stringCollection}}
@@ -70,17 +71,19 @@ public class {{{className}}}Test extends TestCase {
 	
 	protected void setUp() throws Exception {
 		super.setUp();
-		modelStore = new InMemSpdxStore();
-		copyManager = new ModelCopyManager();
-		creationInfo = new CreationInfoBuilder(modelStore, modelStore.getNextId(IdType.Anonymous), copyManager)
+		modelStore = new MockModelStore();
+		copyManager = new MockCopyManager();
+		ModelRegistry.getModelRegistry().registerModel(new SpdxModelInfoV3_0());
+		{{#hasCreationInfo}}
+		creationInfo = new CreationInfo.CreationInfoBuilder(modelStore, modelStore.getNextId(IdType.Anonymous), copyManager)
 							.setCreated("2010-01-29T18:30:22Z")
-							.setSpecVersion("SPDX-3.0")
-							.addProfile(ProfileIdentifierType.SOFTWARE)
-							.addProfile(ProfileIdentifierType.CORE).build();
+							.setSpecVersion("3.0.0")
+							.build();
 		AgentBuilder agentBuilder = new AgentBuilder(modelStore, "https://unique/id" + modelStore.getNextId(IdType.SpdxId), copyManager);
 		agentBuilder.setCreationInfo(creationInfo);
 		agentBuilder.setName("Creator Name");
 		creationInfo.getCreatedBys().add(agentBuilder.build());
+		{{/hasCreationInfo}}
 	}
 
 	protected void tearDown() throws Exception {
@@ -88,7 +91,7 @@ public class {{{className}}}Test extends TestCase {
 	}
 	
 	public {{{className}}}Builder builderFor{{{className}}}Tests(
-					IModelStore modelStore, String objectUri, @Nullable ModelCopyManager copyManager) throws InvalidSPDXAnalysisException {
+					IModelStore modelStore, String objectUri, @Nullable IModelCopyManager copyManager) throws InvalidSPDXAnalysisException {
 		{{{className}}}Builder retval = new {{{className}}}Builder(modelStore, objectUri, copyManager)
 				{{#booleanProperties}}
 				.{{{setter}}}(true)
@@ -129,7 +132,9 @@ public class {{{className}}}Test extends TestCase {
 				{{/objectPropertyValueSet}}
 				***************/
 				;
+		{{#hasCreationInfo}}
 		retval.setCreationInfo(creationInfo);
+		{{/hasCreationInfo}}
 		return retval;
 	}
 	
@@ -174,7 +179,7 @@ public class {{{className}}}Test extends TestCase {
 	
 	public void testEquivalent() throws InvalidSPDXAnalysisException {
 		{{{className}}} test{{{className}}} = builderFor{{{className}}}Tests(modelStore, TEST_OBJECT_URI, copyManager).build();
-		{{{className}}} test2{{{className}}} = builderFor{{{className}}}Tests(new InMemSpdxStore(), "https://testObject2", copyManager).build();
+		{{{className}}} test2{{{className}}} = builderFor{{{className}}}Tests(modelStore, "https://testObject2", copyManager).build();
 		assertTrue(test{{{className}}}.equivalent(test2{{{className}}}));
 		assertTrue(test2{{{className}}}.equivalent(test{{{className}}}));
 		// TODO change some parameters for negative tests
@@ -327,12 +332,18 @@ public class {{{className}}}Test extends TestCase {
 		{{^nonOptional}}
 		assertEquals(Optional.of({{{propertyNameUpper}}}_TEST_VALUE), test{{{className}}}.{{{getter}}}());
 		{{/nonOptional}}
-		test{{{className}}}.{{{setter}}}("new {{{propertyName}}} value");
+		{{^pattern}}
+		String newStringValue = "new {{{propertyName}}} value";
+		{{/pattern}}
+		{{#pattern}}
+		String newStringValue = UnitTestHelper.genRandPattern("{{{pattern}}}");
+		{{/pattern}}
+		test{{{className}}}.{{{setter}}}(newStringValue);
 		{{#nonOptional}}
-		assertEquals("new {{{propertyName}}} value", test{{{className}}}.{{{getter}}}());
+		assertEquals(newStringValue, test{{{className}}}.{{{getter}}}());
 		{{/nonOptional}}
 		{{^nonOptional}}
-		assertEquals(Optional.of("new {{{propertyName}}} value"), test{{{className}}}.{{{getter}}}());
+		assertEquals(Optional.of(newStringValue), test{{{className}}}.{{{getter}}}());
 		{{/nonOptional}}
 	}
 	{{/stringProperties}}

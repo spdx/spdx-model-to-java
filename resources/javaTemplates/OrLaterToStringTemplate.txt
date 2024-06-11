@@ -1,5 +1,7 @@
-		try {
-			return this.{{{subjectLicenseGetter}}}().toString() + "+";
+try {
+			String subjectLicense = Objects.nonNull(this.{{{subjectLicenseGetter}}}()) ? 
+							this.{{{subjectLicenseGetter}}}().toString() : "[Missing Subject License]";
+			return subjectLicense + "+";
 		} catch (InvalidSPDXAnalysisException e) {
 			return "Error: "+e.getMessage();
 		}

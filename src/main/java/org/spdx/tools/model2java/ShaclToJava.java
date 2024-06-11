@@ -215,9 +215,33 @@ public class ShaclToJava {
 		generatePackageInfo(dir);
 		generatePomFile(dir);
 		generateIndividualFactory(dir);
+		//TODO: Get the version from the SHACL file
+		generateMockFiles(dir, "3.0.0");
 		return warnings;
 	}
 	
+
+	/**
+	 * Generates the test mock files
+	 * @param dir
+	 * @throws IOException 
+	 */
+	private void generateMockFiles(File dir, String specVersion) throws IOException {
+		Path path = dir.toPath().resolve("src").resolve("test").resolve("java").resolve("org")
+				.resolve("spdx").resolve("library").resolve("model").resolve("v3");
+		Files.createDirectories(path);
+		File mockModelStoreFile = path.resolve("MockModelStore.java").toFile();
+		mockModelStoreFile.createNewFile();
+		writeMustacheFile(ShaclToJavaConstants.MOCK_MODEL_STORE_TEMPLATE, mockModelStoreFile, new HashMap<>());
+		File mockCopyManager = path.resolve("MockCopyManager.java").toFile();
+		mockCopyManager.createNewFile();
+		writeMustacheFile(ShaclToJavaConstants.MOCK_COPY_MANAGER_TEMPLATE, mockCopyManager, new HashMap<>());
+		File unitTestHelper = path.resolve("UnitTestHelper.java").toFile();
+		unitTestHelper.createNewFile();
+		HashMap<String, Object> mustacheMap = new HashMap<>();
+		mustacheMap.put("specVersion", specVersion);
+		writeMustacheFile(ShaclToJavaConstants.UNIT_TEST_HELPER_TEMPLATE, unitTestHelper, mustacheMap);
+	}
 
 	/**
 	 * @param individualUri
@@ -856,7 +880,6 @@ public class ShaclToJava {
 			boolean abstractClass) throws IOException, ShaclToJavaException {
 		String pkgName = uriToPkg(classUri);
 		File sourceFile = createJavaSourceFile(classUri, dir);
-		File unitTestFile = createUnitTestFile(classUri, dir);
 		Set<String> requiredImports = new HashSet<>();
 		Map<String, Object> mustacheMap = new HashMap<>();
 		mustacheMap.put("abstract", abstractClass);
@@ -922,7 +945,21 @@ public class ShaclToJava {
 			mustacheMap.put("equalsHashOverride", equalsHashOverride);
 		}
 		writeMustacheFile(ShaclToJavaConstants.JAVA_CLASS_TEMPLATE, sourceFile, mustacheMap);
-		writeMustacheFile(ShaclToJavaConstants.UNIT_TEST_TEMPLATE, unitTestFile, mustacheMap);
+		if (!abstractClass) {
+			File unitTestFile = createUnitTestFile(classUri, dir);
+			requiredImports.add(String.format("import %s.%s.%sBuilder;", pkgName, name, name));
+			requiredImports.add("import junit.framework.TestCase;");
+			requiredImports.add("import org.spdx.library.model.v3.MockCopyManager;");
+			requiredImports.add("import org.spdx.library.model.v3.MockModelStore;");
+			requiredImports.add("import org.spdx.library.model.v3.UnitTestHelper;");
+			requiredImports.add("import org.spdx.library.model.v3.core.Agent.AgentBuilder;");
+			requiredImports.add("import java.util.Arrays;");
+			requiredImports.add("import org.spdx.core.ModelRegistry;");
+			requiredImports.add("import org.spdx.library.model.v3.SpdxModelInfoV3_0;");
+			imports = buildImports(new ArrayList<String>(requiredImports));
+			mustacheMap.put("imports", imports.toArray(new String[imports.size()]));
+			writeMustacheFile(ShaclToJavaConstants.UNIT_TEST_TEMPLATE, unitTestFile, mustacheMap);
+		}
 		return mustacheToString(ShaclToJavaConstants.CREATE_CLASS_TEMPLATE, mustacheMap);
 	}
 	
@@ -960,7 +997,7 @@ public class ShaclToJava {
 			return "\t\treturn this.getObjectUri().substring(SpdxConstantsV3.SPDX_LISTED_LICENSE_NAMESPACE.length());";
 		} else if ("https://spdx.org/rdf/3.0.0/terms/ExpandedLicensing/CustomLicense".equals(classUri) ||
 				"https://spdx.org/rdf/3.0.0/terms/ExpandedLicensing/CustomLicenseAddition".equals(classUri)) {
-			return "\t\tif (this.getObjectUri().contains(\"LicenseRef-\")) {\n"
+			return "if (this.getObjectUri().contains(\"LicenseRef-\")) {\n"
 					+ "\t\t\treturn (this.getObjectUri().substring(this.getObjectUri().lastIndexOf(\"LicenseRef-\")));\n"
 					+ "\t\t} else {\n"
 					+ "\t\t\treturn this.getObjectUri();\n"
@@ -1593,7 +1630,7 @@ public class ShaclToJava {
 			path = path.resolve(parts[i].toLowerCase());
 		}
 		Files.createDirectories(path);
-		String fileName = uriToClassName(classUri);
+		String fileName = uriToClassName(classUri)+"Test";
 		File retval = path.resolve(fileName + ".java").toFile();
 		retval.createNewFile();
 		return retval;
