@@ -38,6 +38,7 @@ import com.mifmif.common.regex.Generex;
 
 /**
  * Helper class for unit tests
+ * GENEREATED FROM A TEMPLATE FILE - DO NOT MODIFY
  * @author Gary
  *
  */
@@ -188,11 +189,14 @@ public class UnitTestHelper {
 	}
 	
 	/**
-	 * @param pattern
+	 * @param pattern regex pattern
 	 * @return a random string that fits the Regex pattern
 	 */
 	public static String genRandPattern(String pattern) {
 		String modifiedPattern = pattern.startsWith("^") ? pattern.substring(1) : pattern;
+		int index = modifiedPattern.indexOf("(?:-((");
+		// simplify the semver regex since Generex doesn't handle the optional components well
+		modifiedPattern = index < 0 ? modifiedPattern : modifiedPattern.substring(0, index);
 		modifiedPattern = modifiedPattern.endsWith("$") ? 
 				modifiedPattern.substring(0, modifiedPattern.length()-1) : modifiedPattern;
 		return new Generex(modifiedPattern).random();

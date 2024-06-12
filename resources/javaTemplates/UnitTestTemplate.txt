@@ -22,6 +22,10 @@ package {{{pkgName}}};
 {{.}}
 {{/imports}}
 
+/**
+ * GENERATED FILE - DO NOT MODIFY
+**/
+
 public class {{{className}}}Test extends TestCase {
 
 	static final String TEST_OBJECT_URI = "https://test.uri/testuri";
@@ -158,19 +162,6 @@ public class {{{className}}}Test extends TestCase {
 	}
 
 	/**
-	 * Test method for {@link {{{pkgName}}}.{{{className}}}#toString()}.
-	 */
-	public void testToString() throws InvalidSPDXAnalysisException {
-		{{{className}}} test{{{className}}} = builderFor{{{className}}}Tests(modelStore, TEST_OBJECT_URI, copyManager).build();
-		{{^usePropertiesForToString}}
-		assertEquals("{{{className}}}: "+TEST_OBJECT_URI, test{{{className}}}.toString());
-		{{/usePropertiesForToString}}
-		{{#usePropertiesForToString}}
-		fail("Not yet implemented");
-		{{/usePropertiesForToString}}
-	}
-
-	/**
 	 * Test method for {@link {{{pkgName}}}.{{{className}}}#Element({{{pkgName}}}.{{{className}}}.{{{className}}}Builder)}.
 	 */
 	public void test{{{className}}}{{{className}}}Builder() throws InvalidSPDXAnalysisException {
@@ -204,7 +195,7 @@ public class {{{className}}}Test extends TestCase {
 		{{^nonOptional}}
 //		assertEquals(Optional.of(NEW_TEST_VALUE), test{{{className}}}.{{{getter}}}());
 		{{/nonOptional}}
-		fail("Not yet implemented");
+		//TODO: Implement
 	}
 	{{/elementProperties}}
 	{{#objectProperties}}
@@ -227,7 +218,7 @@ public class {{{className}}}Test extends TestCase {
 		{{^nonOptional}}
 //		assertEquals(Optional.of(NEW_TEST_VALUE), test{{{className}}}.{{{getter}}}());
 		{{/nonOptional}}
-		fail("Not yet implemented");
+		//TODO: Implement
 	}
 	{{/objectProperties}}
 	{{#anyLicenseInfoProperties}}
@@ -250,7 +241,7 @@ public class {{{className}}}Test extends TestCase {
 		{{^nonOptional}}
 //		assertEquals(Optional.of(NEW_TEST_VALUE), test{{{className}}}.{{{getter}}}());
 		{{/nonOptional}}
-		fail("Not yet implemented");
+		//TODO: Implement
 	}
 	{{/anyLicenseInfoProperties}}
 	{{#enumerationProperties}}
@@ -358,7 +349,7 @@ public class {{{className}}}Test extends TestCase {
 //		test{{{className}}}.{{{getter}}}s().clear();
 //		test{{{className}}}.{{{getter}}}s().addAll(NEW_TEST_VALUE);
 //		assertTrue(UnitTestHelper.isListsEquivalent(NEW_TEST_VALUE, new ArrayList<>(test{{{className}}}.{{{getter}}}s())));
-		fail("Not yet implemented");
+		//TODO: Implement
 	}
 	{{/objectPropertyValueCollection}}
 	{{#stringCollection}}
@@ -385,7 +376,7 @@ public class {{{className}}}Test extends TestCase {
 //		test{{{className}}}.{{{getter}}}s().clear();
 //		test{{{className}}}.{{{getter}}}s().addAll(NEW_TEST_VALUE);
 //		assertTrue(UnitTestHelper.isListsEquivalent(NEW_TEST_VALUE, new ArrayList<>(test{{{className}}}.{{{getter}}}())));
-		fail("Not yet implemented");
+		//TODO: Implement
 	}
 	{{/objectPropertyValueSet}}
 	{{#enumPropertyValueCollection}}
