@@ -67,6 +67,7 @@ public class ShaclToJavaConstants {
 	public static final String MOCK_COPY_MANAGER_TEMPLATE = "MockCopyManagerTemplate.txt";
 	public static final String UNIT_TEST_HELPER_TEMPLATE = "UnitTestHelperTemplate.txt";
 	public static final String TEST_VALUES_GENERATOR_TEMPLATE = "TestValuesGeneratorTemplate.txt";
+	public static final String TEST_MODEL_INFO_TEMPLATE = "TestModelInfoTemplate.txt";
 	
 	public static Set<String> INTEGER_TYPES = new HashSet<>();
 	static {

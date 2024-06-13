@@ -18,6 +18,260 @@ package org.spdx.library.model.v3;
  */
 public class TestValuesGenerator {
 
+	public static Map<String, Class<?>> MOCK_TYPE_TO_CLASS = new HashMap<>();
+	
+	static {
+		{{#classesForBuilders}}
+		{{#abstract}}
+		MOCK_TYPE_TO_CLASS.put("Mock{{{className}}}", Mock{{{className}}}.class);
+		{{/abstract}}
+		{{/classesForBuilders}}
+	}
+	
+	{{#classesForBuilders}}
+	{{#abstract}}
+	static class Mock{{{className}}} extends {{{className}}} {
+
+		/**
+		 * @param builder superclass builder
+		 * @throws InvalidSPDXAnalysisException on error
+		 */
+		protected Mock{{{className}}}({{{className}}}Builder builder)
+				throws InvalidSPDXAnalysisException {
+			super(builder);
+		}
+		
+		/**
+		 * @param modelStore Model store where the AIAIPackage is to be stored
+		 * @param objectUri URI or anonymous ID for the AIAIPackage
+		 * @param copyManager Copy manager for the AIAIPackage - can be null if copying is not required
+		 * @param create true if AIAIPackage is to be created
+		 * @param idPrefix - prefix to be used when generating new SPDX IDs
+		 * @throws InvalidSPDXAnalysisException when unable to create the AIAIPackage
+		 */
+		 @SuppressWarnings("unchecked")
+		public Mock{{{className}}}(IModelStore modelStore, String objectUri, IModelCopyManager copyManager,
+				boolean create, String idPrefix) throws InvalidSPDXAnalysisException {
+			super(modelStore, objectUri, copyManager, create, idPrefix);
+		}
+		
+		/* (non-Javadoc)
+		 * @see org.spdx.library.core.CoreModelObject#getType()
+		 */
+		@Override
+		public String getType() {
+			return "Mock{{{className}}}";
+		}		
+		
+		static class Mock{{{className}}}Builder extends {{{className}}}Builder {
+
+			/**
+			 * @param modelStore store for the built object
+			 * @param objectUri uri for the built object
+			 * @param copyManager optional copyManager
+			 */
+			public Mock{{{className}}}Builder(IModelStore modelStore,
+					String objectUri, IModelCopyManager copyManager) {
+				super(modelStore, objectUri, copyManager);
+			}
+
+			@Override
+			public {{{className}}} build() throws InvalidSPDXAnalysisException {
+				return new Mock{{{className}}}(this);
+			}
+			
+			{{#objectPropertyValueCollection}}	
+			/**
+			 * Adds a {{{propertyName}}} to the initial collection
+			 * @parameter {{{propertyName}}} {{{propertyName}}} to add
+			 * @return this for chaining
+			**/
+			public Mock{{{className}}}Builder {{{adder}}}({{{type}}} {{{propertyName}}}) {
+				if (Objects.nonNull({{{propertyName}}})) {
+					{{#superSetter}}super.{{/superSetter}}{{{propertyName}}}s.add({{{propertyName}}});
+				}
+				return this;
+			}
+			
+			/**
+			 * Adds all elements from a collection to the initial {{{propertyName}}} collection
+			 * @parameter {{{propertyName}}}Collection collection to initialize the {{{propertyName}}}
+			 * @return this for chaining
+			**/
+			public Mock{{{className}}}Builder {{{addAller}}}(Collection<{{{type}}}> {{{propertyName}}}Collection) {
+				if (Objects.nonNull({{{propertyName}}}Collection)) {
+					{{#superSetter}}super.{{/superSetter}}{{{propertyName}}}s.addAll({{{propertyName}}}Collection);
+				}
+				return this;
+			}
+			{{/objectPropertyValueCollection}}
+			{{#enumPropertyValueCollection}}
+			
+			/**
+			 * Adds a {{{propertyName}}} to the initial collection
+			 * @parameter {{{propertyName}}} {{{propertyName}}} to add
+			 * @return this for chaining
+			**/
+			public Mock{{{className}}}Builder {{{adder}}}({{{type}}} {{{propertyName}}}) {
+				if (Objects.nonNull({{{propertyName}}})) {
+					{{#superSetter}}super.{{/superSetter}}{{{propertyName}}}s.add({{{propertyName}}});
+				}
+				return this;
+			}
+			
+			/**
+			 * Adds all elements from a collection to the initial {{{propertyName}}} collection
+			 * @parameter {{{propertyName}}}Collection collection to initialize the {{{propertyName}}}
+			 * @return this for chaining
+			**/
+			public Mock{{{className}}}Builder {{{addAller}}}(Collection<{{{type}}}> {{{propertyName}}}Collection) {
+				if (Objects.nonNull({{{propertyName}}}Collection)) {
+					{{#superSetter}}super.{{/superSetter}}{{{propertyName}}}s.addAll({{{propertyName}}}Collection);
+				}
+				return this;
+			}
+			{{/enumPropertyValueCollection}}
+			{{#stringCollection}}
+			
+			/**
+			 * Adds a {{{propertyName}}} to the initial collection
+			 * @parameter {{{propertyName}}} {{{propertyName}}} to add
+			 * @return this for chaining
+			**/
+			public Mock{{{className}}}Builder {{{adder}}}(String {{{propertyName}}}) {
+				if (Objects.nonNull({{{propertyName}}})) {
+					{{#superSetter}}super.{{/superSetter}}{{{propertyName}}}s.add({{{propertyName}}});
+				}
+				return this;
+			}
+			
+			/**
+			 * Adds all elements from a collection to the initial {{{propertyName}}} collection
+			 * @parameter {{{propertyName}}}Collection collection to initialize the {{{propertyName}}}
+			 * @return this for chaining
+			**/
+			public Mock{{{className}}}Builder {{{addAller}}}(Collection<String> {{{propertyName}}}Collection) {
+				if (Objects.nonNull({{{propertyName}}}Collection)) {
+					{{#superSetter}}super.{{/superSetter}}{{{propertyName}}}s.addAll({{{propertyName}}}Collection);
+				}
+				return this;
+			}
+			{{/stringCollection}}
+			{{#objectPropertyValueSet}}
+			
+			/**
+			 * Adds a {{{propertyName}}} to the initial collection
+			 * @parameter {{{propertyName}}} {{{propertyName}}} to add
+			 * @return this for chaining
+			**/
+			public Mock{{{className}}}Builder {{{adder}}}({{{type}}} {{{propertyName}}}) {
+				if (Objects.nonNull({{{propertyName}}})) {
+					{{#superSetter}}super.{{/superSetter}}{{{propertyName}}}s.add({{{propertyName}}});
+				}
+				return this;
+			}
+			
+			/**
+			 * Adds all elements from a collection to the initial {{{propertyName}}} collection
+			 * @parameter {{{propertyName}}}Collection collection to initialize the {{{propertyName}}}
+			 * @return this for chaining
+			**/
+			public Mock{{{className}}}Builder {{{addAller}}}(Set<{{{type}}}> {{{propertyName}}}Set) {
+				if (Objects.nonNull({{{propertyName}}}Set)) {
+					{{#superSetter}}super.{{/superSetter}}{{{propertyName}}}s.addAll({{{propertyName}}}Set);
+				}
+				return this;
+			}
+			{{/objectPropertyValueSet}}
+			{{#elementProperties}}
+			
+			/**
+			 * Sets the initial value of {{{propertyName}}}
+			 * @parameter {{{propertyName}}} value to set
+			 * @return this for chaining
+			**/
+			public Mock{{{className}}}Builder {{{setter}}}({{{type}}} {{{propertyName}}}) {
+				{{#superSetter}}super.{{/superSetter}}{{^superSetter}}this.{{/superSetter}}{{{propertyName}}} = {{{propertyName}}};
+				return this;
+			}
+			{{/elementProperties}}
+			{{#objectProperties}}
+			
+			/**
+			 * Sets the initial value of {{{propertyName}}}
+			 * @parameter {{{propertyName}}} value to set
+			 * @return this for chaining
+			**/
+			public Mock{{{className}}}Builder {{{setter}}}({{{type}}} {{{propertyName}}}) {
+				{{#superSetter}}super.{{/superSetter}}{{^superSetter}}this.{{/superSetter}}{{{propertyName}}} = {{{propertyName}}};
+				return this;
+			}
+			{{/objectProperties}}
+			{{#anyLicenseInfoProperties}}
+			
+			/**
+			 * Sets the initial value of {{{propertyName}}}
+			 * @parameter {{{propertyName}}} value to set
+			 * @return this for chaining
+			**/
+			public Mock{{{className}}}Builder {{{setter}}}({{{type}}} {{{propertyName}}}) {
+				{{#superSetter}}super.{{/superSetter}}{{^superSetter}}this.{{/superSetter}}{{{propertyName}}} = {{{propertyName}}};
+				return this;
+			}
+			{{/anyLicenseInfoProperties}}
+			{{#enumerationProperties}}
+			
+			/**
+			 * Sets the initial value of {{{propertyName}}}
+			 * @parameter {{{propertyName}}} value to set
+			 * @return this for chaining
+			**/
+			public Mock{{{className}}}Builder {{{setter}}}({{{type}}} {{{propertyName}}}) {
+				{{#superSetter}}super.{{/superSetter}}{{^superSetter}}this.{{/superSetter}}{{{propertyName}}} = {{{propertyName}}};
+				return this;
+			}
+			{{/enumerationProperties}}
+			{{#booleanProperties}}
+			
+			/**
+			 * Sets the initial value of {{{propertyName}}}
+			 * @parameter {{{propertyName}}} value to set
+			 * @return this for chaining
+			**/
+			public Mock{{{className}}}Builder {{{setter}}}({{{type}}} {{{propertyName}}}) {
+				{{#superSetter}}super.{{/superSetter}}{{^superSetter}}this.{{/superSetter}}{{{propertyName}}} = {{{propertyName}}};
+				return this;
+			}
+			{{/booleanProperties}}
+			{{#integerProperties}}
+			
+			/**
+			 * Sets the initial value of {{{propertyName}}}
+			 * @parameter {{{propertyName}}} value to set
+			 * @return this for chaining
+			**/
+			public Mock{{{className}}}Builder {{{setter}}}({{{type}}} {{{propertyName}}}) {
+				{{#superSetter}}super.{{/superSetter}}{{^superSetter}}this.{{/superSetter}}{{{propertyName}}} = {{{propertyName}}};
+				return this;
+			}
+			{{/integerProperties}}
+			{{#stringProperties}}
+			
+			/**
+			 * Sets the initial value of {{{propertyName}}}
+			 * @parameter {{{propertyName}}} value to set
+			 * @return this for chaining
+			**/
+			public Mock{{{className}}}Builder {{{setter}}}(String {{{propertyName}}}) {
+				{{#superSetter}}super.{{/superSetter}}{{^superSetter}}this.{{/superSetter}}{{{propertyName}}} = {{{propertyName}}};
+				return this;
+			}
+			{{/stringProperties}}
+		}
+	}
+	{{/abstract}}
+	{{/classesForBuilders}}
+
 	{{#integerProperties}}
 	public static final Integer {{{propertyNameUpper}}}_TEST_VALUE = 55;
 	{{/integerProperties}}
@@ -62,7 +316,7 @@ public class TestValuesGenerator {
 		this.modelStore = modelStore;
 		this.copyManager = copyManager;
 		if (!ModelRegistry.getModelRegistry().containsSpecVersion("3.0.0")) {
-			ModelRegistry.getModelRegistry().registerModel(new SpdxModelInfoV3_0());
+			ModelRegistry.getModelRegistry().registerModel(new TestSpdxModelInfo());
 		}
 		creationInfo = new CreationInfo.CreationInfoBuilder(modelStore, modelStore.getNextId(IdType.Anonymous), copyManager)
 							.setCreated("2010-01-29T18:30:22Z")
@@ -76,7 +330,12 @@ public class TestValuesGenerator {
 	
 	{{#classesForBuilders}}
 	public {{{className}}}Builder builderFor{{{className}}}Tests(String objectUri) throws InvalidSPDXAnalysisException {
+		{{#abstract}}
+		{{{className}}}Builder retval = new Mock{{{className}}}.Mock{{{className}}}Builder(modelStore, objectUri, copyManager)
+		{{/abstract}}
+		{{^abstract}}
 		{{{className}}}Builder retval = new {{{className}}}Builder(modelStore, objectUri, copyManager)
+		{{/abstract}}
 				{{#booleanProperties}}
 				.{{{setter}}}(true)
 				{{/booleanProperties}}
@@ -97,24 +356,23 @@ public class TestValuesGenerator {
 				.{{{adder}}}({{{propertyNameUpper}}}_TEST_VALUE1)
 				.{{{adder}}}({{{propertyNameUpper}}}_TEST_VALUE2)
 				{{/enumPropertyValueCollection}}
-				//TODO: Add in test values
-				/********************
 				{{#elementProperties}}
-				.{{{setter}}}(Element testElement)
+				.{{{setter}}}(builderFor{{{type}}}Tests(modelStore.getNextId(IdType.SpdxId)).build())
 				{{/elementProperties}}
 				{{#objectProperties}}
-				.{{{setter}}}(new {{{type}}}())
+				{{^isCreationInfo}}
+				.{{{setter}}}(builderFor{{{type}}}Tests(modelStore.getNextId(IdType.SpdxId)).build())
+				{{/isCreationInfo}}
 				{{/objectProperties}}
 				{{#anyLicenseInfoProperties}}
-				.{{{setter}}}(TEST_ANYLICENSE_INFO)
+				.{{{setter}}}(builderFor{{{type}}}Tests(modelStore.getNextId(IdType.SpdxId)).build())
 				{{/anyLicenseInfoProperties}}
 				{{#objectPropertyValueCollection}}
-				.{{{adder}}}({{{type}}})
+				.{{{adder}}}(builderFor{{{type}}}Tests(modelStore.getNextId(IdType.SpdxId)).build())
 				{{/objectPropertyValueCollection}}
 				{{#objectPropertyValueSet}}
-				.{{{adder}}}({{{type}}})
+				.{{{adder}}}(builderFor{{{type}}}Tests(modelStore.getNextId(IdType.SpdxId)).build())
 				{{/objectPropertyValueSet}}
-				***************/
 				;
 		{{#hasCreationInfo}}
 		retval.setCreationInfo(creationInfo);

@@ -276,6 +276,10 @@ public class ShaclToJava {
 		List<Map<String, Object>> classesMaps = new ArrayList<>();
 		for (Entry<String, Map<String, Object>> entry:unitTestMaps.entrySet()) {
 			classesMaps.add(entry.getValue());
+			boolean isAbstract = (Boolean)entry.getValue().get("abstract");
+			if (isAbstract) {
+				requiredImports.add("import "+uriToPkg(entry.getKey()) + "." + uriToClassName(entry.getKey()) + ";");
+			}
 			requiredImports.add("import "+uriToPkg(entry.getKey()) + "." + uriToClassName(entry.getKey()) +
 					"." + uriToClassName(entry.getKey()) + "Builder;");
 		}
@@ -291,6 +295,10 @@ public class ShaclToJava {
 		requiredImports.add("import org.spdx.storage.IModelStore;");
 		requiredImports.add("import org.spdx.storage.IModelStore.IdType;");
 		requiredImports.add("import java.util.List;");
+		requiredImports.add("import java.util.Objects;");
+		requiredImports.add("import java.util.Collection;");
+		requiredImports.add("import java.util.Map;");
+		requiredImports.add("import java.util.HashMap;");
 		List<String> importList = new ArrayList<String>(requiredImports);
 		Collections.sort(importList);
 		mustacheMap.put("imports", importList);
@@ -322,6 +330,9 @@ public class ShaclToJava {
 		HashMap<String, Object> mustacheMap = new HashMap<>();
 		mustacheMap.put("specVersion", specVersion);
 		writeMustacheFile(ShaclToJavaConstants.UNIT_TEST_HELPER_TEMPLATE, unitTestHelper, mustacheMap);
+		File testModelInfoFile = path.resolve("TestSpdxModelInfo.java").toFile();
+		testModelInfoFile.createNewFile();
+		writeMustacheFile(ShaclToJavaConstants.TEST_MODEL_INFO_TEMPLATE, testModelInfoFile, new HashMap<>());
 	}
 
 	/**
@@ -1043,26 +1054,24 @@ public class ShaclToJava {
 			javaClassMap.put("equalsHashOverride", equalsHashOverride);
 		}
 		javaClassMaps.put(classUri, javaClassMap);
-		if (!abstractClass) {
-			// make a copy of the java class map
-			Map<String, Object> unitTestMap = new HashMap<>();
-			for (Entry<String, Object> entry:javaClassMap.entrySet()) {
-				unitTestMap.put(entry.getKey(), entry.getValue());
-			}
-			requiredImports.add(String.format("import %s.%s.%sBuilder;", pkgName, name, name));
-			requiredImports.add("import junit.framework.TestCase;");
-			requiredImports.add("import org.spdx.library.model.v3.MockCopyManager;");
-			requiredImports.add("import org.spdx.library.model.v3.MockModelStore;");
-			requiredImports.add("import org.spdx.library.model.v3.UnitTestHelper;");
-			requiredImports.add("import org.spdx.library.model.v3.core.Agent.AgentBuilder;");
-			requiredImports.add("import java.util.Arrays;");
-			requiredImports.add("import org.spdx.core.ModelRegistry;");
-			requiredImports.add("import org.spdx.library.model.v3.SpdxModelInfoV3_0;");
-			requiredImports.add("import org.spdx.library.model.v3.TestValuesGenerator;");
-			imports = buildImports(new ArrayList<String>(requiredImports));
-			unitTestMap.put("imports", imports.toArray(new String[imports.size()]));
-			unitTestMaps.put(classUri, unitTestMap);
+		// make a copy of the java class map
+		Map<String, Object> unitTestMap = new HashMap<>();
+		for (Entry<String, Object> entry:javaClassMap.entrySet()) {
+			unitTestMap.put(entry.getKey(), entry.getValue());
 		}
+		requiredImports.add(String.format("import %s.%s.%sBuilder;", pkgName, name, name));
+		requiredImports.add("import junit.framework.TestCase;");
+		requiredImports.add("import org.spdx.library.model.v3.MockCopyManager;");
+		requiredImports.add("import org.spdx.library.model.v3.MockModelStore;");
+		requiredImports.add("import org.spdx.library.model.v3.UnitTestHelper;");
+		requiredImports.add("import org.spdx.library.model.v3.core.Agent.AgentBuilder;");
+		requiredImports.add("import java.util.Arrays;");
+		requiredImports.add("import org.spdx.core.ModelRegistry;");
+		requiredImports.add("import org.spdx.library.model.v3.SpdxModelInfoV3_0;");
+		requiredImports.add("import org.spdx.library.model.v3.TestValuesGenerator;");
+		imports = buildImports(new ArrayList<String>(requiredImports));
+		unitTestMap.put("imports", imports.toArray(new String[imports.size()]));
+		unitTestMaps.put(classUri, unitTestMap);
 		return mustacheToString(ShaclToJavaConstants.CREATE_CLASS_TEMPLATE, javaClassMap);
 	}
 	
@@ -1340,6 +1349,7 @@ public class ShaclToJava {
 		retval.put("setter", "set" + getSetName);
 		retval.put("adder", "add" + getSetName);
 		retval.put("addAller", "addAll" + getSetName);
+		retval.put("isCreationInfo", "creationInfo".equals(name));
 		
 		Integer minCardinality = null;
 		Integer maxCardinality = null;
