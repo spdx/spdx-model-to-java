@@ -20,6 +20,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Set;
 
@@ -140,6 +141,9 @@ public class ShaclToJava {
 		List<String> classUris = new ArrayList<>();
 		List<Map<String, Object>> enumMustacheMaps = new ArrayList<>();
 		List<String> createBuilderList = new ArrayList<>();
+		Map<String, Map<String, Object>> javaClassMaps = new HashMap<>();
+		Map<String, Map<String, Object>> unitTestMaps = new HashMap<>();
+		Map<PropertyType, Map<String, Map<String, Object>>> allPropertiesInUse = new HashMap<>();
 		allClasses.forEach(ontClass -> {
 			String comment = ontClass.getComment(null);
 			String classUri = ontClass.getURI();
@@ -191,10 +195,15 @@ public class ShaclToJava {
 				} else if (!stringTypes.contains(classUri)) { // TODO: we may want to handle String subtypes in the future
 					try {
 						boolean isAbstract = isAbstract(ontClass);
-						String createString = generateJavaClass(dir, classUri, name, new ArrayList<>(propertyShapes.values()),
-								classShape, comment, superClassUri, superClasses, isAbstract);
+						String createString = fillMustachMapsForClass(classUri, name, new ArrayList<>(propertyShapes.values()),
+								classShape, comment, superClassUri, superClasses, isAbstract, 
+								javaClassMaps, unitTestMaps, allPropertiesInUse);
 						if (!isAbstract) {
 							createBuilderList.add(createString);
+						}
+						generateJavaClass(dir, classUri, javaClassMaps.get(classUri));
+						if (!isAbstract) {
+							generateUnitTest(dir, classUri, unitTestMaps.get(classUri));
 						}
 					} catch (ShaclToJavaException e) {
 						warnings.add("Error generating Java class for "+name+":" + e.getMessage());
@@ -204,6 +213,7 @@ public class ShaclToJava {
 				warnings.add("I/O Error generating Java class for "+name+":" + e.getMessage());
 			}
 		});
+		generateTestValueGenerator(dir, allPropertiesInUse, unitTestMaps);
 		generateSpdxConstants(dir, classUris);
 		generateEnumFactory(dir, enumMustacheMaps);
 		generateModelClassFactory(dir, classUris);
@@ -219,7 +229,78 @@ public class ShaclToJava {
 		generateMockFiles(dir, "3.0.0");
 		return warnings;
 	}
-	
+
+	/**
+	 * @param dir directory for the source files
+	 * @param allPropertiesInUse Map of all properties
+	 * @param unitTestMaps all unit test maps
+	 * @throws IOException on IO error writing file
+	 */
+	private void generateTestValueGenerator(File dir,
+			Map<PropertyType, Map<String, Map<String, Object>>> allPropertiesInUse,
+			Map<String, Map<String, Object>> unitTestMaps) throws IOException {
+		Map<String, Object> mustacheMap = new HashMap<>();
+		Set<String> requiredImports = new HashSet<>();
+		for (Entry<PropertyType, Map<String, Map<String, Object>>> entry:allPropertiesInUse.entrySet()) {
+			List<Map<String, Object>> propertiesForType = new ArrayList<>();
+			for (Map<String, Object> propertyMap:entry.getValue().values()) {
+				propertiesForType.add(propertyMap);
+				String typeUri = (String)propertyMap.get("typeUri");
+				if (PropertyType.ENUM.equals(entry.getKey()) || PropertyType.OBJECT.equals(entry.getKey()) ||
+								PropertyType.OBJECT_COLLECTION.equals(entry.getKey()) || 
+								PropertyType.ENUM_COLLECTION.equals(entry.getKey()) || 
+								PropertyType.OBJECT_SET.equals(entry.getKey()) ||
+								PropertyType.ANY_LICENSE_INFO.equals(entry.getKey()) ||
+								PropertyType.ELEMENT.equals(entry.getKey())) {				
+					requiredImports.add("import "+uriToPkg(typeUri) + "." + uriToClassName(typeUri) +";");
+				}
+			}
+			String propTypeStr = "";
+			switch (entry.getKey()) {
+				case ELEMENT: propTypeStr = "elementProperties"; break;
+				case OBJECT: propTypeStr = "objectProperties"; break;
+				case ANY_LICENSE_INFO: propTypeStr = "anyLicenseInfoProperties"; break;
+				case ENUM: propTypeStr = "enumerationProperties"; break;
+				case BOOLEAN: propTypeStr = "booleanProperties"; break;
+				case INTEGER: propTypeStr = "integerProperties"; break;
+				case STRING: propTypeStr = "stringProperties"; break;
+				case OBJECT_COLLECTION: propTypeStr = "objectPropertyValueCollection"; break;
+				case STRING_COLLECTION: propTypeStr = "stringCollection"; break;
+				case OBJECT_SET: propTypeStr = "objectPropertyValueSet"; break;
+				case ENUM_COLLECTION: propTypeStr = "enumPropertyValueCollection"; break;
+				default: throw new RuntimeException("Unknown prop type: "+entry.getKey());
+			}
+			mustacheMap.put(propTypeStr, propertiesForType);
+		}
+		
+		List<Map<String, Object>> classesMaps = new ArrayList<>();
+		for (Entry<String, Map<String, Object>> entry:unitTestMaps.entrySet()) {
+			classesMaps.add(entry.getValue());
+			requiredImports.add("import "+uriToPkg(entry.getKey()) + "." + uriToClassName(entry.getKey()) +
+					"." + uriToClassName(entry.getKey()) + "Builder;");
+		}
+		mustacheMap.put("classesForBuilders", classesMaps);
+		requiredImports.add("import java.util.Arrays;");
+		requiredImports.add("import org.spdx.core.IModelCopyManager;");
+		requiredImports.add("import org.spdx.core.InvalidSPDXAnalysisException;");
+		requiredImports.add("import org.spdx.core.ModelRegistry;");
+		requiredImports.add("import org.spdx.library.model.v3.core.CreationInfo;");
+		requiredImports.add("import org.spdx.library.model.v3.core.RelationshipCompleteness;");
+		requiredImports.add("import org.spdx.library.model.v3.core.RelationshipType;");
+		requiredImports.add("import org.spdx.library.model.v3.core.Agent.AgentBuilder;");
+		requiredImports.add("import org.spdx.storage.IModelStore;");
+		requiredImports.add("import org.spdx.storage.IModelStore.IdType;");
+		requiredImports.add("import java.util.List;");
+		List<String> importList = new ArrayList<String>(requiredImports);
+		Collections.sort(importList);
+		mustacheMap.put("imports", importList);
+		Path path = dir.toPath().resolve("src").resolve("test").resolve("java").resolve("org")
+				.resolve("spdx").resolve("library").resolve("model").resolve("v3");
+		Files.createDirectories(path);
+		File testValuesGeneratorFile = path.resolve("TestValuesGenerator.java").toFile();
+		testValuesGeneratorFile.createNewFile();
+		writeMustacheFile(ShaclToJavaConstants.TEST_VALUES_GENERATOR_TEMPLATE, testValuesGeneratorFile, mustacheMap);
+	}
 
 	/**
 	 * Generates the test mock files
@@ -861,7 +942,7 @@ public class ShaclToJava {
 	}
 	
 	/**
-	 * @param dir Directory to store the source files in
+	 * Fills in the maps needed for generating the test values generator, java class, and unit test files
 	 * @param classUri URI for the class
 	 * @param name local name for the class
 	 * @param propertyShapes properties for the class
@@ -870,23 +951,41 @@ public class ShaclToJava {
 	 * @param superClassUri URI of the superclass (if any)
 	 * @param superClasses all superclasses for the class
 	 * @param abstractClass if true, the class is abstract
+	 * @param javaClassMaps Map of OntClass to the mustache map for generating the java classes
+	 * @param unitTestMaps Map of the OntClass to the mustachMap for generating the unit test classes
 	 * @return Code to create the Java object to be appended to the model object source file
 	 * @throws IOException 
 	 * @throws ShaclToJavaException 
 	 */
-	private String generateJavaClass(File dir, String classUri, String name,
+	private String fillMustachMapsForClass(String classUri, String name,
 			List<PropertyShape> propertyShapes, Shape classShape, String comment, 
 			@Nullable String superClassUri, List<OntClass> superClasses,
-			boolean abstractClass) throws IOException, ShaclToJavaException {
+			boolean abstractClass, Map<String, Map<String, Object>> javaClassMaps,
+			Map<String, Map<String, Object>> unitTestMaps,
+			Map<PropertyType, Map<String, Map<String, Object>>> allPropertiesInUse) throws IOException, ShaclToJavaException {
 		String pkgName = uriToPkg(classUri);
-		File sourceFile = createJavaSourceFile(classUri, dir);
+		
 		Set<String> requiredImports = new HashSet<>();
-		Map<String, Object> mustacheMap = new HashMap<>();
-		mustacheMap.put("abstract", abstractClass);
-		mustacheMap.put("className", name);
-		mustacheMap.put("classProfile", uriToProfile(classUri));
+		Map<String, Object> javaClassMap = new HashMap<>();
+		
+		javaClassMap.put("abstract", abstractClass);
+		javaClassMap.put("className", name);
+		javaClassMap.put("classProfile", uriToProfile(classUri));
 		Map<PropertyType, List<Map<String, Object>>> propertyMap = findProperties(propertyShapes, classShape, 
 				requiredImports, propertyUrisForConstants, classUri, superClasses);
+		for (Entry<PropertyType, List<Map<String, Object>>> entry:propertyMap.entrySet()) {
+			for (Map<String, Object> propMap:entry.getValue()) {
+				Map<String, Map<String, Object>> allPropertiesForType = allPropertiesInUse.get(entry.getKey());
+				if (Objects.isNull(allPropertiesForType)) {
+					allPropertiesForType = new HashMap<>();
+					allPropertiesInUse.put(entry.getKey(), allPropertiesForType);
+				}
+				String propertyUri = (String)propMap.get("uri");
+				if (!allPropertiesForType.containsKey(propertyUri)) {
+					allPropertiesForType.put(propertyUri, propMap);
+				}
+			}
+		}
 		int numProperties = 0;
 		for (List<Map<String, Object>> props:propertyMap.values()) {
 			numProperties += props.size();
@@ -895,27 +994,26 @@ public class ShaclToJava {
 			requiredImports.add("import org.spdx.library.model.v3.SpdxConstantsV3;");
 			requiredImports.add("import java.util.Optional;");
 		}
-		mustacheMap.put("elementProperties", propertyMap.get(PropertyType.ELEMENT));
-		mustacheMap.put("objectProperties", propertyMap.get(PropertyType.OBJECT));
-		mustacheMap.put("anyLicenseInfoProperties", propertyMap.get(PropertyType.ANY_LICENSE_INFO));
-		mustacheMap.put("enumerationProperties", propertyMap.get(PropertyType.ENUM));
-		mustacheMap.put("booleanProperties", propertyMap.get(PropertyType.BOOLEAN));
-		mustacheMap.put("integerProperties", propertyMap.get(PropertyType.INTEGER));
-		mustacheMap.put("stringProperties", propertyMap.get(PropertyType.STRING));
-		mustacheMap.put("objectPropertyValueCollection", propertyMap.get(PropertyType.OBJECT_COLLECTION));
-		mustacheMap.put("stringCollection", propertyMap.get(PropertyType.STRING_COLLECTION));
-		mustacheMap.put("objectPropertyValueSet", propertyMap.get(PropertyType.OBJECT_SET));
-		mustacheMap.put("enumPropertyValueCollection", propertyMap.get(PropertyType.ENUM_COLLECTION));
-		mustacheMap.put("suppressUnchecked", !(propertyMap.get(PropertyType.OBJECT_COLLECTION).isEmpty() &&
+		javaClassMap.put("elementProperties", propertyMap.get(PropertyType.ELEMENT));
+		javaClassMap.put("objectProperties", propertyMap.get(PropertyType.OBJECT));
+		javaClassMap.put("anyLicenseInfoProperties", propertyMap.get(PropertyType.ANY_LICENSE_INFO));
+		javaClassMap.put("enumerationProperties", propertyMap.get(PropertyType.ENUM));
+		javaClassMap.put("booleanProperties", propertyMap.get(PropertyType.BOOLEAN));
+		javaClassMap.put("integerProperties", propertyMap.get(PropertyType.INTEGER));
+		javaClassMap.put("stringProperties", propertyMap.get(PropertyType.STRING));
+		javaClassMap.put("objectPropertyValueCollection", propertyMap.get(PropertyType.OBJECT_COLLECTION));
+		javaClassMap.put("stringCollection", propertyMap.get(PropertyType.STRING_COLLECTION));
+		javaClassMap.put("objectPropertyValueSet", propertyMap.get(PropertyType.OBJECT_SET));
+		javaClassMap.put("enumPropertyValueCollection", propertyMap.get(PropertyType.ENUM_COLLECTION));
+		javaClassMap.put("suppressUnchecked", !(propertyMap.get(PropertyType.OBJECT_COLLECTION).isEmpty() &&
 				propertyMap.get(PropertyType.OBJECT_SET).isEmpty() &&
 				propertyMap.get(PropertyType.STRING_COLLECTION).isEmpty()));
-		mustacheMap.put("year", YEAR);
-		mustacheMap.put("pkgName", pkgName);
-		
-		mustacheMap.put("classComments", toClassComment(comment));
+		javaClassMap.put("year", YEAR);
+		javaClassMap.put("pkgName", pkgName);
+		javaClassMap.put("classComments", toClassComment(comment));
 		String superClass = getSuperClass(superClassUri, requiredImports, classUri);
-		mustacheMap.put("superClass", superClass);
-		mustacheMap.put("verifySuperclass", superClass != "ModelObjectV3");
+		javaClassMap.put("superClass", superClass);
+		javaClassMap.put("verifySuperclass", superClass != "ModelObjectV3");
 		if (!this.uriToNamespaceUri(classUri).endsWith("Core")) {
 			requiredImports.add("import org.spdx.library.model.v3.core.ProfileIdentifierType;");
 		}
@@ -926,27 +1024,31 @@ public class ShaclToJava {
 				break;
 			}
 		}
-		mustacheMap.put("hasCreationInfo", hasCreationInfo);
+		javaClassMap.put("hasCreationInfo", hasCreationInfo);
 		if (hasCreationInfo && !"Element".equals(name)) {
 			requiredImports.add("import org.spdx.library.model.v3.core.Element;");
 			requiredImports.add("import org.spdx.library.model.v3.core.CreationInfo;");
 		}
 		String equalsHashOverride = getEqualsHashOverride(classUri, superClasses, requiredImports);
 		List<String> imports = buildImports(new ArrayList<String>(requiredImports));
-		mustacheMap.put("imports", imports.toArray(new String[imports.size()]));
+		javaClassMap.put("imports", imports.toArray(new String[imports.size()]));
 		//TODO: Implement
-		mustacheMap.put("compareUsingProperties", false); // use properties to implement compareTo
-		mustacheMap.put("compareProperties", new ArrayList<Map<String, Object>>()); // List of property mustache maps to use in compare
+		javaClassMap.put("compareUsingProperties", false); // use properties to implement compareTo
+		javaClassMap.put("compareProperties", new ArrayList<Map<String, Object>>()); // List of property mustache maps to use in compare
 		String toStringString = generateToString(classUri, superClasses, propertyMap, requiredImports);
 		if (Objects.nonNull(toStringString)) {
-			mustacheMap.put("toString", toStringString); // use properties to implement toString
+			javaClassMap.put("toString", toStringString); // use properties to implement toString
 		}
 		if (Objects.nonNull(equalsHashOverride)) {
-			mustacheMap.put("equalsHashOverride", equalsHashOverride);
+			javaClassMap.put("equalsHashOverride", equalsHashOverride);
 		}
-		writeMustacheFile(ShaclToJavaConstants.JAVA_CLASS_TEMPLATE, sourceFile, mustacheMap);
+		javaClassMaps.put(classUri, javaClassMap);
 		if (!abstractClass) {
-			File unitTestFile = createUnitTestFile(classUri, dir);
+			// make a copy of the java class map
+			Map<String, Object> unitTestMap = new HashMap<>();
+			for (Entry<String, Object> entry:javaClassMap.entrySet()) {
+				unitTestMap.put(entry.getKey(), entry.getValue());
+			}
 			requiredImports.add(String.format("import %s.%s.%sBuilder;", pkgName, name, name));
 			requiredImports.add("import junit.framework.TestCase;");
 			requiredImports.add("import org.spdx.library.model.v3.MockCopyManager;");
@@ -956,11 +1058,36 @@ public class ShaclToJava {
 			requiredImports.add("import java.util.Arrays;");
 			requiredImports.add("import org.spdx.core.ModelRegistry;");
 			requiredImports.add("import org.spdx.library.model.v3.SpdxModelInfoV3_0;");
+			requiredImports.add("import org.spdx.library.model.v3.TestValuesGenerator;");
 			imports = buildImports(new ArrayList<String>(requiredImports));
-			mustacheMap.put("imports", imports.toArray(new String[imports.size()]));
-			writeMustacheFile(ShaclToJavaConstants.UNIT_TEST_TEMPLATE, unitTestFile, mustacheMap);
+			unitTestMap.put("imports", imports.toArray(new String[imports.size()]));
+			unitTestMaps.put(classUri, unitTestMap);
 		}
-		return mustacheToString(ShaclToJavaConstants.CREATE_CLASS_TEMPLATE, mustacheMap);
+		return mustacheToString(ShaclToJavaConstants.CREATE_CLASS_TEMPLATE, javaClassMap);
+	}
+	
+	/**
+	 * @param dir top level directory for code
+	 * @param classUri URI for the class
+	 * @param mustacheMap mustache map for template
+	 * @throws IOException 
+	 */
+	private void generateUnitTest(File dir, String classUri,
+			Map<String, Object> mustacheMap) throws IOException {
+		File unitTestFile = createUnitTestFile(classUri, dir);
+		writeMustacheFile(ShaclToJavaConstants.UNIT_TEST_TEMPLATE, unitTestFile, mustacheMap);
+	}
+
+	/**
+	 * @param dir top level directory for code
+	 * @param classUri URI for the class
+	 * @param mustacheMap mustache map for template
+	 * @throws IOException 
+	 */
+	private void generateJavaClass(File dir, String classUri,
+			Map<String, Object> mustacheMap) throws IOException {
+		File sourceFile = createJavaSourceFile(classUri, dir);
+		writeMustacheFile(ShaclToJavaConstants.JAVA_CLASS_TEMPLATE, sourceFile, mustacheMap);
 	}
 	
 	/**
@@ -1283,7 +1410,7 @@ public class ShaclToJava {
 				requiredImports.add("import "+uriToPkg(typeUri) + "." + uriToClassName(typeUri) +";");
 			}
 		}
-		
+		retval.put("typeUri", typeUri);
 		retval.put("type", type);
 		boolean required = minCardinality != null && minCardinality > 0;
 		if (required) {

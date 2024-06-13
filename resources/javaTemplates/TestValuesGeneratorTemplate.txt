@@ -1,0 +1,126 @@
+/**
+ * SPDX-License-Identifier: Apache-2.0
+ * Copyright (c) 2024 Source Auditor Inc.
+ */
+package org.spdx.library.model.v3;
+
+{{#imports}}
+{{.}}
+{{/imports}}
+
+/**
+ * @author Gary O'Neall
+ * 
+ * GENERATED FROM THE TEMPLATE FILE - DO NOT MODIFY
+ * 
+ * The class will provide constant or generated test values for the unit tests
+ *
+ */
+public class TestValuesGenerator {
+
+	{{#integerProperties}}
+	public static final Integer {{{propertyNameUpper}}}_TEST_VALUE = 55;
+	{{/integerProperties}}
+	{{#stringProperties}}
+	{{^pattern}}
+	public static final String {{{propertyNameUpper}}}_TEST_VALUE = "test {{{propertyName}}}";
+	{{/pattern}}
+	{{#pattern}}
+	public static final String {{{propertyNameUpper}}}_TEST_VALUE = UnitTestHelper.genRandPattern("{{{pattern}}}");
+	{{/pattern}}
+	{{/stringProperties}}
+	{{#enumerationProperties}}
+	public static final {{{type}}} {{{propertyNameUpper}}}_TEST_VALUE1 = {{{type}}}.values()[0];
+	public static final {{{type}}} {{{propertyNameUpper}}}_TEST_VALUE2 = {{{type}}}.values()[1];
+	{{/enumerationProperties}}
+	{{#stringCollection}}
+	{{^pattern}}
+	public static final String {{{propertyNameUpper}}}_TEST_VALUE1 = "test 1 {{{propertyName}}}";
+	public static final String {{{propertyNameUpper}}}_TEST_VALUE2 = "test 2 {{{propertyName}}}";
+	public static final String {{{propertyNameUpper}}}_TEST_VALUE3 = "test 3 {{{propertyName}}}";
+	{{/pattern}}
+	{{#pattern}}
+	public static final String {{{propertyNameUpper}}}_TEST_VALUE1 = UnitTestHelper.genRandPattern("{{{pattern}}}");
+	public static final String {{{propertyNameUpper}}}_TEST_VALUE2 = UnitTestHelper.genRandPattern("{{{pattern}}}");
+	public static final String {{{propertyNameUpper}}}_TEST_VALUE3 = UnitTestHelper.genRandPattern("{{{pattern}}}");
+	{{/pattern}}
+	public static final List<String> {{{propertyNameUpper}}}_TEST_LIST1 = Arrays.asList(new String[] { {{{propertyNameUpper}}}_TEST_VALUE1, {{{propertyNameUpper}}}_TEST_VALUE2 });
+	public static final List<String> {{{propertyNameUpper}}}_TEST_LIST2 = Arrays.asList(new String[] { {{{propertyNameUpper}}}_TEST_VALUE3 });
+	{{/stringCollection}}
+	{{#enumPropertyValueCollection}}
+	public static final {{{type}}} {{{propertyNameUpper}}}_TEST_VALUE1 = {{{type}}}.values()[0];
+	public static final {{{type}}} {{{propertyNameUpper}}}_TEST_VALUE2 = {{{type}}}.values()[1];
+	public static final List<{{{type}}}> {{{propertyNameUpper}}}_TEST_LIST1 = Arrays.asList(new {{{type}}}[] { {{{propertyNameUpper}}}_TEST_VALUE1, {{{propertyNameUpper}}}_TEST_VALUE2 });
+	public static final List<{{{type}}}> {{{propertyNameUpper}}}_TEST_LIST2 = Arrays.asList(new {{{type}}}[] { {{{propertyNameUpper}}}_TEST_VALUE1 });
+	{{/enumPropertyValueCollection}}
+	
+	private IModelStore modelStore;
+	private IModelCopyManager copyManager;
+	CreationInfo creationInfo;
+	
+	public TestValuesGenerator(IModelStore modelStore, IModelCopyManager copyManager) throws InvalidSPDXAnalysisException {
+		this.modelStore = modelStore;
+		this.copyManager = copyManager;
+		if (!ModelRegistry.getModelRegistry().containsSpecVersion("3.0.0")) {
+			ModelRegistry.getModelRegistry().registerModel(new SpdxModelInfoV3_0());
+		}
+		creationInfo = new CreationInfo.CreationInfoBuilder(modelStore, modelStore.getNextId(IdType.Anonymous), copyManager)
+							.setCreated("2010-01-29T18:30:22Z")
+							.setSpecVersion("3.0.0")
+							.build();
+		AgentBuilder agentBuilder = new AgentBuilder(modelStore, "https://unique/id" + modelStore.getNextId(IdType.SpdxId), copyManager);
+		agentBuilder.setCreationInfo(creationInfo);
+		agentBuilder.setName("Creator Name");
+		creationInfo.getCreatedBys().add(agentBuilder.build());
+	}
+	
+	{{#classesForBuilders}}
+	public {{{className}}}Builder builderFor{{{className}}}Tests(String objectUri) throws InvalidSPDXAnalysisException {
+		{{{className}}}Builder retval = new {{{className}}}Builder(modelStore, objectUri, copyManager)
+				{{#booleanProperties}}
+				.{{{setter}}}(true)
+				{{/booleanProperties}}
+				{{#integerProperties}}
+				.{{{setter}}}({{{propertyNameUpper}}}_TEST_VALUE)
+				{{/integerProperties}}
+				{{#stringProperties}}
+				.{{{setter}}}({{{propertyNameUpper}}}_TEST_VALUE)
+				{{/stringProperties}}
+				{{#stringCollection}}
+				.{{{adder}}}({{{propertyNameUpper}}}_TEST_VALUE1)
+				.{{{adder}}}({{{propertyNameUpper}}}_TEST_VALUE2)
+				{{/stringCollection}}
+				{{#enumerationProperties}}
+				.{{{setter}}}({{{propertyNameUpper}}}_TEST_VALUE1)
+				{{/enumerationProperties}}
+				{{#enumPropertyValueCollection}}
+				.{{{adder}}}({{{propertyNameUpper}}}_TEST_VALUE1)
+				.{{{adder}}}({{{propertyNameUpper}}}_TEST_VALUE2)
+				{{/enumPropertyValueCollection}}
+				//TODO: Add in test values
+				/********************
+				{{#elementProperties}}
+				.{{{setter}}}(Element testElement)
+				{{/elementProperties}}
+				{{#objectProperties}}
+				.{{{setter}}}(new {{{type}}}())
+				{{/objectProperties}}
+				{{#anyLicenseInfoProperties}}
+				.{{{setter}}}(TEST_ANYLICENSE_INFO)
+				{{/anyLicenseInfoProperties}}
+				{{#objectPropertyValueCollection}}
+				.{{{adder}}}({{{type}}})
+				{{/objectPropertyValueCollection}}
+				{{#objectPropertyValueSet}}
+				.{{{adder}}}({{{type}}})
+				{{/objectPropertyValueSet}}
+				***************/
+				;
+		{{#hasCreationInfo}}
+		retval.setCreationInfo(creationInfo);
+		{{/hasCreationInfo}}
+		return retval;
+	}
+	
+	{{/classesForBuilders}}
+}

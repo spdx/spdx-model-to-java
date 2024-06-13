@@ -30,116 +30,15 @@ public class {{{className}}}Test extends TestCase {
 
 	static final String TEST_OBJECT_URI = "https://test.uri/testuri";
 	
-
-	IModelStore modelStore;
-	IModelCopyManager copyManager;
-	{{#hasCreationInfo}}
-	CreationInfo creationInfo;
-	{{/hasCreationInfo}}
-
-	{{#integerProperties}}
-	static final Integer {{{propertyNameUpper}}}_TEST_VALUE = 55;
-	{{/integerProperties}}
-	{{#stringProperties}}
-	{{^pattern}}
-	static final String {{{propertyNameUpper}}}_TEST_VALUE = "test {{{propertyName}}}";
-	{{/pattern}}
-	{{#pattern}}
-	static final String {{{propertyNameUpper}}}_TEST_VALUE = UnitTestHelper.genRandPattern("{{{pattern}}}");
-	{{/pattern}}
-	{{/stringProperties}}
-	{{#enumerationProperties}}
-	static final {{{type}}} {{{propertyNameUpper}}}_TEST_VALUE1 = {{{type}}}.values()[0];
-	static final {{{type}}} {{{propertyNameUpper}}}_TEST_VALUE2 = {{{type}}}.values()[1];
-	{{/enumerationProperties}}
-	{{#stringCollection}}
-	{{^pattern}}
-	static final String {{{propertyNameUpper}}}_TEST_VALUE1 = "test 1 {{{propertyName}}}";
-	static final String {{{propertyNameUpper}}}_TEST_VALUE2 = "test 2 {{{propertyName}}}";
-	static final String {{{propertyNameUpper}}}_TEST_VALUE3 = "test 3 {{{propertyName}}}";
-	{{/pattern}}
-	{{#pattern}}
-	static final String {{{propertyNameUpper}}}_TEST_VALUE1 = UnitTestHelper.genRandPattern("{{{pattern}}}");
-	static final String {{{propertyNameUpper}}}_TEST_VALUE2 = UnitTestHelper.genRandPattern("{{{pattern}}}");
-	static final String {{{propertyNameUpper}}}_TEST_VALUE3 = UnitTestHelper.genRandPattern("{{{pattern}}}");
-	{{/pattern}}
-	static final List<String> {{{propertyNameUpper}}}_TEST_LIST1 = Arrays.asList(new String[] { {{{propertyNameUpper}}}_TEST_VALUE1, {{{propertyNameUpper}}}_TEST_VALUE2 });
-	static final List<String> {{{propertyNameUpper}}}_TEST_LIST2 = Arrays.asList(new String[] { {{{propertyNameUpper}}}_TEST_VALUE3 });
-	{{/stringCollection}}
-	{{#enumPropertyValueCollection}}
-	static final {{{type}}} {{{propertyNameUpper}}}_TEST_VALUE1 = {{{type}}}.values()[0];
-	static final {{{type}}} {{{propertyNameUpper}}}_TEST_VALUE2 = {{{type}}}.values()[1];
-	static final List<{{{type}}}> {{{propertyNameUpper}}}_TEST_LIST1 = Arrays.asList(new {{{type}}}[] { {{{propertyNameUpper}}}_TEST_VALUE1, {{{propertyNameUpper}}}_TEST_VALUE2 });
-	static final List<{{{type}}}> {{{propertyNameUpper}}}_TEST_LIST2 = Arrays.asList(new {{{type}}}[] { {{{propertyNameUpper}}}_TEST_VALUE1 });
-	{{/enumPropertyValueCollection}}
+	TestValuesGenerator generator;
 	
 	protected void setUp() throws Exception {
 		super.setUp();
-		modelStore = new MockModelStore();
-		copyManager = new MockCopyManager();
-		ModelRegistry.getModelRegistry().registerModel(new SpdxModelInfoV3_0());
-		{{#hasCreationInfo}}
-		creationInfo = new CreationInfo.CreationInfoBuilder(modelStore, modelStore.getNextId(IdType.Anonymous), copyManager)
-							.setCreated("2010-01-29T18:30:22Z")
-							.setSpecVersion("3.0.0")
-							.build();
-		AgentBuilder agentBuilder = new AgentBuilder(modelStore, "https://unique/id" + modelStore.getNextId(IdType.SpdxId), copyManager);
-		agentBuilder.setCreationInfo(creationInfo);
-		agentBuilder.setName("Creator Name");
-		creationInfo.getCreatedBys().add(agentBuilder.build());
-		{{/hasCreationInfo}}
+		generator = new TestValuesGenerator(new MockModelStore(), new MockCopyManager());
 	}
 
 	protected void tearDown() throws Exception {
 		super.tearDown();
-	}
-	
-	public {{{className}}}Builder builderFor{{{className}}}Tests(
-					IModelStore modelStore, String objectUri, @Nullable IModelCopyManager copyManager) throws InvalidSPDXAnalysisException {
-		{{{className}}}Builder retval = new {{{className}}}Builder(modelStore, objectUri, copyManager)
-				{{#booleanProperties}}
-				.{{{setter}}}(true)
-				{{/booleanProperties}}
-				{{#integerProperties}}
-				.{{{setter}}}({{{propertyNameUpper}}}_TEST_VALUE)
-				{{/integerProperties}}
-				{{#stringProperties}}
-				.{{{setter}}}({{{propertyNameUpper}}}_TEST_VALUE)
-				{{/stringProperties}}
-				{{#stringCollection}}
-				.{{{adder}}}({{{propertyNameUpper}}}_TEST_VALUE1)
-				.{{{adder}}}({{{propertyNameUpper}}}_TEST_VALUE2)
-				{{/stringCollection}}
-				{{#enumerationProperties}}
-				.{{{setter}}}({{{propertyNameUpper}}}_TEST_VALUE1)
-				{{/enumerationProperties}}
-				{{#enumPropertyValueCollection}}
-				.{{{adder}}}({{{propertyNameUpper}}}_TEST_VALUE1)
-				.{{{adder}}}({{{propertyNameUpper}}}_TEST_VALUE2)
-				{{/enumPropertyValueCollection}}
-				//TODO: Add in test values
-				/********************
-				{{#elementProperties}}
-				.{{{setter}}}(Element testElement)
-				{{/elementProperties}}
-				{{#objectProperties}}
-				.{{{setter}}}(new {{{type}}}())
-				{{/objectProperties}}
-				{{#anyLicenseInfoProperties}}
-				.{{{setter}}}(TEST_ANYLICENSE_INFO)
-				{{/anyLicenseInfoProperties}}
-				{{#objectPropertyValueCollection}}
-				.{{{adder}}}({{{type}}})
-				{{/objectPropertyValueCollection}}
-				{{#objectPropertyValueSet}}
-				.{{{adder}}}({{{type}}})
-				{{/objectPropertyValueSet}}
-				***************/
-				;
-		{{#hasCreationInfo}}
-		retval.setCreationInfo(creationInfo);
-		{{/hasCreationInfo}}
-		return retval;
 	}
 	
 	/**
@@ -147,7 +46,7 @@ public class {{{className}}}Test extends TestCase {
 	 * @throws InvalidSPDXAnalysisException on errors
 	 */
 	public void testVerify() throws InvalidSPDXAnalysisException {
-		{{{className}}} test{{{className}}} = builderFor{{{className}}}Tests(modelStore, TEST_OBJECT_URI, copyManager).build();
+		{{{className}}} test{{{className}}} = generator.builderFor{{{className}}}Tests(TEST_OBJECT_URI).build();
 		List<String> result = test{{{className}}}.verify();
 		assertTrue(result.isEmpty());
 		// TODO - add negative tests
@@ -157,7 +56,7 @@ public class {{{className}}}Test extends TestCase {
 	 * Test method for {@link {{{pkgName}}}.{{{className}}}#getType()}.
 	 */
 	public void testGetType() throws InvalidSPDXAnalysisException {
-		{{{className}}} test{{{className}}} = builderFor{{{className}}}Tests(modelStore, TEST_OBJECT_URI, copyManager).build();
+		{{{className}}} test{{{className}}} = generator.builderFor{{{className}}}Tests(TEST_OBJECT_URI).build();
 		assertEquals("{{{classProfile}}}.{{{className}}}", test{{{className}}}.getType());
 	}
 
@@ -165,12 +64,12 @@ public class {{{className}}}Test extends TestCase {
 	 * Test method for {@link {{{pkgName}}}.{{{className}}}#Element({{{pkgName}}}.{{{className}}}.{{{className}}}Builder)}.
 	 */
 	public void test{{{className}}}{{{className}}}Builder() throws InvalidSPDXAnalysisException {
-		builderFor{{{className}}}Tests(modelStore, TEST_OBJECT_URI, copyManager).build();
+		generator.builderFor{{{className}}}Tests(TEST_OBJECT_URI).build();
 	}
 	
 	public void testEquivalent() throws InvalidSPDXAnalysisException {
-		{{{className}}} test{{{className}}} = builderFor{{{className}}}Tests(modelStore, TEST_OBJECT_URI, copyManager).build();
-		{{{className}}} test2{{{className}}} = builderFor{{{className}}}Tests(modelStore, "https://testObject2", copyManager).build();
+		{{{className}}} test{{{className}}} = generator.builderFor{{{className}}}Tests(TEST_OBJECT_URI).build();
+		{{{className}}} test2{{{className}}} = generator.builderFor{{{className}}}Tests("https://testObject2").build();
 		assertTrue(test{{{className}}}.equivalent(test2{{{className}}}));
 		assertTrue(test2{{{className}}}.equivalent(test{{{className}}}));
 		// TODO change some parameters for negative tests
@@ -181,7 +80,7 @@ public class {{{className}}}Test extends TestCase {
 	 * Test method for {@link {{{pkgName}}}.{{{className}}}#{{{setter}}}}.
 	 */
 	public void test{{{className}}}{{{setter}}}() throws InvalidSPDXAnalysisException {
-		{{{className}}} test{{{className}}} = builderFor{{{className}}}Tests(modelStore, TEST_OBJECT_URI, copyManager).build();
+		{{{className}}} test{{{className}}} = generator.builderFor{{{className}}}Tests(TEST_OBJECT_URI).build();
 		{{#nonOptional}}
 //		assertEquals(TEST_VALUE, test{{{className}}}.{{{getter}}}());
 		{{/nonOptional}}
@@ -204,7 +103,7 @@ public class {{{className}}}Test extends TestCase {
 	 * Test method for {@link {{{pkgName}}}.{{{className}}}#{{{setter}}}}.
 	 */
 	public void test{{{className}}}{{{setter}}}() throws InvalidSPDXAnalysisException {
-		{{{className}}} test{{{className}}} = builderFor{{{className}}}Tests(modelStore, TEST_OBJECT_URI, copyManager).build();
+		{{{className}}} test{{{className}}} = generator.builderFor{{{className}}}Tests(TEST_OBJECT_URI).build();
 		{{#nonOptional}}
 //		assertEquals(TEST_VALUE, test{{{className}}}.{{{getter}}}());
 		{{/nonOptional}}
@@ -227,7 +126,7 @@ public class {{{className}}}Test extends TestCase {
 	 * Test method for {@link {{{pkgName}}}.{{{className}}}#{{{setter}}}}.
 	 */
 	public void test{{{className}}}{{{setter}}}() throws InvalidSPDXAnalysisException {
-		{{{className}}} test{{{className}}} = builderFor{{{className}}}Tests(modelStore, TEST_OBJECT_URI, copyManager).build();
+		{{{className}}} test{{{className}}} = generator.builderFor{{{className}}}Tests(TEST_OBJECT_URI).build();
 		{{#nonOptional}}
 //		assertEquals(TEST_VALUE, test{{{className}}}.{{{getter}}}());
 		{{/nonOptional}}
@@ -250,19 +149,19 @@ public class {{{className}}}Test extends TestCase {
 	 * Test method for {@link {{{pkgName}}}.{{{className}}}#{{{setter}}}}.
 	 */
 	public void test{{{className}}}{{{setter}}}() throws InvalidSPDXAnalysisException {
-		{{{className}}} test{{{className}}} = builderFor{{{className}}}Tests(modelStore, TEST_OBJECT_URI, copyManager).build();
+		{{{className}}} test{{{className}}} = generator.builderFor{{{className}}}Tests(TEST_OBJECT_URI).build();
 		{{#nonOptional}}
-		assertEquals({{{propertyNameUpper}}}_TEST_VALUE1, test{{{className}}}.{{{getter}}}());
+		assertEquals(TestValuesGenerator.{{{propertyNameUpper}}}_TEST_VALUE1, test{{{className}}}.{{{getter}}}());
 		{{/nonOptional}}
 		{{^nonOptional}}
-		assertEquals(Optional.of({{{propertyNameUpper}}}_TEST_VALUE1), test{{{className}}}.{{{getter}}}());
+		assertEquals(Optional.of(TestValuesGenerator.{{{propertyNameUpper}}}_TEST_VALUE1), test{{{className}}}.{{{getter}}}());
 		{{/nonOptional}}
-		test{{{className}}}.{{{setter}}}({{{propertyNameUpper}}}_TEST_VALUE2);
+		test{{{className}}}.{{{setter}}}(TestValuesGenerator.{{{propertyNameUpper}}}_TEST_VALUE2);
 		{{#nonOptional}}
-		assertEquals({{{propertyNameUpper}}}_TEST_VALUE2, test{{{className}}}.{{{getter}}}());
+		assertEquals(TestValuesGenerator.{{{propertyNameUpper}}}_TEST_VALUE2, test{{{className}}}.{{{getter}}}());
 		{{/nonOptional}}
 		{{^nonOptional}}
-		assertEquals(Optional.of({{{propertyNameUpper}}}_TEST_VALUE2), test{{{className}}}.{{{getter}}}());
+		assertEquals(Optional.of(TestValuesGenerator.{{{propertyNameUpper}}}_TEST_VALUE2), test{{{className}}}.{{{getter}}}());
 		{{/nonOptional}}
 	}
 	{{/enumerationProperties}}
@@ -272,7 +171,7 @@ public class {{{className}}}Test extends TestCase {
 	 * Test method for {@link {{{pkgName}}}.{{{className}}}#{{{setter}}}}.
 	 */
 	public void test{{{className}}}{{{setter}}}() throws InvalidSPDXAnalysisException {
-		{{{className}}} test{{{className}}} = builderFor{{{className}}}Tests(modelStore, TEST_OBJECT_URI, copyManager).build();
+		{{{className}}} test{{{className}}} = generator.builderFor{{{className}}}Tests(TEST_OBJECT_URI).build();
 		{{#nonOptional}}
 		assertEquals(new Boolean(true), test{{{className}}}.{{{getter}}}());
 		{{/nonOptional}}
@@ -294,12 +193,12 @@ public class {{{className}}}Test extends TestCase {
 	 * Test method for {@link {{{pkgName}}}.{{{className}}}#{{{setter}}}}.
 	 */
 	public void test{{{className}}}{{{setter}}}() throws InvalidSPDXAnalysisException {
-		{{{className}}} test{{{className}}} = builderFor{{{className}}}Tests(modelStore, TEST_OBJECT_URI, copyManager).build();
+		{{{className}}} test{{{className}}} = generator.builderFor{{{className}}}Tests(TEST_OBJECT_URI).build();
 		{{#nonOptional}}
-		assertEquals({{{propertyNameUpper}}}_TEST_VALUE, test{{{className}}}.{{{getter}}}());
+		assertEquals(TestValuesGenerator.{{{propertyNameUpper}}}_TEST_VALUE, test{{{className}}}.{{{getter}}}());
 		{{/nonOptional}}
 		{{^nonOptional}}
-		assertEquals(Optional.of({{{propertyNameUpper}}}_TEST_VALUE), test{{{className}}}.{{{getter}}}());
+		assertEquals(Optional.of(TestValuesGenerator.{{{propertyNameUpper}}}_TEST_VALUE), test{{{className}}}.{{{getter}}}());
 		{{/nonOptional}}
 		test{{{className}}}.{{{setter}}}(new Integer(653));
 		{{#nonOptional}}
@@ -316,12 +215,12 @@ public class {{{className}}}Test extends TestCase {
 	 * Test method for {@link {{{pkgName}}}.{{{className}}}#{{{setter}}}}.
 	 */
 	public void test{{{className}}}{{{setter}}}() throws InvalidSPDXAnalysisException {
-		{{{className}}} test{{{className}}} = builderFor{{{className}}}Tests(modelStore, TEST_OBJECT_URI, copyManager).build();
+		{{{className}}} test{{{className}}} = generator.builderFor{{{className}}}Tests(TEST_OBJECT_URI).build();
 		{{#nonOptional}}
-		assertEquals({{{propertyNameUpper}}}_TEST_VALUE, test{{{className}}}.{{{getter}}}());
+		assertEquals(TestValuesGenerator.{{{propertyNameUpper}}}_TEST_VALUE, test{{{className}}}.{{{getter}}}());
 		{{/nonOptional}}
 		{{^nonOptional}}
-		assertEquals(Optional.of({{{propertyNameUpper}}}_TEST_VALUE), test{{{className}}}.{{{getter}}}());
+		assertEquals(Optional.of(TestValuesGenerator.{{{propertyNameUpper}}}_TEST_VALUE), test{{{className}}}.{{{getter}}}());
 		{{/nonOptional}}
 		{{^pattern}}
 		String newStringValue = "new {{{propertyName}}} value";
@@ -344,7 +243,7 @@ public class {{{className}}}Test extends TestCase {
 	 * Test method for {@link {{{pkgName}}}.{{{className}}}#{{{getter}}}}.
 	 */
 	public void test{{{className}}}{{{getter}}}s() throws InvalidSPDXAnalysisException {
-		{{{className}}} test{{{className}}} = builderFor{{{className}}}Tests(modelStore, TEST_OBJECT_URI, copyManager).build();
+		{{{className}}} test{{{className}}} = generator.builderFor{{{className}}}Tests(TEST_OBJECT_URI).build();
 //		assertTrue(UnitTestHelper.isListsEquivalent(TEST_VALUE, new ArrayList<>(test{{{className}}}.{{{getter}}}s())));
 //		test{{{className}}}.{{{getter}}}s().clear();
 //		test{{{className}}}.{{{getter}}}s().addAll(NEW_TEST_VALUE);
@@ -358,11 +257,11 @@ public class {{{className}}}Test extends TestCase {
 	 * Test method for {@link {{{pkgName}}}.{{{className}}}#{{{getter}}}s}.
 	 */
 	public void test{{{className}}}{{{getter}}}s() throws InvalidSPDXAnalysisException {
-		{{{className}}} test{{{className}}} = builderFor{{{className}}}Tests(modelStore, TEST_OBJECT_URI, copyManager).build();
-		assertTrue(UnitTestHelper.isListsEqual({{{propertyNameUpper}}}_TEST_LIST1, new ArrayList<>(test{{{className}}}.{{{getter}}}s())));
+		{{{className}}} test{{{className}}} = generator.builderFor{{{className}}}Tests(TEST_OBJECT_URI).build();
+		assertTrue(UnitTestHelper.isListsEqual(TestValuesGenerator.{{{propertyNameUpper}}}_TEST_LIST1, new ArrayList<>(test{{{className}}}.{{{getter}}}s())));
 		test{{{className}}}.{{{getter}}}s().clear();
-		test{{{className}}}.{{{getter}}}s().addAll({{{propertyNameUpper}}}_TEST_LIST2);
-		assertTrue(UnitTestHelper.isListsEqual({{{propertyNameUpper}}}_TEST_LIST2, new ArrayList<>(test{{{className}}}.{{{getter}}}s())));
+		test{{{className}}}.{{{getter}}}s().addAll(TestValuesGenerator.{{{propertyNameUpper}}}_TEST_LIST2);
+		assertTrue(UnitTestHelper.isListsEqual(TestValuesGenerator.{{{propertyNameUpper}}}_TEST_LIST2, new ArrayList<>(test{{{className}}}.{{{getter}}}s())));
 	}
 	{{/stringCollection}}
 	{{#objectPropertyValueSet}}
@@ -371,7 +270,7 @@ public class {{{className}}}Test extends TestCase {
 	 * Test method for {@link {{{pkgName}}}.{{{className}}}#{{{getter}}}s}.
 	 */
 	public void test{{{className}}}{{{getter}}}s() throws InvalidSPDXAnalysisException {
-		{{{className}}} test{{{className}}} = builderFor{{{className}}}Tests(modelStore, TEST_OBJECT_URI, copyManager).build();
+		{{{className}}} test{{{className}}} = generator.builderFor{{{className}}}Tests(TEST_OBJECT_URI).build();
 //		assertTrue(UnitTestHelper.isListsEquivalent(TEST_VALUE, new ArrayList<>(test{{{className}}}.{{{getter}}}s())));
 //		test{{{className}}}.{{{getter}}}s().clear();
 //		test{{{className}}}.{{{getter}}}s().addAll(NEW_TEST_VALUE);
@@ -385,11 +284,11 @@ public class {{{className}}}Test extends TestCase {
 	 * Test method for {@link {{{pkgName}}}.{{{className}}}#{{{getter}}}}.
 	 */
 	public void test{{{className}}}{{{getter}}}s() throws InvalidSPDXAnalysisException {
-		{{{className}}} test{{{className}}} = builderFor{{{className}}}Tests(modelStore, TEST_OBJECT_URI, copyManager).build();
-		assertTrue(UnitTestHelper.isListsEqual({{{propertyNameUpper}}}_TEST_LIST1, new ArrayList<>(test{{{className}}}.{{{getter}}}s())));
+		{{{className}}} test{{{className}}} = generator.builderFor{{{className}}}Tests(TEST_OBJECT_URI).build();
+		assertTrue(UnitTestHelper.isListsEqual(TestValuesGenerator.{{{propertyNameUpper}}}_TEST_LIST1, new ArrayList<>(test{{{className}}}.{{{getter}}}s())));
 		test{{{className}}}.{{{getter}}}s().clear();
-		test{{{className}}}.{{{getter}}}s().addAll({{{propertyNameUpper}}}_TEST_LIST2);
-		assertTrue(UnitTestHelper.isListsEqual({{{propertyNameUpper}}}_TEST_LIST2, new ArrayList<>(test{{{className}}}.{{{getter}}}s())));
+		test{{{className}}}.{{{getter}}}s().addAll(TestValuesGenerator.{{{propertyNameUpper}}}_TEST_LIST2);
+		assertTrue(UnitTestHelper.isListsEqual(TestValuesGenerator.{{{propertyNameUpper}}}_TEST_LIST2, new ArrayList<>(test{{{className}}}.{{{getter}}}s())));
 	}
 	{{/enumPropertyValueCollection}}
 	{{#elementProperties}}
