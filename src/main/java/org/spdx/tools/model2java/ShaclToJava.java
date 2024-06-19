@@ -29,6 +29,7 @@ import javax.annotation.Nullable;
 import org.apache.jena.ontology.OntModel;
 import org.apache.jena.ontology.DatatypeProperty;
 import org.apache.jena.ontology.Individual;
+import org.apache.jena.ontology.ObjectProperty;
 import org.apache.jena.ontology.OntClass;
 import org.apache.jena.ontology.OntProperty;
 import org.apache.jena.query.Query;
@@ -71,8 +72,15 @@ public class ShaclToJava {
 	Set<String> propertyUrisForConstants = new HashSet<>(); // Map of property URI's to be included in the SPDX Constants file
 	Set<String> enumerationTypes = new HashSet<>(); // Set of URI's for enumeration types
 	Set<String> anyLicenseInfoTypes = new HashSet<>(); // Set of URI's for AnyLicenseInfo types
-	Set<String> elementTypes = new HashSet<>(); // Set of URI's for Elemen types
+	Set<String> elementTypes = new HashSet<>(); // Set of URI's for Element types
 	Set<String> stringTypes = new HashSet<>(); // set of classes which subtype from String
+	Map<String, String> uriToClassName = new HashMap<>();
+	Map<String, String> uriToPropertyName = new HashMap<>();
+	List<Individual> allIndividuals;
+	List<OntClass> allClasses;
+	List<DatatypeProperty> allDataProperties;
+	List<ObjectProperty> allObjectProperties;
+	List<Resource> objectIndividuals;
 	
 	public enum PropertyType {
 		ELEMENT,
@@ -111,22 +119,11 @@ public class ShaclToJava {
 		this.model = model;
 		shapes = Shapes.parse(model);
 		shapeMap = shapes.getShapeMap();
-	}
-	
-	/**
-	 * Generates sore files and store them in the dir
-	 * @param dir Directory to hold the java source
-	 * @return list of warnings - if empty, all files were generated successfully
-	 * @throws IOException for any issues storing the files
-	 * @throws ShaclToJavaException errors in the ontology
-	 */
-	public List<String> generate(File dir) throws IOException, ShaclToJavaException {
-		List<String> warnings = new ArrayList<>();
-		List<Individual> allIndividuals = model.listIndividuals().toList();
-		List<OntClass> allClasses = model.listClasses().toList();
-		List<DatatypeProperty> allDataProperties = model.listDatatypeProperties().toList();
-		List<Resource> objectIndividuals = new ArrayList<>();
-
+		allIndividuals = model.listIndividuals().toList();
+		allClasses = model.listClasses().toList();
+		allDataProperties = model.listDatatypeProperties().toList();
+		allObjectProperties = model.listObjectProperties().toList();
+		objectIndividuals = new ArrayList<>();
 		Query asIndividualQuery = QueryFactory.create(String.format(
 				"select ?oi where {?oi <%s> <%s>}", ShaclToJavaConstants.TYPE_PRED, ShaclToJavaConstants.NAMED_INDIVIDUAL));
 		try (QueryExecution qexec = QueryExecutionFactory.create(asIndividualQuery, model)) {
@@ -136,8 +133,42 @@ public class ShaclToJava {
 				objectIndividuals.add(soln.getResource("oi"));
 			}
 		}
-		collectTypeInformation(allClasses, allIndividuals, allDataProperties, objectIndividuals);
+		collectTypeInformation();
 		collectRelationshipRestrictions();
+		collectNameMappings();
+	}
+	
+	/**
+	 * Create the mapings from the URI's to class names and property names
+	 */
+	private void collectNameMappings() {
+		uriToClassName.clear();
+		for (OntClass ontClass:allClasses) {
+			uriToClassName.put(ontClass.getURI(), uriToClassName(ontClass.getURI()));
+		}
+		for (List<String> individualUris:classUriToIndividualUris.values()) {
+			for (String individualUri:individualUris) {
+				uriToClassName.put(individualUri, uriToClassName(individualUri));
+			}
+		}
+		uriToPropertyName.clear();
+		for (DatatypeProperty prop:allDataProperties) {
+			uriToPropertyName.put(prop.getURI(), uriToPropertyName(prop.getURI()));
+		}
+		for (ObjectProperty prop:allObjectProperties) {
+			uriToPropertyName.put(prop.getURI(), uriToPropertyName(prop.getURI()));
+		}
+	}
+
+	/**
+	 * Generates source and test files and store them in the dir
+	 * @param dir Directory to hold the java source
+	 * @return list of warnings - if empty, all files were generated successfully
+	 * @throws IOException for any issues storing the files
+	 * @throws ShaclToJavaException errors in the ontology
+	 */
+	public List<String> generate(File dir) throws IOException, ShaclToJavaException {
+		List<String> warnings = new ArrayList<>();
 		List<String> classUris = new ArrayList<>();
 		List<Map<String, Object>> enumMustacheMaps = new ArrayList<>();
 		List<String> createBuilderList = new ArrayList<>();
@@ -148,7 +179,7 @@ public class ShaclToJava {
 			String comment = ontClass.getComment(null);
 			String classUri = ontClass.getURI();
 			classUris.add(classUri);
-			String name = uriToClassName(classUri);
+			String name = uriToClassName.get(classUri);
 			Shape classShape = shapeMap.get(ontClass.asNode());
 			Map<String, PropertyShape> propertyShapes = new HashMap<>();
 			
@@ -182,7 +213,7 @@ public class ShaclToJava {
 					// Generate the individuals
 					for (String individualUri:this.classUriToIndividualUris.get(ontClass.getURI())) {
 						try {
-							generateIndividualClass(dir, individualUri, uriToClassName(individualUri),
+							generateIndividualClass(dir, individualUri, uriToClassName.get(individualUri),
 									new ArrayList<>(propertyShapes.values()), getIndividualComment(individualUri),
 									classUri, classShape, superClasses);
 						} catch (ShaclToJavaException e) {
@@ -252,7 +283,7 @@ public class ShaclToJava {
 								PropertyType.OBJECT_SET.equals(entry.getKey()) ||
 								PropertyType.ANY_LICENSE_INFO.equals(entry.getKey()) ||
 								PropertyType.ELEMENT.equals(entry.getKey())) {				
-					requiredImports.add("import "+uriToPkg(typeUri) + "." + uriToClassName(typeUri) +";");
+					requiredImports.add("import "+uriToPkg(typeUri) + "." + uriToClassName.get(typeUri) +";");
 				}
 			}
 			String propTypeStr = "";
@@ -278,10 +309,10 @@ public class ShaclToJava {
 			classesMaps.add(entry.getValue());
 			boolean isAbstract = (Boolean)entry.getValue().get("abstract");
 			if (isAbstract) {
-				requiredImports.add("import "+uriToPkg(entry.getKey()) + "." + uriToClassName(entry.getKey()) + ";");
+				requiredImports.add("import "+uriToPkg(entry.getKey()) + "." + uriToClassName.get(entry.getKey()) + ";");
 			}
-			requiredImports.add("import "+uriToPkg(entry.getKey()) + "." + uriToClassName(entry.getKey()) +
-					"." + uriToClassName(entry.getKey()) + "Builder;");
+			requiredImports.add("import "+uriToPkg(entry.getKey()) + "." + uriToClassName.get(entry.getKey()) +
+					"." + uriToClassName.get(entry.getKey()) + "Builder;");
 		}
 		mustacheMap.put("classesForBuilders", classesMaps);
 		requiredImports.add("import java.util.Arrays;");
@@ -404,7 +435,7 @@ public class ShaclToJava {
 		for (String classUri:classUris) {
 			//TODO: Don't add abstract classes
 			if (!enumClassUris.contains(classUri) && !enumerationTypes.contains(classUri)) {
-				imports.add("import "+uriToPkg(classUri) + "." + uriToClassName(classUri) +";");
+				imports.add("import "+uriToPkg(classUri) + "." + uriToClassName.get(classUri) +";");
 			}
 		}
 		imports.add("import org.spdx.library.model.v3.core.ProfileIdentifierType;");
@@ -516,7 +547,7 @@ public class ShaclToJava {
 		List<String> imports = new ArrayList<>();
 		for (List<String> individuals:this.classUriToIndividualUris.values()) {
 			for (String individualUri:individuals) {
-				String className = uriToClassName(individualUri);
+				String className = uriToClassName.get(individualUri);
 				String pkg = uriToPkg(individualUri);
 				Map<String, String> individualMustacheMap = new HashMap<>();
 				individualMustacheMap.put("individualUri", individualUri);
@@ -572,7 +603,7 @@ public class ShaclToJava {
 			List<Map<String, Object>> propMustacheList = new ArrayList<>();
 			for (String propUri:propertyUris) {
 				Map<String, Object> propMustacheMap = new HashMap<>();
-				String propertyName = uriToPropertyName(propUri);
+				String propertyName = uriToPropertyName.get(propUri);
 				String propertyConstantName = propertyNameToPropertyConstant(propertyName, namespaceName);
 				propMustacheMap.put("propertyConstantName", propertyConstantName);
 				propMustacheMap.put("propertyConstantValue", propertyName);
@@ -585,7 +616,7 @@ public class ShaclToJava {
 		List<String> classConstantDefinitions = new ArrayList<>();
 		List<String> classConstants = new ArrayList<>();
 		for (String classUri:classUris) {
-			String className = uriToClassName(classUri);
+			String className = uriToClassName.get(classUri);
 			String profile = uriToProfile(classUri);
 			String constName = camelCaseToConstCase(profile) + "_" + camelCaseToConstCase(className);
 			classConstantDefinitions.add("static final String " + constName + " = \"" + profile + "." + className + "\";");
@@ -594,7 +625,7 @@ public class ShaclToJava {
 		// Add class constants for the individuals
 		for (List<String> individualUris:this.classUriToIndividualUris.values()) {
 			for (String individualUri:individualUris) {
-				String className = uriToClassName(individualUri);
+				String className = uriToClassName.get(individualUri);
 				String profile = uriToProfile(individualUri);
 				String constName = camelCaseToConstCase(profile) + "_" + camelCaseToConstCase(className);
 				classConstantDefinitions.add("static final String " + constName + " = \"" + profile + "." + className + "\";");
@@ -648,7 +679,7 @@ public class ShaclToJava {
 		
 		List<Map<String, String>> typeToClasses = new ArrayList<>();
 		for (String classUri:classUris) {
-			String className = uriToClassName(classUri);
+			String className = uriToClassName.get(classUri);
 			String profile = uriToProfile(classUri);
 			String packageName = uriToPkg(classUri);
 			String classConstant = camelCaseToConstCase(profile) + "_" + camelCaseToConstCase(className);
@@ -662,7 +693,7 @@ public class ShaclToJava {
 		
 		for (List<String> individualUris:this.classUriToIndividualUris.values()) {
 			for (String individualUri:individualUris) {
-				String className = uriToClassName(individualUri);
+				String className = uriToClassName.get(individualUri);
 				String profile = uriToProfile(individualUri);
 				String packageName = uriToPkg(individualUri);
 				String classConstant = camelCaseToConstCase(profile) + "_" + camelCaseToConstCase(className);
@@ -744,15 +775,8 @@ public class ShaclToJava {
 
 	/**
 	 * Collect type information into the field sets for enum types, anylicenseinfo types, and elements types.  also fills in the enum class URIs
-	 * @param allObjectProperties object properties in the schema
-	 * @param allDataProperties data properties in the schema
-	 * @param allClasses classes in the schema
-	 * @param allIndividuals Individuals to determine enum class types
-	 * @param allDataProperties any data type propoerties
-	 * @param objectIndividuals 
-	 * @throws ShaclToJavaException 
 	 */
-	private void collectTypeInformation(List<OntClass> allClasses, List<Individual> allIndividuals, List<DatatypeProperty> allDataProperties, List<Resource> objectIndividuals) throws ShaclToJavaException {
+	private void collectTypeInformation() {
 		for (Resource individual:objectIndividuals) {
 			boolean hasLabel = false;
 			String individualClassUri = null;
@@ -1113,18 +1137,18 @@ public class ShaclToJava {
 			Set<String> requiredImports) throws IOException {
 		if ("https://spdx.org/rdf/3.0.0/terms/ExpandedLicensing/WithAdditionOperator".equals(classUri)) {
 			Map<String, Object> mustacheMap = new HashMap<>();
-			mustacheMap.put("className", uriToClassName(classUri));
-			String subjectAdditionPropertyName = uriToPropertyName("https://spdx.org/rdf/3.0.0/terms/ExpandedLicensing/subjectAddition");
+			mustacheMap.put("className", uriToClassName.get(classUri));
+			String subjectAdditionPropertyName = uriToPropertyName.get("https://spdx.org/rdf/3.0.0/terms/ExpandedLicensing/subjectAddition");
 			String subjectLicenseGetter = "get" + subjectAdditionPropertyName.substring(0, 1).toUpperCase() + subjectAdditionPropertyName.substring(1);
 			mustacheMap.put("subjectAdditionGetter", subjectLicenseGetter);
-			String subjectExtendablePropertyName = uriToPropertyName("https://spdx.org/rdf/3.0.0/terms/ExpandedLicensing/subjectExtendableLicense");
+			String subjectExtendablePropertyName = uriToPropertyName.get("https://spdx.org/rdf/3.0.0/terms/ExpandedLicensing/subjectExtendableLicense");
 			String extendableLicenseGetter = "get" + subjectExtendablePropertyName.substring(0, 1).toUpperCase() + subjectExtendablePropertyName.substring(1);
 			mustacheMap.put("extendableLicenseGetter", extendableLicenseGetter);
 			return mustacheToString(ShaclToJavaConstants.WITH_OPERATOR_TO_STRING_TEMPLATE, mustacheMap);
 		} else if ("https://spdx.org/rdf/3.0.0/terms/ExpandedLicensing/OrLaterOperator".equals(classUri)) {
 			Map<String, Object> mustacheMap = new HashMap<>();
-			mustacheMap.put("className", uriToClassName(classUri));
-			String subjectPropertyName = uriToPropertyName("https://spdx.org/rdf/3.0.0/terms/ExpandedLicensing/subjectLicense");
+			mustacheMap.put("className", uriToClassName.get(classUri));
+			String subjectPropertyName = uriToPropertyName.get("https://spdx.org/rdf/3.0.0/terms/ExpandedLicensing/subjectLicense");
 			String subjectLicenseGetter = "get" + subjectPropertyName.substring(0, 1).toUpperCase() + subjectPropertyName.substring(1);
 			mustacheMap.put("subjectLicenseGetter", subjectLicenseGetter);
 			return mustacheToString(ShaclToJavaConstants.OR_LATER_TO_STRING_TEMPLATE, mustacheMap);
@@ -1141,7 +1165,7 @@ public class ShaclToJava {
 		} else if ("https://spdx.org/rdf/3.0.0/terms/ExpandedLicensing/ConjunctiveLicenseSet".equals(classUri) ||
 				"https://spdx.org/rdf/3.0.0/terms/ExpandedLicensing/DisjunctiveLicenseSet".equals(classUri)) {
 			Map<String, Object> mustacheMap = new HashMap<>();
-			String licenseMemberPropName = uriToPropertyName("https://spdx.org/rdf/3.0.0/terms/ExpandedLicensing/member") + "s";
+			String licenseMemberPropName = uriToPropertyName.get("https://spdx.org/rdf/3.0.0/terms/ExpandedLicensing/member") + "s";
 			String licenseMemberGetter = "get" + licenseMemberPropName.substring(0, 1).toUpperCase() + licenseMemberPropName.substring(1);
 			mustacheMap.put("licenseMembersGetter", licenseMemberGetter);
 			mustacheMap.put("operator", 
@@ -1149,7 +1173,7 @@ public class ShaclToJava {
 			return mustacheToString(ShaclToJavaConstants.LICENSE_SET_TO_STRING_TEMPLATE, mustacheMap);
 		}  else if ("https://spdx.org/rdf/3.0.0/terms/Core/Element".equals(classUri)) {
 			Map<String, Object> mustacheMap = new HashMap<>();
-			String nameProp = uriToPropertyName("https://spdx.org/rdf/3.0.0/terms/Core/name");
+			String nameProp = uriToPropertyName.get("https://spdx.org/rdf/3.0.0/terms/Core/name");
 			String nameGetter = "get" + nameProp.substring(0, 1).toUpperCase() + nameProp.substring(1);
 			mustacheMap.put("nameGetter", nameGetter);
 			return mustacheToString(ShaclToJavaConstants.ELEMENT_TO_STRING_TEMPLATE, mustacheMap);
@@ -1180,41 +1204,41 @@ public class ShaclToJava {
 		// NOTE: This needs to be checked first since licenses are subclasses of elements
 		if ("https://spdx.org/rdf/3.0.0/terms/ExpandedLicensing/ConjunctiveLicenseSet".equals(classUri)) {
 			Map<String, Object> mustacheMap = new HashMap<>();
-			mustacheMap.put("className", uriToClassName(classUri));
+			mustacheMap.put("className", uriToClassName.get(classUri));
 			mustacheMap.put("primeNumber", "1381");
 			requiredImports.add("import java.util.HashSet;");
 			requiredImports.add("import java.util.Iterator;");
-			String licenseMemberPropName = uriToPropertyName("https://spdx.org/rdf/3.0.0/terms/ExpandedLicensing/member") + "s";
+			String licenseMemberPropName = uriToPropertyName.get("https://spdx.org/rdf/3.0.0/terms/ExpandedLicensing/member") + "s";
 			String licenseMemberGetter = "get" + licenseMemberPropName.substring(0, 1).toUpperCase() + licenseMemberPropName.substring(1);
 			mustacheMap.put("licenseMembersGetter", licenseMemberGetter);
 			return mustacheToString(ShaclToJavaConstants.LICENSE_SET_EQUALS_OVERRIDE_TEMPLATE, mustacheMap);
 		}
 		if ("https://spdx.org/rdf/3.0.0/terms/ExpandedLicensing/DisjunctiveLicenseSet".equals(classUri)) {
 			Map<String, Object> mustacheMap = new HashMap<>();
-			mustacheMap.put("className", uriToClassName(classUri));
+			mustacheMap.put("className", uriToClassName.get(classUri));
 			mustacheMap.put("primeNumber", "41");
 			requiredImports.add("import java.util.HashSet;");
 			requiredImports.add("import java.util.Iterator;");
-			String licenseMemberPropName = uriToPropertyName("https://spdx.org/rdf/3.0.0/terms/ExpandedLicensing/member") + "s";
+			String licenseMemberPropName = uriToPropertyName.get("https://spdx.org/rdf/3.0.0/terms/ExpandedLicensing/member") + "s";
 			String licenseMemberGetter = "get" + licenseMemberPropName.substring(0, 1).toUpperCase() + licenseMemberPropName.substring(1);
 			mustacheMap.put("licenseMembersGetter", licenseMemberGetter);
 			return mustacheToString(ShaclToJavaConstants.LICENSE_SET_EQUALS_OVERRIDE_TEMPLATE, mustacheMap);
 		}
 		if ("https://spdx.org/rdf/3.0.0/terms/ExpandedLicensing/OrLaterOperator".equals(classUri)) {
 			Map<String, Object> mustacheMap = new HashMap<>();
-			mustacheMap.put("className", uriToClassName(classUri));
-			String subjectPropertyName = uriToPropertyName("https://spdx.org/rdf/3.0.0/terms/ExpandedLicensing/subjectLicense");
+			mustacheMap.put("className", uriToClassName.get(classUri));
+			String subjectPropertyName = uriToPropertyName.get("https://spdx.org/rdf/3.0.0/terms/ExpandedLicensing/subjectLicense");
 			String subjectLicenseGetter = "get" + subjectPropertyName.substring(0, 1).toUpperCase() + subjectPropertyName.substring(1);
 			mustacheMap.put("subjectLicenseGetter", subjectLicenseGetter);
 			return mustacheToString(ShaclToJavaConstants.OR_LATER_EQUALS_OVERRIDE_TEMPLATE, mustacheMap);
 		}
 		if ("https://spdx.org/rdf/3.0.0/terms/ExpandedLicensing/WithAdditionOperator".equals(classUri)) {
 			Map<String, Object> mustacheMap = new HashMap<>();
-			mustacheMap.put("className", uriToClassName(classUri));
-			String subjectAdditionPropertyName = uriToPropertyName("https://spdx.org/rdf/3.0.0/terms/ExpandedLicensing/subjectAddition");
+			mustacheMap.put("className", uriToClassName.get(classUri));
+			String subjectAdditionPropertyName = uriToPropertyName.get("https://spdx.org/rdf/3.0.0/terms/ExpandedLicensing/subjectAddition");
 			String subjectLicenseGetter = "get" + subjectAdditionPropertyName.substring(0, 1).toUpperCase() + subjectAdditionPropertyName.substring(1);
 			mustacheMap.put("subjectAdditionGetter", subjectLicenseGetter);
-			String subjectExtendablePropertyName = uriToPropertyName("https://spdx.org/rdf/3.0.0/terms/ExpandedLicensing/subjectExtendableLicense");
+			String subjectExtendablePropertyName = uriToPropertyName.get("https://spdx.org/rdf/3.0.0/terms/ExpandedLicensing/subjectExtendableLicense");
 			String extendableLicenseGetter = "get" + subjectExtendablePropertyName.substring(0, 1).toUpperCase() + subjectExtendablePropertyName.substring(1);
 			mustacheMap.put("extendableLicenseGetter", extendableLicenseGetter);
 			return mustacheToString(ShaclToJavaConstants.WITH_EQUALS_OVERRIDE_TEMPLATE, mustacheMap);
@@ -1341,7 +1365,7 @@ public class ShaclToJava {
 		String nameSpace = uriToNamespaceUri(classUri);
 		String propertyUri = propertyShape.getPath().toString().replaceAll("<", "").replaceAll(">", "");
 		
-		String name = uriToPropertyName(propertyUri);
+		String name = uriToPropertyName.get(propertyUri);
 		retval.put("propertyName", name);
 		retval.put("propertyNameUpper", camelCaseToConstCase(name));
 		String getSetName = name.substring(0, 1).toUpperCase() + name.substring(1);
@@ -1409,7 +1433,7 @@ public class ShaclToJava {
 		} else if (ShaclToJavaConstants.INTEGER_TYPES.contains(typeUri)) {
 			type = "Integer";
 		} else {
-			type = uriToClassName(typeUri);
+			type = uriToClassName.get(typeUri);
 			if (!typeUri.startsWith(nameSpace) && 
 					(PropertyType.ENUM.equals(propertyType) || PropertyType.OBJECT.equals(propertyType) ||
 							PropertyType.OBJECT_COLLECTION.equals(propertyType) || 
@@ -1417,7 +1441,7 @@ public class ShaclToJava {
 							PropertyType.OBJECT_SET.equals(propertyType) ||
 							PropertyType.ANY_LICENSE_INFO.equals(propertyType) ||
 							PropertyType.ELEMENT.equals(propertyType))) {				
-				requiredImports.add("import "+uriToPkg(typeUri) + "." + uriToClassName(typeUri) +";");
+				requiredImports.add("import "+uriToPkg(typeUri) + "." + uriToClassName.get(typeUri) +";");
 			}
 		}
 		retval.put("typeUri", typeUri);
@@ -1622,9 +1646,9 @@ public class ShaclToJava {
 		}
 		String classNameSpace = uriToNamespaceUri(classUri);
 		if (!superClassUri.startsWith(classNameSpace)) {
-			requiredImports.add("import " + uriToPkg(superClassUri) + "." + uriToClassName(superClassUri) + ";");
+			requiredImports.add("import " + uriToPkg(superClassUri) + "." + uriToClassName.get(superClassUri) + ";");
 		}
-		return uriToClassName(superClassUri);
+		return uriToClassName.get(superClassUri);
 	}
 
 	/**
@@ -1767,7 +1791,7 @@ public class ShaclToJava {
 			path = path.resolve(parts[i].toLowerCase());
 		}
 		Files.createDirectories(path);
-		String fileName = uriToClassName(classUri)+"Test";
+		String fileName = uriToClassName.get(classUri)+"Test";
 		File retval = path.resolve(fileName + ".java").toFile();
 		retval.createNewFile();
 		return retval;
@@ -1788,7 +1812,7 @@ public class ShaclToJava {
 			path = path.resolve(parts[i].toLowerCase());
 		}
 		Files.createDirectories(path);
-		String fileName = uriToClassName(classUri);
+		String fileName = uriToClassName.get(classUri);
 		File retval = path.resolve(fileName + ".java").toFile();
 		retval.createNewFile();
 		return retval;
