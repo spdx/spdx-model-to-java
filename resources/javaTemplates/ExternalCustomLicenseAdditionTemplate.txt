@@ -21,7 +21,7 @@ import org.spdx.library.model.v3.core.ExternalIdentifier;
 import org.spdx.library.model.v3.core.ExternalRef;
 import org.spdx.library.model.v3.core.NamespaceMap;
 import org.spdx.library.model.v3.core.SpdxDocument;
-import org.spdx.library.model.v3.expandedlicensing.ExpandedLicensingCustomLicenseAddition;
+import org.spdx.library.model.v3.expandedlicensing.CustomLicenseAddition;
 import org.spdx.storage.IModelStore;
 
 /**
@@ -32,7 +32,7 @@ import org.spdx.storage.IModelStore;
  * @author Gary O'Neall
  *
  */
-public class ExternalCustomLicenseAddition extends ExpandedLicensingCustomLicenseAddition  implements IndividualUriValue {
+public class ExternalCustomLicenseAddition extends CustomLicenseAddition  implements IndividualUriValue {
 
 	@Nullable SpdxDocument enclosingSpdxDocument = null;
 	
@@ -182,12 +182,12 @@ public class ExternalCustomLicenseAddition extends ExpandedLicensingCustomLicens
 	}
 	
 	/**
-	 * @param ExpandedLicensingAdditionText the ExpandedLicensingAdditionText to set
+	 * @param AdditionText the AdditionText to set
 	 * @return this to chain setters
 	 * @throws InvalidSPDXAnalysisException 
 	 */
 	 @Override
-	public ExternalCustomLicenseAddition setExpandedLicensingAdditionText(@Nullable String ExpandedLicensingAdditionText) throws InvalidSPDXAnalysisException {
+	public ExternalCustomLicenseAddition setAdditionText(@Nullable String AdditionText) throws InvalidSPDXAnalysisException {
 		 throw new InvalidSPDXAnalysisException(getObjectUri() + " is external to this object store.");
 	 }
 	 
@@ -196,7 +196,7 @@ public class ExternalCustomLicenseAddition extends ExpandedLicensingCustomLicens
 	 * @throws InvalidSPDXAnalysisException 
 	 */
 	 @Override
-	public @Nullable String getExpandedLicensingAdditionText() throws InvalidSPDXAnalysisException {
+	public @Nullable String getAdditionText() throws InvalidSPDXAnalysisException {
 		 return null;
 	 }
 }

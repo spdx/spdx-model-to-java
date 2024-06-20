@@ -7,10 +7,10 @@
 			return false;
 		}
 		{{{className}}} comp = ({{{className}}})o;
-		ExpandedLicensingExtendableLicense myLicense = null;
-		ExpandedLicensingExtendableLicense compLicense = null;
-		ExpandedLicensingLicenseAddition myException = null;
-		ExpandedLicensingLicenseAddition compException = null;
+		ExtendableLicense myLicense = null;
+		ExtendableLicense compLicense = null;
+		LicenseAddition myException = null;
+		LicenseAddition compException = null;
 		try {
 			myLicense = this.{{{extendableLicenseGetter}}}();
 		} catch (InvalidSPDXAnalysisException e) {

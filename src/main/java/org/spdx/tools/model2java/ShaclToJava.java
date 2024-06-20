@@ -139,24 +139,62 @@ public class ShaclToJava {
 	}
 	
 	/**
+	 * Updates the uriNameMap and nameUriMap with the name and URI based on maintaining
+	 * unique names.  If the name is not unique, the "core" profile gets the short name,
+	 * otherwise the name is created by prepending the profile.
+	 * @param uri Uri
+	 * @param uriNameMap Map of URI's to names
+	 * @param nameUriMap Map of names to URI
+	 */
+	private void createUriNameMapping(String uri, Map<String, String> uriNameMap, 
+			Map<String, String> nameUriMap) {
+		String name = uriToName(uri);
+		if (uri.equals(nameUriMap.get(name))) {
+			return; // already there
+		} else if (nameUriMap.containsKey(name)) {
+			String profile = uriToProfile(uri);
+			if ("Core".equalsIgnoreCase(profile)) {
+				// replace the existing short name
+				String otherUri = nameUriMap.get(name);
+				String otherProfile = uriToProfile(otherUri);
+				String otherName = otherProfile + name.substring(0, 1).toUpperCase() + name.substring(1);
+				uriNameMap.put(otherUri, otherName);
+				nameUriMap.put(otherName, otherUri);
+				uriNameMap.put(uri, name);
+				nameUriMap.put(name, uri);
+			} else {
+				// use the profile in the name
+				String nameWithProfile = profile + name.substring(0, 1).toUpperCase() + name.substring(1);
+				uriNameMap.put(uri, nameWithProfile);
+				nameUriMap.put(nameWithProfile, uri);
+			}
+		} else {
+			uriNameMap.put(uri, name);
+			nameUriMap.put(name, uri);
+		}
+	}
+	
+	/**
 	 * Create the mapings from the URI's to class names and property names
 	 */
 	private void collectNameMappings() {
 		uriToClassName.clear();
+		Map<String, String> classNameToUri = new HashMap<>();
 		for (OntClass ontClass:allClasses) {
-			uriToClassName.put(ontClass.getURI(), uriToClassName(ontClass.getURI()));
+			createUriNameMapping(ontClass.getURI(), uriToClassName, classNameToUri);
 		}
 		for (List<String> individualUris:classUriToIndividualUris.values()) {
 			for (String individualUri:individualUris) {
-				uriToClassName.put(individualUri, uriToClassName(individualUri));
+				createUriNameMapping(individualUri, uriToClassName, classNameToUri);
 			}
 		}
 		uriToPropertyName.clear();
+		Map<String, String> propertyNameToUri = new HashMap<>();
 		for (DatatypeProperty prop:allDataProperties) {
-			uriToPropertyName.put(prop.getURI(), uriToPropertyName(prop.getURI()));
+			createUriNameMapping(prop.getURI(), uriToPropertyName, propertyNameToUri);
 		}
 		for (ObjectProperty prop:allObjectProperties) {
-			uriToPropertyName.put(prop.getURI(), uriToPropertyName(prop.getURI()));
+			createUriNameMapping(prop.getURI(), uriToPropertyName, propertyNameToUri);
 		}
 	}
 
@@ -1606,32 +1644,6 @@ public class ShaclToJava {
 			retval = uri;
 		}
 		return ShaclToJavaConstants.RESERVED_JAVA_WORDS.containsKey(retval) ? ShaclToJavaConstants.RESERVED_JAVA_WORDS.get(retval) : retval;
-	}
-	
-	/**
-	 * @param uri
-	 * @return the class name associated with the class URI
-	 */
-	private String uriToClassName(String uri) {
-		String retval = uriToName(uri);
-		String profile = uriToProfile(uri);
-		if (!"Core".equalsIgnoreCase(profile)) {
-			retval = profile + retval.substring(0, 1).toUpperCase() + retval.substring(1);
-		}
-		return retval;
-	}
-
-	/**
-	 * @param uri
-	 * @return the property name associated with the class URI
-	 */
-	private String uriToPropertyName(String uri) {
-		String retval = uriToName(uri);
-		String profile = uriToProfile(uri);
-		if (!"Core".equalsIgnoreCase(profile)) {
-			retval = profile + retval.substring(0, 1).toUpperCase() + retval.substring(1);
-		}
-		return retval;
 	}
 	
 	/**

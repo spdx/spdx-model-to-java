@@ -55,8 +55,8 @@ public class ShaclToJavaTest extends TestCase {
 					.resolve("model")
 					.resolve("v3")
 					.resolve("ai");
-				File classFile = aIPath.resolve("AIAIPackage.java").toFile();
-				File enumFile = aIPath.resolve("AISafetyRiskAssessmentType.java").toFile();
+				File classFile = aIPath.resolve("AIPackage.java").toFile();
+				File enumFile = aIPath.resolve("SafetyRiskAssessmentType.java").toFile();
 				assertTrue(classFile.exists());
 				assertTrue(classFile.isFile());
 				assertTrue(enumFile.exists());

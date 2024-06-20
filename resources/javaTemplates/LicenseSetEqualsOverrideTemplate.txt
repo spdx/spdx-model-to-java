@@ -5,14 +5,14 @@
 	 * @return all members "flattening out" license sets which are members of this set
 	 * @throws SpdxInvalidTypeException 
 	 */
-	public List<SimpleLicensingAnyLicenseInfo> getFlattenedMembers() throws InvalidSPDXAnalysisException {
-		HashSet<SimpleLicensingAnyLicenseInfo> retval = new HashSet<>();	// Use a set since any duplicated elements would be still considered equal
-		Iterator<SimpleLicensingAnyLicenseInfo> iter = this.{{{licenseMembersGetter}}}().iterator();
+	public List<AnyLicenseInfo> getFlattenedMembers() throws InvalidSPDXAnalysisException {
+		HashSet<AnyLicenseInfo> retval = new HashSet<>();	// Use a set since any duplicated elements would be still considered equal
+		Iterator<AnyLicenseInfo> iter = this.{{{licenseMembersGetter}}}().iterator();
 		while (iter.hasNext()) {
-			SimpleLicensingAnyLicenseInfo li = iter.next();
+			AnyLicenseInfo li = iter.next();
 			if (li instanceof {{{className}}}) {
 				// we need to flatten this out
-				List<SimpleLicensingAnyLicenseInfo> members = (({{{className}}})li).getFlattenedMembers();
+				List<AnyLicenseInfo> members = (({{{className}}})li).getFlattenedMembers();
 				for (int i = 0; i < members.size(); i++) {
 					retval.add(members.get(i));
 				}
@@ -20,7 +20,7 @@
 				retval.add(li);
 			}
 		}
-		List<SimpleLicensingAnyLicenseInfo> retvallist = new ArrayList<>();
+		List<AnyLicenseInfo> retvallist = new ArrayList<>();
 		retvallist.addAll(retval);
 		return retvallist;
 	}
@@ -30,13 +30,13 @@
 		// We override equals and hashcode to take into account flattening of the license set
 		// Calculate a hashcode by XOR'ing all of the hashcodes of the license set
 		int retval = {{{primeNumber}}};	// Prime number
-		List<SimpleLicensingAnyLicenseInfo> allMembers;
+		List<AnyLicenseInfo> allMembers;
 		try {
 			allMembers = this.getFlattenedMembers();
 		} catch (InvalidSPDXAnalysisException e) {
 			throw new RuntimeException("Error getting license set members",e);
 		}
-		for (SimpleLicensingAnyLicenseInfo licenseInfo:allMembers) {
+		for (AnyLicenseInfo licenseInfo:allMembers) {
 			retval = retval ^ licenseInfo.hashCode();
 		}
 		return retval;
@@ -56,13 +56,13 @@
 			return false;
 		}
 		{{{className}}} comp = ({{{className}}})o;
-		List<SimpleLicensingAnyLicenseInfo> compInfos;
+		List<AnyLicenseInfo> compInfos;
 		try {
 			compInfos = comp.getFlattenedMembers();
 		} catch (InvalidSPDXAnalysisException e) {
 			throw new RuntimeException("Error getting compare license set members",e);
 		}
-		List<SimpleLicensingAnyLicenseInfo> myInfos;
+		List<AnyLicenseInfo> myInfos;
 		try {
 			myInfos = this.getFlattenedMembers();
 		} catch (InvalidSPDXAnalysisException e) {
@@ -71,7 +71,7 @@
 		if (compInfos.size() != myInfos.size()) {
 			return false;
 		}
-		for (SimpleLicensingAnyLicenseInfo myInfo:myInfos) {
+		for (AnyLicenseInfo myInfo:myInfos) {
 			if (!compInfos.contains(myInfo)) {
 				return false;
 			}
@@ -91,13 +91,13 @@
 	}
 
 	protected boolean setsEquivalent({{{className}}} compare) throws InvalidSPDXAnalysisException {
-		List<SimpleLicensingAnyLicenseInfo> compInfos;
+		List<AnyLicenseInfo> compInfos;
 		try {
 			compInfos = compare.getFlattenedMembers();
 		} catch (InvalidSPDXAnalysisException e) {
 			throw new RuntimeException("Error getting compare license set members",e);
 		}
-		List<SimpleLicensingAnyLicenseInfo> myInfos;
+		List<AnyLicenseInfo> myInfos;
 		try {
 			myInfos = this.getFlattenedMembers();
 		} catch (InvalidSPDXAnalysisException e) {
@@ -106,10 +106,10 @@
 		if (compInfos.size() != myInfos.size()) {
 			return false;
 		}
-		for (SimpleLicensingAnyLicenseInfo myInfo:myInfos) {
+		for (AnyLicenseInfo myInfo:myInfos) {
 			if (!compInfos.contains(myInfo)) {
 				boolean found = false;
-				for (SimpleLicensingAnyLicenseInfo compInfo:compInfos) {
+				for (AnyLicenseInfo compInfo:compInfos) {
 					if (myInfo.equivalent(compInfo)) {
 						found = true;
 						break;

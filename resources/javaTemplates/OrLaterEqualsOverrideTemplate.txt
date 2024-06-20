@@ -3,7 +3,7 @@
 		if (!(compare instanceof {{{className}}})) {
 			return false;
 		}
-		ExpandedLicensingLicense cLic;
+		License cLic;
 		try {
 			cLic = (({{{className}}})compare).{{{subjectLicenseGetter}}}();
 			return Objects.equals(this.{{{subjectLicenseGetter}}}(), cLic);

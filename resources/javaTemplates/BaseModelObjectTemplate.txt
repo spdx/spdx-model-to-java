@@ -122,8 +122,8 @@ public abstract class ModelObjectV3 extends CoreModelObject {
 	
 	@Override
 	protected boolean isNoAssertion(Object value) {
-		return value instanceof ExpandedLicensingIndividualLicensingInfo && 
-				((ExpandedLicensingIndividualLicensingInfo)value).getObjectUri() == "https://spdx.org/rdf/3.0.0/terms/Licensing/NoAssertion";
+		return value instanceof IndividualLicensingInfo && 
+				((IndividualLicensingInfo)value).getObjectUri() == "https://spdx.org/rdf/3.0.0/terms/Licensing/NoAssertion";
 	}
 	
 	/**
@@ -133,16 +133,16 @@ public abstract class ModelObjectV3 extends CoreModelObject {
 	 * @throws InvalidSPDXAnalysisException
 	 */
 	@SuppressWarnings("unchecked")
-	protected Optional<SimpleLicensingAnyLicenseInfo> getAnyLicenseInfoPropertyValue(PropertyDescriptor propertyDescriptor) throws InvalidSPDXAnalysisException {
+	protected Optional<AnyLicenseInfo> getAnyLicenseInfoPropertyValue(PropertyDescriptor propertyDescriptor) throws InvalidSPDXAnalysisException {
 		Optional<Object> result = getObjectPropertyValue(propertyDescriptor);
 		if (!result.isPresent()) {
 			return Optional.empty();
-		} else if (result.get() instanceof SimpleLicensingAnyLicenseInfo) {
-			return (Optional<SimpleLicensingAnyLicenseInfo>)(Optional<?>)result;
+		} else if (result.get() instanceof AnyLicenseInfo) {
+			return (Optional<AnyLicenseInfo>)(Optional<?>)result;
 		} else if (result.get() instanceof SimpleUriValue) {
 			Object val = ((SimpleUriValue)(result.get())).toModelObject(modelStore, copyManager, specVersion);
-			if (val instanceof SimpleLicensingAnyLicenseInfo) {
-				return Optional.of((SimpleLicensingAnyLicenseInfo)val);
+			if (val instanceof AnyLicenseInfo) {
+				return Optional.of((AnyLicenseInfo)val);
 			} else {
 				logger.error("Invalid type for AnyLicenseInfo property: "+val.getClass().toString());
 				throw new SpdxInvalidTypeException("Invalid type for AnyLicenseInfo property: "+val.getClass().toString());
