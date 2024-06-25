@@ -140,7 +140,7 @@ public abstract class ModelObjectV3 extends CoreModelObject {
 		} else if (result.get() instanceof AnyLicenseInfo) {
 			return (Optional<AnyLicenseInfo>)(Optional<?>)result;
 		} else if (result.get() instanceof SimpleUriValue) {
-			Object val = ((SimpleUriValue)(result.get())).toModelObject(modelStore, copyManager, specVersion);
+			Object val = ((SimpleUriValue)(result.get())).toModelObject(modelStore, copyManager, specVersion, AnyLicenseInfo.class);
 			if (val instanceof AnyLicenseInfo) {
 				return Optional.of((AnyLicenseInfo)val);
 			} else {
@@ -167,7 +167,7 @@ public abstract class ModelObjectV3 extends CoreModelObject {
 		} else if (result.get() instanceof Element) {
 			return (Optional<Element>)(Optional<?>)result;
 		} else if (result.get() instanceof SimpleUriValue) {
-			Object val = ((SimpleUriValue)(result.get())).toModelObject(modelStore, copyManager, specVersion);
+			Object val = ((SimpleUriValue)(result.get())).toModelObject(modelStore, copyManager, specVersion, Element.class);
 			if (val instanceof Element) {
 				return Optional.of((Element)val);
 			} else {

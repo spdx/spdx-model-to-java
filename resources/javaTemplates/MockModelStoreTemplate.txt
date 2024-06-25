@@ -232,32 +232,9 @@ public class MockModelStore implements IModelStore {
 	public void delete(String objectUri) throws InvalidSPDXAnalysisException {
 
 	}
-
+	
 	@Override
-	public IExternalElementInfo addExternalReference(String externalObjectUri,
-			String collectionUri, IExternalElementInfo externalElementInfo) {
-		Map<String, IExternalElementInfo> ermap = externalReferenceMap.get(externalObjectUri);
-		if (Objects.isNull(ermap)) {
-			ermap = new HashMap<>();
-			externalReferenceMap.put(externalObjectUri, ermap);
-		}
-		return ermap.put(collectionUri, externalElementInfo);
+	public boolean isAnon(String objectUri) {
+		return objectUri.startsWith(ANON_PREFIX);
 	}
-
-	@Override
-	public Map<String, IExternalElementInfo> getExternalReferenceMap(
-			String externalObjectUri) {
-		return externalReferenceMap.get(externalObjectUri);
-	}
-
-	@Override
-	public IExternalElementInfo getExternalElementInfo(String externalObjectUri,
-			String collectionUri) {
-		Map<String, IExternalElementInfo> ermap = externalReferenceMap.get(externalObjectUri);
-		if (Objects.isNull(ermap)) {
-			return null;
-		}
-		return ermap.get(collectionUri);
-	}
-
 }

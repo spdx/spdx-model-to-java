@@ -40,7 +40,7 @@ public class SpdxModelInfoV3_0 implements ISpdxModelInfo {
 	}
 
 	@Override
-	public @Nullable Object uriToIndividual(String uri) {
+	public @Nullable Object uriToIndividual(String uri, @Nullable Class<?> type) {
 		return SpdxIndividualFactory.uriToIndividual.get(uri);
 	}
 
