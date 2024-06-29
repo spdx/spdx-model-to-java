@@ -47,9 +47,9 @@ public class SpdxModelInfoV3_0 implements ISpdxModelInfo {
 	@Override
 	public CoreModelObject createModelObject(IModelStore modelStore,
 			String objectUri, String type, IModelCopyManager copyManager,
-			String specVersion, boolean create)
+			String specVersion, boolean create, String idPrefix)
 			throws InvalidSPDXAnalysisException {
-		return SpdxModelClassFactory.getModelObject(modelStore, objectUri, type, copyManager, create);
+		return SpdxModelClassFactory.getModelObject(modelStore, objectUri, type, copyManager, create, idPrefix);
 	}
 
 	@Override

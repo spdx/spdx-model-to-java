@@ -50,7 +50,7 @@ public class TestSpdxModelInfo implements ISpdxModelInfo {
 	@Override
 	public CoreModelObject createModelObject(IModelStore modelStore,
 			String objectUri, String type, IModelCopyManager copyManager,
-			String specVersion, boolean create)
+			String specVersion, boolean create, String idPrefix)
 			throws InvalidSPDXAnalysisException {
 		if (TestValuesGenerator.MOCK_TYPE_TO_CLASS.containsKey(type)) {
 			Class<?> clazz = TestValuesGenerator.MOCK_TYPE_TO_CLASS.get(type);
@@ -61,7 +61,7 @@ public class TestSpdxModelInfo implements ISpdxModelInfo {
 				throw new InvalidSPDXAnalysisException("Error creating Mock class");
 			}
 		} else {
-			return SpdxModelClassFactory.getModelObject(modelStore, objectUri, type, copyManager, create);
+			return SpdxModelClassFactory.getModelObject(modelStore, objectUri, type, copyManager, create, idPrefix);
 		}
 	}
 
