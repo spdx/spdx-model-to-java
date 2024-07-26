@@ -28,8 +28,8 @@ public class ShaclToJavaConstants {
 	public static final String RANGE_URI = "http://www.w3.org/2000/01/rdf-schema#range";
 	public static final String BOOLEAN_TYPE = "http://www.w3.org/2001/XMLSchema#boolean";
 	public static final String STRING_TYPE = "http://www.w3.org/2001/XMLSchema#string";
-	public static final String ELEMENT_TYPE_URI = "https://spdx.org/rdf/Core/Element";
-	public static final String ELEMENT_TYPE_ANY_LICENSE_INFO = "https://spdx.org/rdf/Licensing/AnyLicenseInfo";
+	public static final String ELEMENT_TYPE_URI = "https://spdx.org/rdf/3.0.0/terms/Core/Element";
+	public static final String ELEMENT_TYPE_ANY_LICENSE_INFO = "https://spdx.org/rdf/3.0.0/terms/Licensing/AnyLicenseInfo";
 	public static final String DATE_TIME_TYPE = "http://www.w3.org/2001/XMLSchema#dateTimeStamp";
 	public static final String ANY_URI_TYPE = "http://www.w3.org/2001/XMLSchema#anyURI";
 	public static final String OWL_THING_URI = "http://www.w3.org/2002/07/owl#Thing";
@@ -48,9 +48,7 @@ public class ShaclToJavaConstants {
 	public static final String INDIVIDUALS_FACTORY_TEMPLATE = "SpdxIndividualFactoryTemplate.txt";
 	public static final String MODEL_CLASS_FACTORY_TEMPLATE = "ModelClassFactoryTemplate.txt";
 	public static final String CREATE_CLASS_TEMPLATE = "CreateClassTemplate.txt";
-	public static final String EXTERNAL_ELEMENT_TEMPLATE = "ExternalElementTemplate.txt";
-	public static final String EXTERNAL_CUSTOM_LICENSE_TEMPLATE = "ExternalCustomLicenseTemplate.txt";
-	public static final String EXTERNAL_CUSTOM_LICENSE_ADDITION_TEMPLATE = "ExternalCustomLicenseAdditionTemplate.txt";
+	public static final String EXTERNAL_JAVA_CLASS_TEMPLATE = "ExternalJavaClassTemplate.txt";
 	public static final String BASE_MODEL_OBJECT_TEMPLATE = "BaseModelObjectTemplate.txt";
 	public static final String MODEL_INFO_TEMPLATE = "ModelInfoTemplate.txt";
 	public static final String PACKAGE_INFO_TEMPLATE = "PackageInfoTemplate.txt";

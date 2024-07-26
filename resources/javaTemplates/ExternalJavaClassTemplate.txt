@@ -18,23 +18,62 @@
  
 package {{{pkgName}}};
 
+import org.spdx.storage.NullModelStore;
 {{#imports}}
 {{.}}
 {{/imports}}
 
-{{{classComments}}}
-public class {{{className}}} extends {{{superClass}}} implements IndividualUriValue {
+/**
+ * This is an external representation of {{{className}}} - nothing can be set and properties returned
+ * are not valid
+ *
+**/
+public class External{{{className}}} extends {{{className}}} {
+
+	{{#objectPropertyValueCollection}}
+	Collection<{{{type}}}> {{{propertyName}}}s = Collections.emptyList();
+	{{/objectPropertyValueCollection}}
+	{{#stringCollection}}
+	Collection<String> {{{propertyName}}}s = Collections.emptyList();
+	{{/stringCollection}}
+	{{#objectPropertyValueSet}}
+	Set<{{{type}}}> {{{propertyName}}}s = Collections.emptySet();
+	{{/objectPropertyValueSet}}
+	{{#enumPropertyValueCollection}}
+	Collection<{{{type}}}> {{{propertyName}}}s = Collections.emptyList();
+	{{/enumPropertyValueCollection}}
 
 	/**
+	 * @param objectUri URI or anonymous ID for the {{{className}}}
 	 * @throws InvalidSPDXAnalysisException when unable to create the {{{className}}}
 	 */
-	public {{{className}}}() throws InvalidSPDXAnalysisException {
-		super(new NullModelStore(), "{{{individualUri}}}", null, true, null);
+	public External{{{className}}}(String objectUri) throws InvalidSPDXAnalysisException {
+		this(new NullModelStore(), objectUri, null, true, "");
 	}
-	
-	@Override
-	public boolean isExternal() {
-		return true;  // since it is not technically stored in the model store
+
+	/**
+	 * @param modelStore Generally ignored for external
+	 * @param objectUri URI for the external element
+	 * @param copyManager Generally ignored for external
+	 * @param create Generally ignored for external
+	 * @param idPrefix Generally ignored for external
+	 * @throws InvalidSPDXAnalysisException when unable to create the External{{{className}}}
+	 */
+	public External{{{className}}}(IModelStore modelStore, String objectUri, @Nullable IModelCopyManager copyManager,
+			boolean create, String idPrefix) throws InvalidSPDXAnalysisException {
+			super(modelStore, objectUri, copyManager, create, idPrefix);
+	}
+
+	/**
+	 * Create the {{{className}}} from the builder - used in the builder class
+	 * @param builder Builder to create the {{{className}}} from
+	 * @throws InvalidSPDXAnalysisException when unable to create the {{{className}}}
+	 */
+	 {{#suppressUnchecked}}
+	 @SuppressWarnings("unchecked")
+	 {{/suppressUnchecked}}
+	protected External{{{className}}}({{{className}}}Builder builder) throws InvalidSPDXAnalysisException {
+		super(builder);
 	}
 
 	/* (non-Javadoc)
@@ -42,28 +81,28 @@ public class {{{className}}} extends {{{superClass}}} implements IndividualUriVa
 	 */
 	@Override
 	public String getType() {
-		return "{{{classProfile}}}.{{{className}}}";
+		return "{{{classProfile}}}.External{{{className}}}";
 	}
 	
 	// Getters and Setters
 	{{#objectPropertyValueCollection}}
 	public Collection<{{{type}}}> {{{getter}}}s() {
-		return new ArrayList<{{{type}}}>();
+		return {{{propertyName}}}s;
 	}
 	{{/objectPropertyValueCollection}}
 	{{#enumPropertyValueCollection}}
 	public Collection<{{{type}}}> {{{getter}}}s() {
-		return new ArrayList<{{{type}}}>();
+		return {{{propertyName}}}s;
 	}
 	{{/enumPropertyValueCollection}}
 	{{#stringCollection}}
 	public Collection<String> {{{getter}}}s() {
-		return new ArrayList<String>();
+		return {{{propertyName}}}s;
 	}
 	{{/stringCollection}}
 	{{#objectPropertyValueSet}}
 	public Set<{{{type}}}> {{{getter}}}s() {
-		throw new InvalidSPDXAnalysisException("Can not set or modify a property of an Individual type");
+		return {{{propertyName}}}s;
 	}
 	{{/objectPropertyValueSet}}
 	{{#elementProperties}}
@@ -90,7 +129,7 @@ public class {{{className}}} extends {{{superClass}}} implements IndividualUriVa
 	 * @throws InvalidSPDXAnalysisException 
 	 */
 	public {{{className}}} {{{setter}}}(@Nullable Element {{{propertyName}}}) throws InvalidSPDXAnalysisException {
-		throw new InvalidSPDXAnalysisException("Can not set or modify a property of an Individual type");
+		throw new InvalidSPDXAnalysisException("External elements can not set properties");
 	}
 	{{/elementProperties}}
 	
@@ -99,7 +138,6 @@ public class {{{className}}} extends {{{superClass}}} implements IndividualUriVa
 	/**
 	 * @return the {{{propertyName}}}
 	 */
-	 @SuppressWarnings("unchecked")
 	public @Nullable {{{type}}} {{{getter}}}() throws InvalidSPDXAnalysisException {
 		return null;
 	}
@@ -120,7 +158,7 @@ public class {{{className}}} extends {{{superClass}}} implements IndividualUriVa
 	 * @throws InvalidSPDXAnalysisException 
 	 */
 	public {{{className}}} {{{setter}}}(@Nullable {{{type}}} {{{propertyName}}}) throws InvalidSPDXAnalysisException {
-		throw new InvalidSPDXAnalysisException("Can not set or modify a property of an Individual type");
+		throw new InvalidSPDXAnalysisException("External elements can not set properties");
 	}
 	{{/objectProperties}}
 	{{#anyLicenseInfoProperties}}
@@ -129,7 +167,7 @@ public class {{{className}}} extends {{{superClass}}} implements IndividualUriVa
 	 * @return the {{{propertyName}}}
 	 */
 	public Optional<{{{type}}}> {{{getter}}}() throws InvalidSPDXAnalysisException {
-		Optional.empty();
+		return Optional.empty();
 	}
 	{{/nonOptional}}
 	{{#nonOptional}}
@@ -147,7 +185,7 @@ public class {{{className}}} extends {{{superClass}}} implements IndividualUriVa
 	 * @throws InvalidSPDXAnalysisException 
 	 */
 	public {{{className}}} {{{setter}}}(@Nullable {{{type}}} {{{propertyName}}}) throws InvalidSPDXAnalysisException {
-		throw new InvalidSPDXAnalysisException("Can not set or modify a property of an Individual type");
+		throw new InvalidSPDXAnalysisException("External elements can not set properties");
 	}
 	{{/anyLicenseInfoProperties}}
 	{{#enumerationProperties}}
@@ -156,7 +194,6 @@ public class {{{className}}} extends {{{superClass}}} implements IndividualUriVa
 	 * @return the {{{propertyName}}}
 	 */
 	public @Nullable {{{type}}} {{{getter}}}() throws InvalidSPDXAnalysisException {
-		Optional<Enum<?>> retval = getEnumPropertyValue(SpdxConstantsV3.{{{propertyConstant}}});
 		return null;
 	}
 	{{/nonOptional}}
@@ -175,7 +212,7 @@ public class {{{className}}} extends {{{superClass}}} implements IndividualUriVa
 	 * @throws InvalidSPDXAnalysisException 
 	 */
 	public {{{className}}} {{{setter}}}(@Nullable {{{type}}} {{{propertyName}}}) throws InvalidSPDXAnalysisException {
-		throw new InvalidSPDXAnalysisException("Can not set or modify a property of an Individual type");
+		throw new InvalidSPDXAnalysisException("External elements can not set properties");
 	}
 	{{/enumerationProperties}}
 	{{#booleanProperties}}
@@ -202,7 +239,7 @@ public class {{{className}}} extends {{{superClass}}} implements IndividualUriVa
 	 * @throws InvalidSPDXAnalysisException 
 	 */
 	public {{{className}}} {{{setter}}}(@Nullable {{{type}}} {{{propertyName}}}) throws InvalidSPDXAnalysisException {
-		throw new InvalidSPDXAnalysisException("Can not set or modify a property of an Individual type");
+		throw new InvalidSPDXAnalysisException("External elements can not set properties");
 	}
 	{{/booleanProperties}}
 	{{#integerProperties}}
@@ -229,7 +266,7 @@ public class {{{className}}} extends {{{superClass}}} implements IndividualUriVa
 	 * @throws InvalidSPDXAnalysisException 
 	 */
 	public {{{className}}} {{{setter}}}(@Nullable {{{type}}} {{{propertyName}}}) throws InvalidSPDXAnalysisException {
-		throw new InvalidSPDXAnalysisException("Can not set or modify a property of an Individual type");
+		throw new InvalidSPDXAnalysisException("External elements can not set properties");
 	}
 	{{/integerProperties}}
 	{{#stringProperties}}
@@ -255,13 +292,17 @@ public class {{{className}}} extends {{{superClass}}} implements IndividualUriVa
 	 * @throws InvalidSPDXAnalysisException 
 	 */
 	public {{{className}}} {{{setter}}}(@Nullable String {{{propertyName}}}) throws InvalidSPDXAnalysisException {
-		throw new InvalidSPDXAnalysisException("Can not set or modify a property of an Individual type");
+		throw new InvalidSPDXAnalysisException("External elements can not set properties");
 	}
 	{{/stringProperties}}
 	
+	
 	@Override
 	public String toString() {
-		return "{{{toStringName}}}";
+		{{^toString}}
+		return "{{{className}}}: "+getObjectUri();
+		{{/toString}}
+		{{{toString}}}
 	}
 	
 	/* (non-Javadoc)
@@ -270,20 +311,5 @@ public class {{{className}}} extends {{{superClass}}} implements IndividualUriVa
 	@Override
 	public List<String> _verify(Set<String> verifiedIds, String specVersionForVerify, List<IndividualUriValue> profiles) {
 		return new ArrayList<>();
-	}
-	
-	@Override
-	public boolean equals(Object o) {
-		return o instanceof {{{className}}};
-	}
-	
-	@Override
-	public int hashCode() {
-		return "{{{individualUri}}}".hashCode();
-	}
-	
-	@Override
-	public String getIndividualURI() {
-		return "{{{individualUri}}}";
 	}
 }

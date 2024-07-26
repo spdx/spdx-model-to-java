@@ -27,22 +27,22 @@ public {{#abstract}}abstract{{/abstract}} class {{{className}}} extends {{{super
 
 	{{#objectPropertyValueCollection}}
 	{{^superSetter}}
-	Collection<{{{type}}}> {{{propertyName}}}s;
+	Collection<{{{type}}}> {{{propertyName}}}s = Collections.emptyList();
 	{{/superSetter}}
 	{{/objectPropertyValueCollection}}
 	{{#stringCollection}}
 	{{^superSetter}}
-	Collection<String> {{{propertyName}}}s;
+	Collection<String> {{{propertyName}}}s = Collections.emptyList();
 	{{/superSetter}}
 	{{/stringCollection}}
 	{{#objectPropertyValueSet}}
 	{{^superSetter}}
-	Set<{{{type}}}> {{{propertyName}}}s;
+	Set<{{{type}}}> {{{propertyName}}}s = Collections.emptySet();
 	{{/superSetter}}
 	{{/objectPropertyValueSet}}
 	{{#enumPropertyValueCollection}}
 	{{^superSetter}}
-	Collection<{{{type}}}> {{{propertyName}}}s;
+	Collection<{{{type}}}> {{{propertyName}}}s = Collections.emptyList();
 	{{/superSetter}}
 	{{/enumPropertyValueCollection}}
 	
@@ -79,22 +79,30 @@ public {{#abstract}}abstract{{/abstract}} class {{{className}}} extends {{{super
 		super(modelStore, objectUri, copyManager, create, idPrefix);
 		{{#objectPropertyValueCollection}}
 		{{^superSetter}}
-		{{{propertyName}}}s = (Collection<{{{type}}}>)(Collection<?>)this.getObjectPropertyValueCollection(SpdxConstantsV3.{{{propertyConstant}}}, {{{type}}}.class);
+		if (!isExternal()) {
+			{{{propertyName}}}s = (Collection<{{{type}}}>)(Collection<?>)this.getObjectPropertyValueCollection(SpdxConstantsV3.{{{propertyConstant}}}, {{{type}}}.class);
+		}
 		{{/superSetter}}
 		{{/objectPropertyValueCollection}}
 		{{#enumPropertyValueCollection}}
 		{{^superSetter}}
-		{{{propertyName}}}s = (Collection<{{{type}}}>)(Collection<?>)this.getObjectPropertyValueCollection(SpdxConstantsV3.{{{propertyConstant}}}, {{{type}}}.class);
+		if (!isExternal()) {
+			{{{propertyName}}}s = (Collection<{{{type}}}>)(Collection<?>)this.getObjectPropertyValueCollection(SpdxConstantsV3.{{{propertyConstant}}}, {{{type}}}.class);
+		}
 		{{/superSetter}}
 		{{/enumPropertyValueCollection}}
 		{{#stringCollection}}
 		{{^superSetter}}
-		{{{propertyName}}}s = (Collection<String>)(Collection<?>)this.getObjectPropertyValueCollection(SpdxConstantsV3.{{{propertyConstant}}}, String.class);
+		if (!isExternal()) {
+			{{{propertyName}}}s = (Collection<String>)(Collection<?>)this.getObjectPropertyValueCollection(SpdxConstantsV3.{{{propertyConstant}}}, String.class);
+		}
 		{{/superSetter}}
 		{{/stringCollection}}
 		{{#objectPropertyValueSet}}
 		{{^superSetter}}
-		{{{propertyName}}}s = (Set<{{{type}}}>)(Set<?>)this.getObjectPropertyValueSet(SpdxConstantsV3.{{{propertyConstant}}}, {{{type}}}.class);
+		if (!isExternal()) {
+			{{{propertyName}}}s = (Set<{{{type}}}>)(Set<?>)this.getObjectPropertyValueSet(SpdxConstantsV3.{{{propertyConstant}}}, {{{type}}}.class);
+		}
 		{{/superSetter}}
 		{{/objectPropertyValueSet}}
 		{{#stringProperty}}

@@ -37,7 +37,7 @@ public class TestSpdxModelInfo implements ISpdxModelInfo {
 
 	@Override
 	public CoreModelObject createExternalElement(IModelStore store, String uri,
-			IModelCopyManager copyManager, String specVersion)
+			IModelCopyManager copyManager, Class<?> type, String specVersion)
 			throws InvalidSPDXAnalysisException {
 		return new ExternalElement(store, uri, copyManager, true, null);
 	}
@@ -75,6 +75,11 @@ public class TestSpdxModelInfo implements ISpdxModelInfo {
 			retval.put(entry.getKey(), entry.getValue());
 		}
 		return retval;
+	}
+	
+	@Override
+	public boolean canBeExternal(Class<?> clazz) {
+		return false;
 	}
 
 }

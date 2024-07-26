@@ -7,6 +7,7 @@ package org.spdx.library.model.v3;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import javax.annotation.Nullable;
 
@@ -14,6 +15,7 @@ import org.spdx.core.CoreModelObject;
 import org.spdx.core.IModelCopyManager;
 import org.spdx.core.ISpdxModelInfo;
 import org.spdx.core.InvalidSPDXAnalysisException;
+import org.spdx.library.model.v3.core.Element;
 import org.spdx.storage.IModelStore;
 
 /**
@@ -34,9 +36,18 @@ public class SpdxModelInfoV3_0 implements ISpdxModelInfo {
 
 	@Override
 	public CoreModelObject createExternalElement(IModelStore store, String uri,
-			IModelCopyManager copyManager, String specVersion)
+			IModelCopyManager copyManager, Class<?> typeClass, String specVersion)
 			throws InvalidSPDXAnalysisException {
-		return new ExternalElement(store, uri, copyManager, true, null);
+		if (Objects.nonNull(typeClass)) {
+			if (!canBeExternal(typeClass)) {
+				throw new InvalidSPDXAnalysisException(typeClass.toString() + "Can not be an external type");
+			}
+			String[] typeParts = SpdxModelClassFactory.SPDX_CLASS_TO_TYPE.get(typeClass).split("\\.");
+			String type = typeParts[0] + "." + "External" + typeParts[1];
+			return SpdxModelClassFactory.getModelObject(store, uri, type, copyManager, true, "");
+		} else {
+			return new ExternalElement(store, uri, copyManager);
+		}
 	}
 
 	@Override
@@ -55,6 +66,11 @@ public class SpdxModelInfoV3_0 implements ISpdxModelInfo {
 	@Override
 	public Map<String, Class<?>> getTypeToClassMap() {
 		return SpdxModelClassFactory.SPDX_TYPE_TO_CLASS_V3;
+	}
+	
+	@Override
+	public boolean canBeExternal(Class<?> clazz) {
+		return Element.class.isAssignableFrom(clazz);
 	}
 
 }

@@ -231,6 +231,12 @@ public class ShaclToJava {
 				subClasses.add(oc);
 			});
 			List<OntClass> superClasses = new ArrayList<>();
+			if (elementTypes.contains(classUri)) {
+				String externalClassUri = classUriToExternalClassUri(classUri);
+				classUris.add(externalClassUri);
+				String externalClassName = "External" + uriToName(classUri);
+				this.uriToClassName.put(externalClassUri, externalClassName);
+			}
 			addAllSuperClasses(ontClass, superClasses);
 			
 			for (OntClass superClass : superClasses) {
@@ -271,6 +277,9 @@ public class ShaclToJava {
 							createBuilderList.add(createString);
 						}
 						generateJavaClass(dir, classUri, javaClassMaps.get(classUri));
+						if (elementTypes.contains(classUri)) {
+							generateExternalJavaClass(dir, classUri, javaClassMaps.get(classUri));
+						}
 						if (!isAbstract) {
 							generateUnitTest(dir, classUri, unitTestMaps.get(classUri));
 						}
@@ -286,9 +295,6 @@ public class ShaclToJava {
 		generateSpdxConstants(dir, classUris);
 		generateEnumFactory(dir, enumMustacheMaps);
 		generateModelClassFactory(dir, classUris);
-		generateExternalElement(dir);
-		generateExternalLicense(dir);
-		generateExternalLicenseAddition(dir);
 		generateModelObject(dir, createBuilderList, classUris);
 		generateSpdxModelInfo(dir);
 		generatePackageInfo(dir);
@@ -298,6 +304,17 @@ public class ShaclToJava {
 		generateMockFiles(dir, "3.0.0");
 		return warnings;
 	}
+
+	/**
+	 * @param classUri class URI
+	 * @return URI for a class which is the external form of the classUri
+	 */
+	private String classUriToExternalClassUri(String classUri) {
+		String nameSpaceUri = uriToNamespaceUri(classUri);
+		String className = classUri.substring(nameSpaceUri.length()+1);
+		return nameSpaceUri + "/External" + className;
+	}
+
 
 	/**
 	 * @param dir directory for the source files
@@ -481,49 +498,7 @@ public class ShaclToJava {
 		mustacheMap.put("imports", imports);
 		writeMustacheFile(ShaclToJavaConstants.BASE_MODEL_OBJECT_TEMPLATE, file, mustacheMap);
 	}
-
-	/**
-	 * Generate the ExternalElement.java file
-	 * @param dir top level directory for the project
-	 * @throws IOException 
-	 */
-	private void generateExternalElement(File dir) throws IOException {
-		Path path = dir.toPath().resolve("src").resolve("main").resolve("java").resolve("org")
-				.resolve("spdx").resolve("library").resolve("model").resolve("v3");
-		Files.createDirectories(path);
-		File file = path.resolve("ExternalElement.java").toFile();
-		file.createNewFile();
-		writeMustacheFile(ShaclToJavaConstants.EXTERNAL_ELEMENT_TEMPLATE, file, new HashMap<>());
-	}
 	
-	/**
-	 * Generate the ExternalElement.java file
-	 * @param dir top level directory for the project
-	 * @throws IOException 
-	 */
-	private void generateExternalLicense(File dir) throws IOException {
-		Path path = dir.toPath().resolve("src").resolve("main").resolve("java").resolve("org")
-				.resolve("spdx").resolve("library").resolve("model").resolve("v3");
-		Files.createDirectories(path);
-		File file = path.resolve("ExternalCustomLicense.java").toFile();
-		file.createNewFile();
-		writeMustacheFile(ShaclToJavaConstants.EXTERNAL_CUSTOM_LICENSE_TEMPLATE, file, new HashMap<>());
-	}
-	
-	/**
-	 * Generate the ExternalElement.java file
-	 * @param dir top level directory for the project
-	 * @throws IOException 
-	 */
-	private void generateExternalLicenseAddition(File dir) throws IOException {
-		Path path = dir.toPath().resolve("src").resolve("main").resolve("java").resolve("org")
-				.resolve("spdx").resolve("library").resolve("model").resolve("v3");
-		Files.createDirectories(path);
-		File file = path.resolve("ExternalCustomLicenseAddition.java").toFile();
-		file.createNewFile();
-		writeMustacheFile(ShaclToJavaConstants.EXTERNAL_CUSTOM_LICENSE_ADDITION_TEMPLATE, file, new HashMap<>());
-	}
-
 	/**
 	 * Collect all relationship restrictions
 	 */
@@ -727,8 +702,8 @@ public class ShaclToJava {
 			typeToClassMap.put("classPath", classPath);
 			typeToClasses.add(typeToClassMap);
 		}
-		// Add individual types
 		
+		// Add individual types
 		for (List<String> individualUris:this.classUriToIndividualUris.values()) {
 			for (String individualUri:individualUris) {
 				String className = uriToClassName.get(individualUri);
@@ -929,8 +904,8 @@ public class ShaclToJava {
 			return PropertyType.OBJECT_COLLECTION;
 		} else if (anyLicenseInfoTypes.contains(typeUri)) {
 			return PropertyType.ANY_LICENSE_INFO;
-		} else if (elementTypes.contains(typeUri)) {
-			return PropertyType.ELEMENT;
+//		} else if (elementTypes.contains(typeUri)) {
+//			return PropertyType.ELEMENT;
 		} else {
 			return PropertyType.OBJECT;
 		}
@@ -1162,6 +1137,18 @@ public class ShaclToJava {
 	}
 	
 	/**
+	 * @param dir top level directory for code
+	 * @param classUri URI for the class the external class is based on
+	 * @param mustacheMap mustache map for template
+	 * @throws IOException 
+	 */
+	private void generateExternalJavaClass(File dir, String classUri,
+			Map<String, Object> mustacheMap) throws IOException {
+		File sourceFile = createExternalJavaSourceFile(classUri, dir);
+		writeMustacheFile(ShaclToJavaConstants.EXTERNAL_JAVA_CLASS_TEMPLATE, sourceFile, mustacheMap);
+	}
+	
+	/**
 	 * @param classUri
 	 * @param superClasses
 	 * @param propertyMap
@@ -1336,6 +1323,7 @@ public class ShaclToJava {
 		mustacheMap.put("classComments", toClassComment(comment));
 		String superClass = getSuperClass(superClassUri, requiredImports, individualUri);
 		mustacheMap.put("superClass", superClass);
+		requiredImports.add("import org.spdx.storage.NullModelStore;");
 		List<String> imports = buildImports(new ArrayList<String>(requiredImports));
 		mustacheMap.put("imports", imports.toArray(new String[imports.size()]));
 		mustacheMap.put("toStringName", name.startsWith("NoAssertion") ? "NOASSERTION" :
@@ -1459,6 +1447,7 @@ public class ShaclToJava {
 		if (PropertyType.OBJECT_COLLECTION.equals(propertyType) || PropertyType.STRING_COLLECTION.equals(propertyType) ||
 				PropertyType.ENUM_COLLECTION.equals(propertyType)) {
 			requiredImports.add("import java.util.Collection;");
+			requiredImports.add("import java.util.Collections;");
 			requiredImports.add("import java.util.Objects;");
 		}
  		retval.put("propertyType", propertyType);
@@ -1825,6 +1814,27 @@ public class ShaclToJava {
 		}
 		Files.createDirectories(path);
 		String fileName = uriToClassName.get(classUri);
+		File retval = path.resolve(fileName + ".java").toFile();
+		retval.createNewFile();
+		return retval;
+	}
+	
+	/**
+	 * @param classUri URI for the non-external class
+	 * @param dir directory to hold the file
+	 * @return the created file
+	 * @throws IOException 
+	 */
+	private File createExternalJavaSourceFile(String classUri, File dir) throws IOException {		
+		Path path = dir.toPath().resolve("src").resolve("main").resolve("java").resolve("org")
+				.resolve("spdx").resolve("library").resolve("model").resolve("v3");
+		String[] parts = classUri.substring(ShaclToJavaConstants.SPDX_URI_PREFIX.length()).split("/");
+		// [0] is version, [1] is "terms"
+		for (int i = 2; i < parts.length-1; i++) {
+			path = path.resolve(parts[i].toLowerCase());
+		}
+		Files.createDirectories(path);
+		String fileName = "External" + uriToClassName.get(classUri);
 		File retval = path.resolve(fileName + ".java").toFile();
 		retval.createNewFile();
 		return retval;
