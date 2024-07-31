@@ -184,7 +184,7 @@ public class UnitTestHelper {
 	public static void copyObjectsToDoc(SpdxDocument doc, Collection<? extends CoreModelObject> modelObjects) throws InvalidSPDXAnalysisException {
 		for (CoreModelObject mo:modelObjects) {
 			doc.getCopyManager().copy(doc.getModelStore(), mo.getModelStore(), mo.getObjectUri(),
-					mo.getType(), "{{{specVersion}}}", doc.getIdPrefix());
+					"3.0.0", doc.getIdPrefix());
 		}
 	}
 	

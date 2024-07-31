@@ -342,7 +342,7 @@ public {{#abstract}}abstract{{/abstract}} class {{{className}}} extends {{{super
 		Optional<Object> retval = getObjectPropertyValue(SpdxConstantsV3.{{{propertyConstant}}});
 		if (retval.isPresent()) {
 			if (!(retval.get() instanceof {{{type}}})) {
-				throw new InvalidSPDXAnalysisException("Incorrect type stored for {{{propertyname}}}");
+				throw new InvalidSPDXAnalysisException("Incorrect type stored for {{{propertyName}}}");
 			}
 			return ({{{type}}})(retval.get());
 		} else {
@@ -359,7 +359,7 @@ public {{#abstract}}abstract{{/abstract}} class {{{className}}} extends {{{super
 		Optional<Object> retval = getObjectPropertyValue(SpdxConstantsV3.{{{propertyConstant}}});
 		if (retval.isPresent()) {
 			if (!(retval.get() instanceof {{{type}}})) {
-				throw new InvalidSPDXAnalysisException("Incorrect type stored for {{{propertyname}}}");
+				throw new InvalidSPDXAnalysisException("Incorrect type stored for {{{propertyName}}}");
 			}
 			return (Optional<{{{type}}}>)(Optional<?>)(retval);
 		} else {
@@ -460,7 +460,7 @@ public {{#abstract}}abstract{{/abstract}} class {{{className}}} extends {{{super
 		Optional<Enum<?>> retval = getEnumPropertyValue(SpdxConstantsV3.{{{propertyConstant}}});
 		if (retval.isPresent()) {
 			if (!(retval.get() instanceof {{{type}}})) {
-				throw new InvalidSPDXAnalysisException("Incorrect type stored for {{{propertyname}}}");
+				throw new InvalidSPDXAnalysisException("Incorrect type stored for {{{propertyName}}}");
 			}
 			return ({{{type}}})(retval.get());
 		} else {
@@ -477,7 +477,7 @@ public {{#abstract}}abstract{{/abstract}} class {{{className}}} extends {{{super
 		Optional<Enum<?>> retval = getEnumPropertyValue(SpdxConstantsV3.{{{propertyConstant}}});
 		if (retval.isPresent()) {
 			if (!(retval.get() instanceof {{{type}}})) {
-				throw new InvalidSPDXAnalysisException("Incorrect type stored for {{{propertyname}}}");
+				throw new InvalidSPDXAnalysisException("Incorrect type stored for {{{propertyName}}}");
 			}
 			return (Optional<{{{type}}}>)(Optional<?>)(retval);
 		} else {
