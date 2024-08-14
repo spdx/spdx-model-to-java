@@ -19,6 +19,7 @@
 package {{{pkgName}}};
 
 import org.spdx.storage.NullModelStore;
+import org.spdx.core.IndividualUriValue;
 {{#imports}}
 {{.}}
 {{/imports}}
@@ -28,7 +29,7 @@ import org.spdx.storage.NullModelStore;
  * are not valid
  *
 **/
-public class External{{{className}}} extends {{{className}}} {
+public class External{{{className}}} extends {{{className}}}  implements IndividualUriValue {
 
 	{{#objectPropertyValueCollection}}
 	Collection<{{{type}}}> {{{propertyName}}}s = Collections.emptyList();
@@ -74,6 +75,19 @@ public class External{{{className}}} extends {{{className}}} {
 	 {{/suppressUnchecked}}
 	protected External{{{className}}}({{{className}}}Builder builder) throws InvalidSPDXAnalysisException {
 		super(builder);
+	}
+	
+	@Override
+	public boolean isExternal() {
+		return true;
+	}
+	
+	/* (non-Javadoc)
+	 * @see org.spdx.library.IndividualUriValue#getIndividualURI()
+	 */
+	@Override
+	public String getIndividualURI() {
+		return getObjectUri();
 	}
 
 	/* (non-Javadoc)
