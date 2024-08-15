@@ -8,4 +8,4 @@
  * Version 3.0 of the SPDX model
  *
  */
-package org.spdx.library.model.v3;
+package org.spdx.library.model.v3_0_0;

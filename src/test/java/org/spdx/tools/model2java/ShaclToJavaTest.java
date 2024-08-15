@@ -53,7 +53,7 @@ public class ShaclToJavaTest extends TestCase {
 					.resolve("spdx")
 					.resolve("library")
 					.resolve("model")
-					.resolve("v3")
+					.resolve("v3_0_0")
 					.resolve("ai");
 				File classFile = aIPath.resolve("AIPackage.java").toFile();
 				File enumFile = aIPath.resolve("SafetyRiskAssessmentType.java").toFile();

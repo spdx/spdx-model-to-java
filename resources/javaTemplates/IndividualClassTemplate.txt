@@ -150,6 +150,60 @@ public class {{{className}}} extends {{{superClass}}} implements IndividualUriVa
 		throw new InvalidSPDXAnalysisException("Can not set or modify a property of an Individual type");
 	}
 	{{/anyLicenseInfoProperties}}
+	{{#licenseAdditionProperties}}
+	{{^nonOptional}}
+	/**
+	 * @return the {{{propertyName}}}
+	 */
+	public Optional<{{{type}}}> {{{getter}}}() throws InvalidSPDXAnalysisException {
+		Optional.empty();
+	}
+	{{/nonOptional}}
+	{{#nonOptional}}
+	/**
+	 * @return the {{{propertyName}}}
+	 */
+	public @Nullable {{{type}}} {{{getter}}}() throws InvalidSPDXAnalysisException {
+		return null;
+	}
+	{{/nonOptional}}
+		
+	/**
+	 * @param {{{propertyName}}} the {{{propertyName}}} to set
+	 * @return this to chain setters
+	 * @throws InvalidSPDXAnalysisException 
+	 */
+	public {{{className}}} {{{setter}}}(@Nullable {{{type}}} {{{propertyName}}}) throws InvalidSPDXAnalysisException {
+		throw new InvalidSPDXAnalysisException("Can not set or modify a property of an Individual type");
+	}
+	{{/licenseAdditionProperties}}
+	{{#extendableLicenseProperties}}
+	{{^nonOptional}}
+	/**
+	 * @return the {{{propertyName}}}
+	 */
+	public Optional<{{{type}}}> {{{getter}}}() throws InvalidSPDXAnalysisException {
+		Optional.empty();
+	}
+	{{/nonOptional}}
+	{{#nonOptional}}
+	/**
+	 * @return the {{{propertyName}}}
+	 */
+	public @Nullable {{{type}}} {{{getter}}}() throws InvalidSPDXAnalysisException {
+		return null;
+	}
+	{{/nonOptional}}
+		
+	/**
+	 * @param {{{propertyName}}} the {{{propertyName}}} to set
+	 * @return this to chain setters
+	 * @throws InvalidSPDXAnalysisException 
+	 */
+	public {{{className}}} {{{setter}}}(@Nullable {{{type}}} {{{propertyName}}}) throws InvalidSPDXAnalysisException {
+		throw new InvalidSPDXAnalysisException("Can not set or modify a property of an Individual type");
+	}
+	{{/extendableLicenseProperties}}
 	{{#enumerationProperties}}
 	{{#nonOptional}}
 	/**

@@ -2,7 +2,7 @@
  * SPDX-License-Identifier: Apache-2.0
  * Copyright (c) 2024 Source Auditor Inc.
  */
-package org.spdx.library.model.v3;
+package org.spdx.library.model.v3_0_0;
 
 {{#imports}}
 {{.}}
@@ -219,6 +219,30 @@ public class TestValuesGenerator {
 				return this;
 			}
 			{{/anyLicenseInfoProperties}}
+			{{#licenseAdditionProperties}}
+			
+			/**
+			 * Sets the initial value of {{{propertyName}}}
+			 * @parameter {{{propertyName}}} value to set
+			 * @return this for chaining
+			**/
+			public Mock{{{className}}}Builder {{{setter}}}({{{type}}} {{{propertyName}}}) {
+				{{#superSetter}}super.{{/superSetter}}{{^superSetter}}this.{{/superSetter}}{{{propertyName}}} = {{{propertyName}}};
+				return this;
+			}
+			{{/licenseAdditionProperties}}
+			{{#extendableLicenseProperties}}
+			
+			/**
+			 * Sets the initial value of {{{propertyName}}}
+			 * @parameter {{{propertyName}}} value to set
+			 * @return this for chaining
+			**/
+			public Mock{{{className}}}Builder {{{setter}}}({{{type}}} {{{propertyName}}}) {
+				{{#superSetter}}super.{{/superSetter}}{{^superSetter}}this.{{/superSetter}}{{{propertyName}}} = {{{propertyName}}};
+				return this;
+			}
+			{{/extendableLicenseProperties}}
 			{{#enumerationProperties}}
 			
 			/**
@@ -367,6 +391,12 @@ public class TestValuesGenerator {
 				{{#anyLicenseInfoProperties}}
 				.{{{setter}}}(builderFor{{{type}}}Tests(modelStore.getNextId(IdType.SpdxId)).build())
 				{{/anyLicenseInfoProperties}}
+				{{#licenseAdditionProperties}}
+				.{{{setter}}}(builderFor{{{type}}}Tests(modelStore.getNextId(IdType.SpdxId)).build())
+				{{/licenseAdditionProperties}}
+				{{#extendableLicenseProperties}}
+				.{{{setter}}}(builderFor{{{type}}}Tests(modelStore.getNextId(IdType.SpdxId)).build())
+				{{/extendableLicenseProperties}}
 				{{#objectPropertyValueCollection}}
 				.{{{adder}}}(builderFor{{{type}}}Tests(modelStore.getNextId(IdType.SpdxId)).build())
 				{{/objectPropertyValueCollection}}

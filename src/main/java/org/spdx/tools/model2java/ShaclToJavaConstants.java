@@ -30,6 +30,8 @@ public class ShaclToJavaConstants {
 	public static final String STRING_TYPE = "http://www.w3.org/2001/XMLSchema#string";
 	public static final String ELEMENT_TYPE_URI = "https://spdx.org/rdf/3.0.0/terms/Core/Element";
 	public static final String ELEMENT_TYPE_ANY_LICENSE_INFO = "https://spdx.org/rdf/3.0.0/terms/Licensing/AnyLicenseInfo";
+	public static final String ELEMENT_TYPE_EXTENDABLE_LICENSE = "https://spdx.org/rdf/3.0.0/terms/ExpandedLicensing/ExtendableLicense";
+	public static final String ELEMENT_TYPE_LICENSE_ADDITION = "https://spdx.org/rdf/3.0.0/terms/ExpandedLicensing/LicenseAddition";
 	public static final String DATE_TIME_TYPE = "http://www.w3.org/2001/XMLSchema#dateTimeStamp";
 	public static final String ANY_URI_TYPE = "http://www.w3.org/2001/XMLSchema#anyURI";
 	public static final String OWL_THING_URI = "http://www.w3.org/2002/07/owl#Thing";

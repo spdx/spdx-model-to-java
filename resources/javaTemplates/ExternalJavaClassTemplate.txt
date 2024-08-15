@@ -202,6 +202,60 @@ public class External{{{className}}} extends {{{className}}}  implements Individ
 		throw new InvalidSPDXAnalysisException("External elements can not set properties");
 	}
 	{{/anyLicenseInfoProperties}}
+	{{#licenseAdditionProperties}}
+	{{^nonOptional}}
+	/**
+	 * @return the {{{propertyName}}}
+	 */
+	public Optional<{{{type}}}> {{{getter}}}() throws InvalidSPDXAnalysisException {
+		return Optional.empty();
+	}
+	{{/nonOptional}}
+	{{#nonOptional}}
+	/**
+	 * @return the {{{propertyName}}}
+	 */
+	public @Nullable {{{type}}} {{{getter}}}() throws InvalidSPDXAnalysisException {
+		return null;
+	}
+	{{/nonOptional}}
+		
+	/**
+	 * @param {{{propertyName}}} the {{{propertyName}}} to set
+	 * @return this to chain setters
+	 * @throws InvalidSPDXAnalysisException 
+	 */
+	public {{{className}}} {{{setter}}}(@Nullable {{{type}}} {{{propertyName}}}) throws InvalidSPDXAnalysisException {
+		throw new InvalidSPDXAnalysisException("External elements can not set properties");
+	}
+	{{/licenseAdditionProperties}}
+	{{#extendableLicenseProperties}}
+	{{^nonOptional}}
+	/**
+	 * @return the {{{propertyName}}}
+	 */
+	public Optional<{{{type}}}> {{{getter}}}() throws InvalidSPDXAnalysisException {
+		return Optional.empty();
+	}
+	{{/nonOptional}}
+	{{#nonOptional}}
+	/**
+	 * @return the {{{propertyName}}}
+	 */
+	public @Nullable {{{type}}} {{{getter}}}() throws InvalidSPDXAnalysisException {
+		return null;
+	}
+	{{/nonOptional}}
+		
+	/**
+	 * @param {{{propertyName}}} the {{{propertyName}}} to set
+	 * @return this to chain setters
+	 * @throws InvalidSPDXAnalysisException 
+	 */
+	public {{{className}}} {{{setter}}}(@Nullable {{{type}}} {{{propertyName}}}) throws InvalidSPDXAnalysisException {
+		throw new InvalidSPDXAnalysisException("External elements can not set properties");
+	}
+	{{/extendableLicenseProperties}}
 	{{#enumerationProperties}}
 	{{#nonOptional}}
 	/**

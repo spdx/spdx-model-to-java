@@ -143,6 +143,52 @@ public class {{{className}}}Test extends TestCase {
 		//TODO: Implement
 	}
 	{{/anyLicenseInfoProperties}}
+	{{#licenseAdditionProperties}}
+	
+	/**
+	 * Test method for {@link {{{pkgName}}}.{{{className}}}#{{{setter}}}}.
+	 */
+	public void test{{{className}}}{{{setter}}}() throws InvalidSPDXAnalysisException {
+		{{{className}}} test{{{className}}} = generator.builderFor{{{className}}}Tests(TEST_OBJECT_URI).build();
+		{{#nonOptional}}
+//		assertEquals(TEST_VALUE, test{{{className}}}.{{{getter}}}());
+		{{/nonOptional}}
+		{{^nonOptional}}
+//		assertEquals(Optional.of(TEST_VALUE), test{{{className}}}.{{{getter}}}());
+		{{/nonOptional}}
+//		test{{{className}}}.{{{setter}}}(NEW_TEST_VALUE);
+		{{#nonOptional}}
+//		assertEquals(NEW_TEST_VALUE, test{{{className}}}.{{{getter}}}());
+		{{/nonOptional}}
+		{{^nonOptional}}
+//		assertEquals(Optional.of(NEW_TEST_VALUE), test{{{className}}}.{{{getter}}}());
+		{{/nonOptional}}
+		//TODO: Implement
+	}
+	{{/licenseAdditionProperties}}
+	{{#extendableLicenseProperties}}
+	
+	/**
+	 * Test method for {@link {{{pkgName}}}.{{{className}}}#{{{setter}}}}.
+	 */
+	public void test{{{className}}}{{{setter}}}() throws InvalidSPDXAnalysisException {
+		{{{className}}} test{{{className}}} = generator.builderFor{{{className}}}Tests(TEST_OBJECT_URI).build();
+		{{#nonOptional}}
+//		assertEquals(TEST_VALUE, test{{{className}}}.{{{getter}}}());
+		{{/nonOptional}}
+		{{^nonOptional}}
+//		assertEquals(Optional.of(TEST_VALUE), test{{{className}}}.{{{getter}}}());
+		{{/nonOptional}}
+//		test{{{className}}}.{{{setter}}}(NEW_TEST_VALUE);
+		{{#nonOptional}}
+//		assertEquals(NEW_TEST_VALUE, test{{{className}}}.{{{getter}}}());
+		{{/nonOptional}}
+		{{^nonOptional}}
+//		assertEquals(Optional.of(NEW_TEST_VALUE), test{{{className}}}.{{{getter}}}());
+		{{/nonOptional}}
+		//TODO: Implement
+	}
+	{{/extendableLicenseProperties}}
 	{{#enumerationProperties}}
 	
 	/**
@@ -297,6 +343,10 @@ public class {{{className}}}Test extends TestCase {
 	{{/objectProperties}}
 	{{#anyLicenseInfoProperties}}
 	{{/anyLicenseInfoProperties}}
+	{{#licenseAdditionProperties}}
+	{{/licenseAdditionProperties}}
+	{{#extendableLicenseProperties}}
+	{{/extendableLicenseProperties}}
 	{{#enumerationProperties}}
 	{{/enumerationProperties}}
 	{{#booleanProperties}}

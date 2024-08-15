@@ -201,6 +201,30 @@ public {{#abstract}}abstract{{/abstract}} class {{{className}}} extends {{{super
 		{{/nonOptional}}
 		{{/superSetter}}
 		{{/anyLicenseInfoProperties}}
+		{{#licenseAdditionProperties}}
+		{{^superSetter}}
+		{{#nonOptional}}
+		if (Objects.nonNull(builder.{{{propertyName}}})) {
+			{{{setter}}}(builder.{{{propertyName}}});
+		}
+		{{/nonOptional}}
+		{{^nonOptional}}
+		{{{setter}}}(builder.{{{propertyName}}});
+		{{/nonOptional}}
+		{{/superSetter}}
+		{{/licenseAdditionProperties}}
+		{{#extendableLicenseProperties}}
+		{{^superSetter}}
+		{{#nonOptional}}
+		if (Objects.nonNull(builder.{{{propertyName}}})) {
+			{{{setter}}}(builder.{{{propertyName}}});
+		}
+		{{/nonOptional}}
+		{{^nonOptional}}
+		{{{setter}}}(builder.{{{propertyName}}});
+		{{/nonOptional}}
+		{{/superSetter}}
+		{{/extendableLicenseProperties}}
 		{{#enumerationProperties}}
 		{{^superSetter}}
 		{{#nonOptional}}
@@ -450,6 +474,108 @@ public {{#abstract}}abstract{{/abstract}} class {{{className}}} extends {{{super
 	}
 	{{/superSetter}}
 	{{/anyLicenseInfoProperties}}
+	{{#licenseAdditionProperties}}
+	{{^superSetter}}
+	{{^nonOptional}}
+	/**
+	 * @return the {{{propertyName}}}
+	 */
+	public Optional<{{{type}}}> {{{getter}}}() throws InvalidSPDXAnalysisException {
+		return getLicenseAdditionPropertyValue(SpdxConstantsV3.{{{propertyConstant}}});
+	}
+	{{/nonOptional}}
+	{{#nonOptional}}
+	/**
+	 * @return the {{{propertyName}}}
+	 */
+	public @Nullable {{{type}}} {{{getter}}}() throws InvalidSPDXAnalysisException {
+		Optional<LicenseAddition> retval = getLicenseAdditionPropertyValue(SpdxConstantsV3.{{{propertyConstant}}});
+		return retval.isPresent() ? retval.get() : null;
+	}
+	{{/nonOptional}}
+		
+	/**
+	 * @param {{{propertyName}}} the {{{propertyName}}} to set
+	 * @return this to chain setters
+	 * @throws InvalidSPDXAnalysisException 
+	 */
+	public {{{className}}} {{{setter}}}(@Nullable {{{type}}} {{{propertyName}}}) throws InvalidSPDXAnalysisException {
+		{{#required}}
+		if (isStrict() && Objects.isNull({{{propertyName}}})) {
+			throw new InvalidSPDXAnalysisException("{{{propertyName}}} is a required property");
+		}
+		{{/required}}
+		{{#superSetter}}
+		super.{{{setter}}}({{{propertyName}}});
+		{{/superSetter}}
+		setPropertyValue(SpdxConstantsV3.{{{propertyConstant}}}, {{{propertyName}}});
+		return this;
+	}
+	{{/superSetter}}
+	{{#superSetter}}
+	/**
+	 * @param {{{propertyName}}} the {{{propertyName}}} to set
+	 * @return this to chain setters
+	 * @throws InvalidSPDXAnalysisException 
+	 */
+	 @Override
+	public {{{className}}} {{{setter}}}(@Nullable {{{type}}} {{{propertyName}}}) throws InvalidSPDXAnalysisException {
+		super.{{{setter}}}({{{propertyName}}});
+		return this;
+	}
+	{{/superSetter}}
+	{{/licenseAdditionProperties}}
+	{{#extendableLicenseProperties}}
+	{{^superSetter}}
+	{{^nonOptional}}
+	/**
+	 * @return the {{{propertyName}}}
+	 */
+	public Optional<{{{type}}}> {{{getter}}}() throws InvalidSPDXAnalysisException {
+		return getExtendableLicensePropertyValue(SpdxConstantsV3.{{{propertyConstant}}});
+	}
+	{{/nonOptional}}
+	{{#nonOptional}}
+	/**
+	 * @return the {{{propertyName}}}
+	 */
+	public @Nullable {{{type}}} {{{getter}}}() throws InvalidSPDXAnalysisException {
+		Optional<ExtendableLicense> retval = getExtendableLicensePropertyValue(SpdxConstantsV3.{{{propertyConstant}}});
+		return retval.isPresent() ? retval.get() : null;
+	}
+	{{/nonOptional}}
+		
+	/**
+	 * @param {{{propertyName}}} the {{{propertyName}}} to set
+	 * @return this to chain setters
+	 * @throws InvalidSPDXAnalysisException 
+	 */
+	public {{{className}}} {{{setter}}}(@Nullable {{{type}}} {{{propertyName}}}) throws InvalidSPDXAnalysisException {
+		{{#required}}
+		if (isStrict() && Objects.isNull({{{propertyName}}})) {
+			throw new InvalidSPDXAnalysisException("{{{propertyName}}} is a required property");
+		}
+		{{/required}}
+		{{#superSetter}}
+		super.{{{setter}}}({{{propertyName}}});
+		{{/superSetter}}
+		setPropertyValue(SpdxConstantsV3.{{{propertyConstant}}}, {{{propertyName}}});
+		return this;
+	}
+	{{/superSetter}}
+	{{#superSetter}}
+	/**
+	 * @param {{{propertyName}}} the {{{propertyName}}} to set
+	 * @return this to chain setters
+	 * @throws InvalidSPDXAnalysisException 
+	 */
+	 @Override
+	public {{{className}}} {{{setter}}}(@Nullable {{{type}}} {{{propertyName}}}) throws InvalidSPDXAnalysisException {
+		super.{{{setter}}}({{{propertyName}}});
+		return this;
+	}
+	{{/superSetter}}
+	{{/extendableLicenseProperties}}
 	{{#enumerationProperties}}
 	{{^superSetter}}
 	{{#nonOptional}}
@@ -817,6 +943,58 @@ public {{#abstract}}abstract{{/abstract}} class {{{className}}} extends {{{super
 		}
 		{{/superSetter}}
 		{{/anyLicenseInfoProperties}}
+		{{#licenseAdditionProperties}}
+		{{^superSetter}}
+		{{#nonOptional}}
+		{{{type}}} {{{propertyName}}};
+		try {
+			{{{propertyName}}} = {{{getter}}}();
+			if (Objects.nonNull({{{propertyName}}})) {
+				retval.addAll({{{propertyName}}}.verify(verifiedIds, specVersionForVerify, profiles));
+		{{/nonOptional}}
+		{{^nonOptional}}
+		Optional<{{{type}}}> {{{propertyName}}};
+		try {
+			{{{propertyName}}} = {{{getter}}}();
+			if ({{{propertyName}}}.isPresent()) {
+				retval.addAll({{{propertyName}}}.get().verify(verifiedIds, specVersionForVerify, profiles));
+		{{/nonOptional}}
+			{{#required}}
+			} else if (!Collections.disjoint(profiles, Arrays.asList(new ProfileIdentifierType[] { {{{requiredProfiles}}} }))) {
+					retval.add("Missing {{{propertyName}}} in {{{className}}}");
+			{{/required}}
+			}
+		} catch (InvalidSPDXAnalysisException e) {
+			retval.add("Error getting {{{propertyName}}} for {{{className}}}: "+e.getMessage());
+		}
+		{{/superSetter}}
+		{{/licenseAdditionProperties}}
+		{{#extendableLicenseProperties}}
+		{{^superSetter}}
+		{{#nonOptional}}
+		{{{type}}} {{{propertyName}}};
+		try {
+			{{{propertyName}}} = {{{getter}}}();
+			if (Objects.nonNull({{{propertyName}}})) {
+				retval.addAll({{{propertyName}}}.verify(verifiedIds, specVersionForVerify, profiles));
+		{{/nonOptional}}
+		{{^nonOptional}}
+		Optional<{{{type}}}> {{{propertyName}}};
+		try {
+			{{{propertyName}}} = {{{getter}}}();
+			if ({{{propertyName}}}.isPresent()) {
+				retval.addAll({{{propertyName}}}.get().verify(verifiedIds, specVersionForVerify, profiles));
+		{{/nonOptional}}
+			{{#required}}
+			} else if (!Collections.disjoint(profiles, Arrays.asList(new ProfileIdentifierType[] { {{{requiredProfiles}}} }))) {
+					retval.add("Missing {{{propertyName}}} in {{{className}}}");
+			{{/required}}
+			}
+		} catch (InvalidSPDXAnalysisException e) {
+			retval.add("Error getting {{{propertyName}}} for {{{className}}}: "+e.getMessage());
+		}
+		{{/superSetter}}
+		{{/extendableLicenseProperties}}
 		{{#enumerationProperties}}
 		{{^superSetter}}
 		try {
@@ -1127,6 +1305,16 @@ public {{#abstract}}abstract{{/abstract}} class {{{className}}} extends {{{super
 		protected SimpleLicensingAnyLicenseInfo {{{propertyName}}} = null;
 		{{/superSetter}}
 		{{/anyLicenseInfoProperties}}
+		{{#licenseAdditionProperties}}
+		{{^superSetter}}
+		protected LicenseAddition {{{propertyName}}} = null;
+		{{/superSetter}}
+		{{/licenseAdditionProperties}}
+		{{#extendableLicenseProperties}}
+		{{^superSetter}}
+		protected ExtendableLicense {{{propertyName}}} = null;
+		{{/superSetter}}
+		{{/extendableLicenseProperties}}
 		{{#enumerationProperties}}
 		{{^superSetter}}
 		protected {{{type}}} {{{propertyName}}} = null;
@@ -1288,6 +1476,30 @@ public {{#abstract}}abstract{{/abstract}} class {{{className}}} extends {{{super
 			return this;
 		}
 		{{/anyLicenseInfoProperties}}
+		{{#licenseAdditionProperties}}
+		
+		/**
+		 * Sets the initial value of {{{propertyName}}}
+		 * @parameter {{{propertyName}}} value to set
+		 * @return this for chaining
+		**/
+		public {{{className}}}Builder {{{setter}}}({{{type}}} {{{propertyName}}}) {
+			{{#superSetter}}super.{{/superSetter}}{{^superSetter}}this.{{/superSetter}}{{{propertyName}}} = {{{propertyName}}};
+			return this;
+		}
+		{{/licenseAdditionProperties}}
+		{{#extendableLicenseProperties}}
+		
+		/**
+		 * Sets the initial value of {{{propertyName}}}
+		 * @parameter {{{propertyName}}} value to set
+		 * @return this for chaining
+		**/
+		public {{{className}}}Builder {{{setter}}}({{{type}}} {{{propertyName}}}) {
+			{{#superSetter}}super.{{/superSetter}}{{^superSetter}}this.{{/superSetter}}{{{propertyName}}} = {{{propertyName}}};
+			return this;
+		}
+		{{/extendableLicenseProperties}}
 		{{#enumerationProperties}}
 		
 		/**

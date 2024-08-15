@@ -2,7 +2,7 @@
  * SPDX-License-Identifier: Apache-2.0
  * Copyright (c) 2024 Source Auditor Inc.
  */
-package org.spdx.library.model.v3;
+package org.spdx.library.model.v3_0_0;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -150,6 +150,61 @@ public abstract class ModelObjectV3 extends CoreModelObject {
 		} else {
 			logger.error("Invalid type for AnyLicenseInfo property: "+result.get().getClass().toString());
 			throw new SpdxInvalidTypeException("Invalid type for AnyLicenseInfo property: "+result.get().getClass().toString());
+		}
+	}
+	
+	/**
+	 * Converts property values to an ExtendableLicense if possible
+	 * @param propertyDescriptor descriptor for the property
+	 * @return AnyLicenseInfo license info for the property
+	 * @throws InvalidSPDXAnalysisException
+	 */
+	@SuppressWarnings("unchecked")
+	protected Optional<ExtendableLicense> getExtendableLicensePropertyValue(PropertyDescriptor propertyDescriptor) throws InvalidSPDXAnalysisException {
+		Optional<Object> result = getObjectPropertyValue(propertyDescriptor, ExtendableLicense.class);
+		if (!result.isPresent()) {
+			return Optional.empty();
+		} else if (result.get() instanceof ExtendableLicense) {
+			return (Optional<ExtendableLicense>)(Optional<?>)result;
+		} else if (result.get() instanceof SimpleUriValue) {
+			Object val = ((SimpleUriValue)(result.get())).toModelObject(modelStore, copyManager, specVersion, ExtendableLicense.class);
+			if (val instanceof ExtendableLicense) {
+				return Optional.of((ExtendableLicense)val);
+			} else {
+				logger.error("Invalid type for ExtendableLicense property: "+val.getClass().toString());
+				throw new SpdxInvalidTypeException("Invalid type for ExtendableLicense property: "+val.getClass().toString());
+			}
+		} else {
+			logger.error("Invalid type for ExtendableLicense property: "+result.get().getClass().toString());
+			throw new SpdxInvalidTypeException("Invalid type for ExtendableLicense property: "+result.get().getClass().toString());
+		}
+	}
+	
+	
+	/**
+	 * Converts property values to an ExtendableLicense if possible
+	 * @param propertyDescriptor descriptor for the property
+	 * @return AnyLicenseInfo license info for the property
+	 * @throws InvalidSPDXAnalysisException
+	 */
+	@SuppressWarnings("unchecked")
+	protected Optional<LicenseAddition> getLicenseAdditionPropertyValue(PropertyDescriptor propertyDescriptor) throws InvalidSPDXAnalysisException {
+		Optional<Object> result = getObjectPropertyValue(propertyDescriptor, LicenseAddition.class);
+		if (!result.isPresent()) {
+			return Optional.empty();
+		} else if (result.get() instanceof LicenseAddition) {
+			return (Optional<LicenseAddition>)(Optional<?>)result;
+		} else if (result.get() instanceof SimpleUriValue) {
+			Object val = ((SimpleUriValue)(result.get())).toModelObject(modelStore, copyManager, specVersion, LicenseAddition.class);
+			if (val instanceof LicenseAddition) {
+				return Optional.of((LicenseAddition)val);
+			} else {
+				logger.error("Invalid type for LicenseAddition property: "+val.getClass().toString());
+				throw new SpdxInvalidTypeException("Invalid type for LicenseAddition property: "+val.getClass().toString());
+			}
+		} else {
+			logger.error("Invalid type for ExtendableLicense property: "+result.get().getClass().toString());
+			throw new SpdxInvalidTypeException("Invalid type for LicenseAddition property: "+result.get().getClass().toString());
 		}
 	}
 	
