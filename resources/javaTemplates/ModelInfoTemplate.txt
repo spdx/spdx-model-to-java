@@ -2,7 +2,7 @@
  * SPDX-License-Identifier: Apache-2.0
  * Copyright (c) 2024 Source Auditor Inc.
  */
-package org.spdx.library.model.v3_0_0;
+package org.spdx.library.model.{{versionSuffix}};
 
 import java.util.Arrays;
 import java.util.List;
@@ -15,8 +15,8 @@ import org.spdx.core.CoreModelObject;
 import org.spdx.core.IModelCopyManager;
 import org.spdx.core.ISpdxModelInfo;
 import org.spdx.core.InvalidSPDXAnalysisException;
-import org.spdx.library.model.v3_0_0.core.Element;
-import org.spdx.library.model.v3_0_0.core.ExternalElement;
+import org.spdx.library.model.{{versionSuffix}}.core.Element;
+import org.spdx.library.model.{{versionSuffix}}.core.ExternalElement;
 import org.spdx.storage.IModelStore;
 
 /**
@@ -32,7 +32,7 @@ public class SpdxModelInfoV3_0 implements ISpdxModelInfo {
 
 	@Override
 	public List<String> getSpecVersions() {
-		return Arrays.asList(new String[] {"SPDX-3.0", "3.0.0"});
+		return Arrays.asList(new String[] {"SPDX-3.0", "{{{versionSemVer}}}"});
 	}
 
 	@Override

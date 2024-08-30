@@ -2,7 +2,7 @@
  * SPDX-License-Identifier: Apache-2.0
  * Copyright (c) 2024 Source Auditor Inc.
  */
-package org.spdx.library.model.v3_0_0;
+package org.spdx.library.model.{{versionSuffix}};
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -123,7 +123,7 @@ public abstract class ModelObjectV3 extends CoreModelObject {
 	@Override
 	protected boolean isNoAssertion(Object value) {
 		return value instanceof IndividualLicensingInfo && 
-				((IndividualLicensingInfo)value).getObjectUri() == "https://spdx.org/rdf/3.0.0/terms/Licensing/NoAssertion";
+				((IndividualLicensingInfo)value).getObjectUri() == "https://spdx.org/rdf/{{{versionSemVer}}}/terms/Licensing/NoAssertion";
 	}
 	
 	/**

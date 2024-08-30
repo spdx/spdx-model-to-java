@@ -16,14 +16,14 @@
  *   limitations under the License.
  */
  
-package org.spdx.library.model.v3_0_0;
+package org.spdx.library.model.{{versionSuffix}};
 
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
 import org.spdx.core.InvalidSPDXAnalysisException;
-import org.spdx.library.model.v3_0_0.core.Element;
+import org.spdx.library.model.{{versionSuffix}}.core.Element;
 
 {{#imports}}
 {{{.}}}

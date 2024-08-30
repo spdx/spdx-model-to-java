@@ -26,7 +26,7 @@ import junit.framework.TestCase;
  */
 public class ShaclToJavaTest extends TestCase {
 	
-	static final String MODEL_FILE_PATH = "testResources" + File.separator + "model.ttl";
+	static final String MODEL_FILE_PATH = "testResources" + File.separator + "spdx-model.ttl";
 
 	protected void setUp() throws Exception {
 		super.setUp();
@@ -53,7 +53,7 @@ public class ShaclToJavaTest extends TestCase {
 					.resolve("spdx")
 					.resolve("library")
 					.resolve("model")
-					.resolve("v3_0_0")
+					.resolve("v3_0_1")
 					.resolve("ai");
 				File classFile = aIPath.resolve("AIPackage.java").toFile();
 				File enumFile = aIPath.resolve("SafetyRiskAssessmentType.java").toFile();

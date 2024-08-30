@@ -28,10 +28,10 @@ public class ShaclToJavaConstants {
 	public static final String RANGE_URI = "http://www.w3.org/2000/01/rdf-schema#range";
 	public static final String BOOLEAN_TYPE = "http://www.w3.org/2001/XMLSchema#boolean";
 	public static final String STRING_TYPE = "http://www.w3.org/2001/XMLSchema#string";
-	public static final String ELEMENT_TYPE_URI = "https://spdx.org/rdf/3.0.0/terms/Core/Element";
-	public static final String ELEMENT_TYPE_ANY_LICENSE_INFO = "https://spdx.org/rdf/3.0.0/terms/Licensing/AnyLicenseInfo";
-	public static final String ELEMENT_TYPE_EXTENDABLE_LICENSE = "https://spdx.org/rdf/3.0.0/terms/ExpandedLicensing/ExtendableLicense";
-	public static final String ELEMENT_TYPE_LICENSE_ADDITION = "https://spdx.org/rdf/3.0.0/terms/ExpandedLicensing/LicenseAddition";
+	public static final String ELEMENT_TYPE_SUFFIX = "/terms/Core/Element";
+	public static final String ELEMENT_TYPE_ANY_LICENSE_INFO_SUFFIX = "/terms/Licensing/AnyLicenseInfo";
+	public static final String ELEMENT_TYPE_EXTENDABLE_LICENSE_SUFFIX = "/terms/ExpandedLicensing/ExtendableLicense";
+	public static final String ELEMENT_TYPE_LICENSE_ADDITION_SUFFIX = "/terms/ExpandedLicensing/LicenseAddition";
 	public static final String DATE_TIME_TYPE = "http://www.w3.org/2001/XMLSchema#dateTimeStamp";
 	public static final String ANY_URI_TYPE = "http://www.w3.org/2001/XMLSchema#anyURI";
 	public static final String OWL_THING_URI = "http://www.w3.org/2002/07/owl#Thing";
@@ -94,11 +94,12 @@ public class ShaclToJavaConstants {
 		RESERVED_JAVA_WORDS.put("package", "spdxPackage");
 		RESERVED_JAVA_WORDS.put("File", "SpdxFile");
 		RESERVED_JAVA_WORDS.put("file", "spdxFile");
+		RESERVED_JAVA_WORDS.put("import", "spdxImport");
 	}
 	
-	public static Set<String> SET_TYPE_URIS = new HashSet<>(); // set of URI's for types should be treated as sets
-	public static Set<String> SET_PROPERTY_URIS = new HashSet<>(); // set of URI's for properties whose types should be treated as sets
+	public static Set<String> SET_TYPE_SUFFIXES = new HashSet<>(); // set of suffixes for types should be treated as sets
+	public static Set<String> SET_PROPERTY_SUFFIXES = new HashSet<>(); // set of suffixes for properties whose types should be treated as sets
 	static {
-		SET_PROPERTY_URIS.add("https://spdx.org/rdf/3.0.0/terms/ExpandedLicensing/member");
+		SET_PROPERTY_SUFFIXES.add("/terms/ExpandedLicensing/member");
 	}
 }

@@ -83,6 +83,8 @@ public class ShaclToJava {
 	List<DatatypeProperty> allDataProperties;
 	List<ObjectProperty> allObjectProperties;
 	List<Resource> objectIndividuals;
+	String versionSemVer;
+	String versionSuffix;
 	
 	public enum PropertyType {
 		ELEMENT,
@@ -121,6 +123,10 @@ public class ShaclToJava {
 	 */
 	public ShaclToJava(OntModel model) {
 		this.model = model;
+		String spdxUri = model.getNsPrefixURI("spdx");
+		versionSemVer = spdxUri.substring("https://spdx.org/rdf/".length());
+		versionSemVer = versionSemVer.substring(0, versionSemVer.indexOf('/'));
+		versionSuffix = "v" + versionSemVer.replaceAll("\\.", "_");
 		shapes = Shapes.parse(model);
 		shapeMap = shapes.getShapeMap();
 		allIndividuals = model.listIndividuals().toList();
@@ -218,8 +224,11 @@ public class ShaclToJava {
 		Map<String, Map<String, Object>> unitTestMaps = new HashMap<>();
 		Map<PropertyType, Map<String, Map<String, Object>>> allPropertiesInUse = new HashMap<>();
 		allClasses.forEach(ontClass -> {
-			String comment = ontClass.getComment(null);
 			String classUri = ontClass.getURI();
+			if (classUri.startsWith("http://spdx.invalid.")) {
+				return;
+			}
+			String comment = ontClass.getComment(null);
 			classUris.add(classUri);
 			String name = uriToClassName.get(classUri);
 			Shape classShape = shapeMap.get(ontClass.asNode());
@@ -308,7 +317,7 @@ public class ShaclToJava {
 		generatePomFile(dir);
 		generateIndividualFactory(dir);
 		//TODO: Get the version from the SHACL file
-		generateMockFiles(dir, "3.0.0");
+		generateMockFiles(dir);
 		return warnings;
 	}
 
@@ -333,6 +342,8 @@ public class ShaclToJava {
 			Map<PropertyType, Map<String, Map<String, Object>>> allPropertiesInUse,
 			Map<String, Map<String, Object>> unitTestMaps) throws IOException {
 		Map<String, Object> mustacheMap = new HashMap<>();
+		mustacheMap.put("versionSuffix", versionSuffix);
+		mustacheMap.put("versionSemVer", versionSemVer);
 		Set<String> requiredImports = new HashSet<>();
 		for (Entry<PropertyType, Map<String, Map<String, Object>>> entry:allPropertiesInUse.entrySet()) {
 			List<Map<String, Object>> propertiesForType = new ArrayList<>();
@@ -385,10 +396,10 @@ public class ShaclToJava {
 		requiredImports.add("import org.spdx.core.IModelCopyManager;");
 		requiredImports.add("import org.spdx.core.InvalidSPDXAnalysisException;");
 		requiredImports.add("import org.spdx.core.ModelRegistry;");
-		requiredImports.add("import org.spdx.library.model.v3_0_0.core.CreationInfo;");
-		requiredImports.add("import org.spdx.library.model.v3_0_0.core.RelationshipCompleteness;");
-		requiredImports.add("import org.spdx.library.model.v3_0_0.core.RelationshipType;");
-		requiredImports.add("import org.spdx.library.model.v3_0_0.core.Agent.AgentBuilder;");
+		requiredImports.add("import org.spdx.library.model."+versionSuffix+".core.CreationInfo;");
+		requiredImports.add("import org.spdx.library.model."+versionSuffix+".core.RelationshipCompleteness;");
+		requiredImports.add("import org.spdx.library.model."+versionSuffix+".core.RelationshipType;");
+		requiredImports.add("import org.spdx.library.model."+versionSuffix+".core.Agent.AgentBuilder;");
 		requiredImports.add("import org.spdx.storage.IModelStore;");
 		requiredImports.add("import org.spdx.storage.IModelStore.IdType;");
 		requiredImports.add("import java.util.List;");
@@ -400,7 +411,7 @@ public class ShaclToJava {
 		Collections.sort(importList);
 		mustacheMap.put("imports", importList);
 		Path path = dir.toPath().resolve("src").resolve("test").resolve("java").resolve("org")
-				.resolve("spdx").resolve("library").resolve("model").resolve("v3_0_0");
+				.resolve("spdx").resolve("library").resolve("model").resolve(versionSuffix);
 		Files.createDirectories(path);
 		File testValuesGeneratorFile = path.resolve("TestValuesGenerator.java").toFile();
 		testValuesGeneratorFile.createNewFile();
@@ -412,24 +423,25 @@ public class ShaclToJava {
 	 * @param dir
 	 * @throws IOException 
 	 */
-	private void generateMockFiles(File dir, String specVersion) throws IOException {
+	private void generateMockFiles(File dir) throws IOException {
 		Path path = dir.toPath().resolve("src").resolve("test").resolve("java").resolve("org")
-				.resolve("spdx").resolve("library").resolve("model").resolve("v3_0_0");
+				.resolve("spdx").resolve("library").resolve("model").resolve(versionSuffix);
+		Map<String, Object> mustacheMap = new HashMap<>();
+		mustacheMap.put("versionSuffix", versionSuffix);
+		mustacheMap.put("specVersion", versionSemVer);
 		Files.createDirectories(path);
 		File mockModelStoreFile = path.resolve("MockModelStore.java").toFile();
 		mockModelStoreFile.createNewFile();
-		writeMustacheFile(ShaclToJavaConstants.MOCK_MODEL_STORE_TEMPLATE, mockModelStoreFile, new HashMap<>());
+		writeMustacheFile(ShaclToJavaConstants.MOCK_MODEL_STORE_TEMPLATE, mockModelStoreFile, mustacheMap);
 		File mockCopyManager = path.resolve("MockCopyManager.java").toFile();
 		mockCopyManager.createNewFile();
-		writeMustacheFile(ShaclToJavaConstants.MOCK_COPY_MANAGER_TEMPLATE, mockCopyManager, new HashMap<>());
+		writeMustacheFile(ShaclToJavaConstants.MOCK_COPY_MANAGER_TEMPLATE, mockCopyManager, mustacheMap);
 		File unitTestHelper = path.resolve("UnitTestHelper.java").toFile();
 		unitTestHelper.createNewFile();
-		HashMap<String, Object> mustacheMap = new HashMap<>();
-		mustacheMap.put("specVersion", specVersion);
 		writeMustacheFile(ShaclToJavaConstants.UNIT_TEST_HELPER_TEMPLATE, unitTestHelper, mustacheMap);
 		File testModelInfoFile = path.resolve("TestSpdxModelInfo.java").toFile();
 		testModelInfoFile.createNewFile();
-		writeMustacheFile(ShaclToJavaConstants.TEST_MODEL_INFO_TEMPLATE, testModelInfoFile, new HashMap<>());
+		writeMustacheFile(ShaclToJavaConstants.TEST_MODEL_INFO_TEMPLATE, testModelInfoFile, mustacheMap);
 	}
 
 	/**
@@ -463,11 +475,14 @@ public class ShaclToJava {
 	 */
 	private void generatePackageInfo(File dir) throws IOException {
 		Path path = dir.toPath().resolve("src").resolve("main").resolve("java").resolve("org")
-				.resolve("spdx").resolve("library").resolve("model").resolve("v3_0_0");
+				.resolve("spdx").resolve("library").resolve("model").resolve(versionSuffix);
 		Files.createDirectories(path);
 		File file = path.resolve("package-info.java").toFile();
 		file.createNewFile();
-		writeMustacheFile(ShaclToJavaConstants.PACKAGE_INFO_TEMPLATE, file, new HashMap<>());
+		Map<String, Object> mustacheMap = new HashMap<>();
+		mustacheMap.put("versionSuffix", versionSuffix);
+		mustacheMap.put("versionSemVer", versionSemVer);
+		writeMustacheFile(ShaclToJavaConstants.PACKAGE_INFO_TEMPLATE, file, mustacheMap);
 	}
 
 	/**
@@ -476,11 +491,14 @@ public class ShaclToJava {
 	 */
 	private void generateSpdxModelInfo(File dir) throws IOException {
 		Path path = dir.toPath().resolve("src").resolve("main").resolve("java").resolve("org")
-				.resolve("spdx").resolve("library").resolve("model").resolve("v3_0_0");
+				.resolve("spdx").resolve("library").resolve("model").resolve(versionSuffix);
 		Files.createDirectories(path);
 		File file = path.resolve("SpdxModelInfoV3_0.java").toFile();
 		file.createNewFile();
-		writeMustacheFile(ShaclToJavaConstants.MODEL_INFO_TEMPLATE, file, new HashMap<>());
+		Map<String, Object> mustacheMap = new HashMap<>();
+		mustacheMap.put("versionSuffix", versionSuffix);
+		mustacheMap.put("versionSemVer", versionSemVer);
+		writeMustacheFile(ShaclToJavaConstants.MODEL_INFO_TEMPLATE, file, mustacheMap);
 	}
 
 	/**
@@ -491,12 +509,14 @@ public class ShaclToJava {
 	 */
 	private void generateModelObject(File dir, List<String> createBuilderList, List<String> classUris) throws IOException {
 		Path path = dir.toPath().resolve("src").resolve("main").resolve("java").resolve("org")
-				.resolve("spdx").resolve("library").resolve("model").resolve("v3_0_0");
+				.resolve("spdx").resolve("library").resolve("model").resolve(versionSuffix);
 		Files.createDirectories(path);
 		File file = path.resolve("ModelObjectV3.java").toFile();
 		file.createNewFile();
 		Map<String, Object> mustacheMap = new HashMap<>();
 		mustacheMap.put("createBuilder", createBuilderList);
+		mustacheMap.put("versionSuffix", versionSuffix);
+		mustacheMap.put("versionSemVer", versionSemVer);
 		List<String> imports = new ArrayList<>();
 		for (String classUri:classUris) {
 			//TODO: Don't add abstract classes
@@ -504,7 +524,7 @@ public class ShaclToJava {
 				imports.add("import "+uriToPkg(classUri) + "." + uriToClassName.get(classUri) +";");
 			}
 		}
-		imports.add("import org.spdx.library.model.v3_0_0.core.ProfileIdentifierType;");
+		imports.add("import org.spdx.library.model."+versionSuffix+".core.ProfileIdentifierType;");
 		Collections.sort(imports);
 		mustacheMap.put("imports", imports);
 		writeMustacheFile(ShaclToJavaConstants.BASE_MODEL_OBJECT_TEMPLATE, file, mustacheMap);
@@ -550,9 +570,9 @@ public class ShaclToJava {
 		}
 		Collections.sort(imports);
 		mustacheMap.put("imports", imports);
-		
+		mustacheMap.put("versionSuffix", versionSuffix);
 		Path path = dir.toPath().resolve("src").resolve("main").resolve("java").resolve("org")
-				.resolve("spdx").resolve("library").resolve("model").resolve("v3_0_0");
+				.resolve("spdx").resolve("library").resolve("model").resolve(versionSuffix);
 		Files.createDirectories(path);
 		File enumFactoryFile = path.resolve("SpdxEnumFactory.java").toFile();
 		enumFactoryFile.createNewFile();	
@@ -567,6 +587,7 @@ public class ShaclToJava {
 	 */
 	private void generateIndividualFactory(File dir) throws IOException {
 		Map<String, Object> mustacheMap = new HashMap<>();
+		mustacheMap.put("versionSuffix", versionSuffix);
 		List<Map<String, String>> individualMustacheMaps = new ArrayList<>();
 		List<String> imports = new ArrayList<>();
 		for (List<String> individuals:this.classUriToIndividualUris.values()) {
@@ -587,7 +608,7 @@ public class ShaclToJava {
 		mustacheMap.put("imports", imports);
 		mustacheMap.put("individuals", individualMustacheMaps);
 		Path path = dir.toPath().resolve("src").resolve("main").resolve("java").resolve("org")
-				.resolve("spdx").resolve("library").resolve("model").resolve("v3_0_0");
+				.resolve("spdx").resolve("library").resolve("model").resolve(versionSuffix);
 		Files.createDirectories(path);
 		File individualsFile = path.resolve("SpdxIndividualFactory.java").toFile();
 		individualsFile.createNewFile();	
@@ -612,6 +633,7 @@ public class ShaclToJava {
 			propUriSet.add(propUri);
 		}
 		Map<String, Object> mustacheMap = new HashMap<>();
+		mustacheMap.put("versionSuffix", versionSuffix);
 		List<Map<String, Object>> namespaceMustacheList = new ArrayList<>();
 		List<String> namespaceUris = new ArrayList<String>(namespaceToPropUri.keySet());
 		Collections.sort(namespaceUris);
@@ -684,8 +706,9 @@ public class ShaclToJava {
 		classConstantString.append("};");
 		mustacheMap.put("classConstantDefinitions", classConstantDefinitions);
 		mustacheMap.put("allClassConstants", classConstantString.toString());
+		mustacheMap.put("versionSemVer", versionSemVer);
 		Path path = dir.toPath().resolve("src").resolve("main").resolve("java").resolve("org")
-				.resolve("spdx").resolve("library").resolve("model").resolve("v3_0_0");
+				.resolve("spdx").resolve("library").resolve("model").resolve(versionSuffix);
 		Files.createDirectories(path);
 		File constantsFile = path.resolve("SpdxConstantsV3.java").toFile();
 		constantsFile.createNewFile();	
@@ -700,7 +723,7 @@ public class ShaclToJava {
 	 */
 	private void generateModelClassFactory(File dir, List<String> classUris) throws IOException {		
 		Map<String, Object> mustacheMap = new HashMap<>();	
-		
+		mustacheMap.put("versionSuffix", versionSuffix);
 		List<Map<String, String>> typeToClasses = new ArrayList<>();
 		for (String classUri:classUris) {
 			String className = uriToClassName.get(classUri);
@@ -731,7 +754,7 @@ public class ShaclToJava {
 		
 		mustacheMap.put("typeToClass", typeToClasses);
 		Path path = dir.toPath().resolve("src").resolve("main").resolve("java").resolve("org")
-				.resolve("spdx").resolve("library").resolve("model").resolve("v3_0_0");
+				.resolve("spdx").resolve("library").resolve("model").resolve(versionSuffix);
 		Files.createDirectories(path);
 		File modelClassFactoryFile = path.resolve("SpdxModelClassFactoryV3.java").toFile();
 		modelClassFactoryFile.createNewFile();	
@@ -829,17 +852,22 @@ public class ShaclToJava {
 			addAllSuperClasses(ontClass, superClasses);
 			if (isEnumClass(ontClass)) {
 				enumerationTypes.add(ontClass.getURI());
-			} else if (isLicenseAdditionClass(ontClass, superClasses)) {
-				licenseAdditionTypes.add(ontClass.getURI());
-			} else if (isExtendableLicenseClass(ontClass, superClasses)) {
-				extendableLicenseTypes.add(ontClass.getURI());
-			} else if (isAnyLicenseInfoClass(ontClass, superClasses)) {
-				anyLicenseInfoTypes.add(ontClass.getURI());
-			} else if (isElementClass(ontClass, superClasses)) {
-				elementTypes.add(ontClass.getURI());
 			} else if (isStringClass(ontClass, superClasses)) {
 				stringTypes.add(ontClass.getURI());
-			}
+			} else {
+				if (isLicenseAdditionClass(ontClass, superClasses)) {
+					licenseAdditionTypes.add(ontClass.getURI());
+				}
+				if (isExtendableLicenseClass(ontClass, superClasses)) {
+					extendableLicenseTypes.add(ontClass.getURI());
+				}
+				if (isAnyLicenseInfoClass(ontClass, superClasses)) {
+					anyLicenseInfoTypes.add(ontClass.getURI());
+				}
+				if (isElementClass(ontClass, superClasses)) {
+					elementTypes.add(ontClass.getURI());
+				}
+			} 
 		});
 	}
 	
@@ -897,7 +925,7 @@ public class ShaclToJava {
 				return PropertyType.STRING;
 			}
 			// If we get here, we're dealing with objects
-		} else if (ShaclToJavaConstants.SET_TYPE_URIS.contains(typeUri)) {
+		} else if (ShaclToJavaConstants.SET_TYPE_SUFFIXES.contains(typeUri.substring(typeUri.lastIndexOf("/terms/")))) {
 			return PropertyType.OBJECT_SET;
 		} else if (Objects.isNull(maxRestriction) || maxRestriction > 1) {
 			return PropertyType.OBJECT_COLLECTION;
@@ -953,11 +981,11 @@ public class ShaclToJava {
 	 */
 	private boolean isElementClass(OntClass ontClass,
 			List<OntClass> superClasses) {
-		if (ShaclToJavaConstants.ELEMENT_TYPE_URI.equals(ontClass.getURI())) {
+		if (ontClass.getURI().endsWith(ShaclToJavaConstants.ELEMENT_TYPE_SUFFIX)) {
 			return true;
 		}
 		for (OntClass superClass:superClasses) {
-			if (ShaclToJavaConstants.ELEMENT_TYPE_URI.equals(superClass.getURI())) {
+			if (superClass.getURI().endsWith(ShaclToJavaConstants.ELEMENT_TYPE_SUFFIX)) {
 				return true;
 			}
 		}
@@ -971,7 +999,7 @@ public class ShaclToJava {
 	 */
 	private boolean isAnyLicenseInfoClass(OntClass ontClass,
 			List<OntClass> superClasses) {
-		if (ShaclToJavaConstants.ELEMENT_TYPE_ANY_LICENSE_INFO.equals(ontClass.getURI())) {
+		if (ontClass.getURI().endsWith(ShaclToJavaConstants.ELEMENT_TYPE_ANY_LICENSE_INFO_SUFFIX)) {
 			return true;
 		}
 		// We don't include superclasses for AnyLicenseInfo types
@@ -985,7 +1013,7 @@ public class ShaclToJava {
 	 */
 	private boolean isExtendableLicenseClass(OntClass ontClass,
 			List<OntClass> superClasses) {
-		if (ShaclToJavaConstants.ELEMENT_TYPE_EXTENDABLE_LICENSE.equals(ontClass.getURI())) {
+		if (ontClass.getURI().endsWith(ShaclToJavaConstants.ELEMENT_TYPE_EXTENDABLE_LICENSE_SUFFIX)) {
 			return true;
 		}
 		// We don't include superclasses for AnyLicenseInfo types
@@ -999,7 +1027,7 @@ public class ShaclToJava {
 	 */
 	private boolean isLicenseAdditionClass(OntClass ontClass,
 			List<OntClass> superClasses) {
-		if (ShaclToJavaConstants.ELEMENT_TYPE_LICENSE_ADDITION.equals(ontClass.getURI())) {
+		if (ontClass.getURI().endsWith(ShaclToJavaConstants.ELEMENT_TYPE_LICENSE_ADDITION_SUFFIX)) {
 			return true;
 		}
 		// We don't include superclasses for AnyLicenseInfo types
@@ -1070,7 +1098,7 @@ public class ShaclToJava {
 			numProperties += props.size();
 		}
 		if (numProperties > 0) {
-			requiredImports.add("import org.spdx.library.model.v3_0_0.SpdxConstantsV3;");
+			requiredImports.add("import org.spdx.library.model."+versionSuffix+".SpdxConstantsV3;");
 			requiredImports.add("import java.util.Optional;");
 		}
 		javaClassMap.put("elementProperties", propertyMap.get(PropertyType.ELEMENT));
@@ -1096,7 +1124,7 @@ public class ShaclToJava {
 		javaClassMap.put("superClass", superClass);
 		javaClassMap.put("verifySuperclass", superClass != "ModelObjectV3");
 		if (!this.uriToNamespaceUri(classUri).endsWith("Core")) {
-			requiredImports.add("import org.spdx.library.model.v3_0_0.core.ProfileIdentifierType;");
+			requiredImports.add("import org.spdx.library.model."+versionSuffix+".core.ProfileIdentifierType;");
 		}
 		boolean hasCreationInfo = false;
 		for (Map<String, Object> property:propertyMap.get(PropertyType.OBJECT)) {
@@ -1107,8 +1135,8 @@ public class ShaclToJava {
 		}
 		javaClassMap.put("hasCreationInfo", hasCreationInfo);
 		if (hasCreationInfo && !"Element".equals(name)) {
-			requiredImports.add("import org.spdx.library.model.v3_0_0.core.Element;");
-			requiredImports.add("import org.spdx.library.model.v3_0_0.core.CreationInfo;");
+			requiredImports.add("import org.spdx.library.model."+versionSuffix+".core.Element;");
+			requiredImports.add("import org.spdx.library.model."+versionSuffix+".core.CreationInfo;");
 		}
 		String equalsHashOverride = getEqualsHashOverride(classUri, superClasses, requiredImports);
 		List<String> imports = buildImports(new ArrayList<String>(requiredImports));
@@ -1131,14 +1159,14 @@ public class ShaclToJava {
 		}
 		requiredImports.add(String.format("import %s.%s.%sBuilder;", pkgName, name, name));
 		requiredImports.add("import junit.framework.TestCase;");
-		requiredImports.add("import org.spdx.library.model.v3_0_0.MockCopyManager;");
-		requiredImports.add("import org.spdx.library.model.v3_0_0.MockModelStore;");
-		requiredImports.add("import org.spdx.library.model.v3_0_0.UnitTestHelper;");
-		requiredImports.add("import org.spdx.library.model.v3_0_0.core.Agent.AgentBuilder;");
+		requiredImports.add("import org.spdx.library.model."+versionSuffix+".MockCopyManager;");
+		requiredImports.add("import org.spdx.library.model."+versionSuffix+".MockModelStore;");
+		requiredImports.add("import org.spdx.library.model."+versionSuffix+".UnitTestHelper;");
+		requiredImports.add("import org.spdx.library.model."+versionSuffix+".core.Agent.AgentBuilder;");
 		requiredImports.add("import java.util.Arrays;");
 		requiredImports.add("import org.spdx.core.ModelRegistry;");
-		requiredImports.add("import org.spdx.library.model.v3_0_0.SpdxModelInfoV3_0;");
-		requiredImports.add("import org.spdx.library.model.v3_0_0.TestValuesGenerator;");
+		requiredImports.add("import org.spdx.library.model."+versionSuffix+".SpdxModelInfoV3_0;");
+		requiredImports.add("import org.spdx.library.model."+versionSuffix+".TestValuesGenerator;");
 		imports = buildImports(new ArrayList<String>(requiredImports));
 		unitTestMap.put("imports", imports.toArray(new String[imports.size()]));
 		unitTestMaps.put(classUri, unitTestMap);
@@ -1193,52 +1221,52 @@ public class ShaclToJava {
 			List<OntClass> superClasses,
 			Map<PropertyType, List<Map<String, Object>>> propertyMap,
 			Set<String> requiredImports) throws IOException {
-		if ("https://spdx.org/rdf/3.0.0/terms/ExpandedLicensing/WithAdditionOperator".equals(classUri)) {
+		if (classUri.endsWith("ExpandedLicensing/WithAdditionOperator")) {
 			Map<String, Object> mustacheMap = new HashMap<>();
 			mustacheMap.put("className", uriToClassName.get(classUri));
-			String subjectAdditionPropertyName = uriToPropertyName.get("https://spdx.org/rdf/3.0.0/terms/ExpandedLicensing/subjectAddition");
+			String subjectAdditionPropertyName = uriToPropertyName.get("https://spdx.org/rdf/"+versionSemVer+"/terms/ExpandedLicensing/subjectAddition");
 			String subjectLicenseGetter = "get" + subjectAdditionPropertyName.substring(0, 1).toUpperCase() + subjectAdditionPropertyName.substring(1);
 			mustacheMap.put("subjectAdditionGetter", subjectLicenseGetter);
-			String subjectExtendablePropertyName = uriToPropertyName.get("https://spdx.org/rdf/3.0.0/terms/ExpandedLicensing/subjectExtendableLicense");
+			String subjectExtendablePropertyName = uriToPropertyName.get("https://spdx.org/rdf/"+versionSemVer+"/terms/ExpandedLicensing/subjectExtendableLicense");
 			String extendableLicenseGetter = "get" + subjectExtendablePropertyName.substring(0, 1).toUpperCase() + subjectExtendablePropertyName.substring(1);
 			mustacheMap.put("extendableLicenseGetter", extendableLicenseGetter);
 			return mustacheToString(ShaclToJavaConstants.WITH_OPERATOR_TO_STRING_TEMPLATE, mustacheMap);
-		} else if ("https://spdx.org/rdf/3.0.0/terms/ExpandedLicensing/OrLaterOperator".equals(classUri)) {
+		} else if (classUri.endsWith("ExpandedLicensing/OrLaterOperator")) {
 			Map<String, Object> mustacheMap = new HashMap<>();
 			mustacheMap.put("className", uriToClassName.get(classUri));
-			String subjectPropertyName = uriToPropertyName.get("https://spdx.org/rdf/3.0.0/terms/ExpandedLicensing/subjectLicense");
+			String subjectPropertyName = uriToPropertyName.get("https://spdx.org/rdf/"+versionSemVer+"/terms/ExpandedLicensing/subjectLicense");
 			String subjectLicenseGetter = "get" + subjectPropertyName.substring(0, 1).toUpperCase() + subjectPropertyName.substring(1);
 			mustacheMap.put("subjectLicenseGetter", subjectLicenseGetter);
 			return mustacheToString(ShaclToJavaConstants.OR_LATER_TO_STRING_TEMPLATE, mustacheMap);
-		} else if ("https://spdx.org/rdf/3.0.0/terms/ExpandedLicensing/ListedLicense".equals(classUri) ||
-				"https://spdx.org/rdf/3.0.0/terms/ExpandedLicensing/ListedLicenseException".equals(classUri)) {
+		} else if (classUri.endsWith("ExpandedLicensing/ListedLicense") ||
+				classUri.endsWith("ExpandedLicensing/ListedLicenseException")) {
 			return "\t\treturn this.getObjectUri().substring(SpdxConstantsV3.SPDX_LISTED_LICENSE_NAMESPACE.length());";
-		} else if ("https://spdx.org/rdf/3.0.0/terms/ExpandedLicensing/CustomLicense".equals(classUri) ||
-				"https://spdx.org/rdf/3.0.0/terms/ExpandedLicensing/CustomLicenseAddition".equals(classUri)) {
+		} else if (classUri.endsWith("ExpandedLicensing/CustomLicense") ||
+				classUri.endsWith("ExpandedLicensing/CustomLicenseAddition")) {
 			return "if (this.getObjectUri().contains(\"LicenseRef-\")) {\n"
 					+ "\t\t\treturn (this.getObjectUri().substring(this.getObjectUri().lastIndexOf(\"LicenseRef-\")));\n"
 					+ "\t\t} else {\n"
 					+ "\t\t\treturn this.getObjectUri();\n"
 					+ "\t\t}";
-		} else if ("https://spdx.org/rdf/3.0.0/terms/ExpandedLicensing/ConjunctiveLicenseSet".equals(classUri) ||
-				"https://spdx.org/rdf/3.0.0/terms/ExpandedLicensing/DisjunctiveLicenseSet".equals(classUri)) {
+		} else if (classUri.endsWith("ExpandedLicensing/ConjunctiveLicenseSet") ||
+				classUri.endsWith("ExpandedLicensing/DisjunctiveLicenseSet")) {
 			Map<String, Object> mustacheMap = new HashMap<>();
-			String licenseMemberPropName = uriToPropertyName.get("https://spdx.org/rdf/3.0.0/terms/ExpandedLicensing/member") + "s";
+			String licenseMemberPropName = uriToPropertyName.get("https://spdx.org/rdf/"+versionSemVer+"/terms/ExpandedLicensing/member") + "s";
 			String licenseMemberGetter = "get" + licenseMemberPropName.substring(0, 1).toUpperCase() + licenseMemberPropName.substring(1);
 			mustacheMap.put("licenseMembersGetter", licenseMemberGetter);
 			mustacheMap.put("operator", 
-					"https://spdx.org/rdf/3.0.0/terms/ExpandedLicensing/DisjunctiveLicenseSet".equals(classUri) ? "OR" : "AND");
+					classUri.endsWith("ExpandedLicensing/DisjunctiveLicenseSet") ? "OR" : "AND");
 			return mustacheToString(ShaclToJavaConstants.LICENSE_SET_TO_STRING_TEMPLATE, mustacheMap);
-		}  else if ("https://spdx.org/rdf/3.0.0/terms/Core/Element".equals(classUri)) {
+		}  else if (classUri.endsWith("Core/Element")) {
 			Map<String, Object> mustacheMap = new HashMap<>();
-			String nameProp = uriToPropertyName.get("https://spdx.org/rdf/3.0.0/terms/Core/name");
+			String nameProp = uriToPropertyName.get("https://spdx.org/rdf/"+versionSemVer+"/terms/Core/name");
 			String nameGetter = "get" + nameProp.substring(0, 1).toUpperCase() + nameProp.substring(1);
 			mustacheMap.put("nameGetter", nameGetter);
 			return mustacheToString(ShaclToJavaConstants.ELEMENT_TO_STRING_TEMPLATE, mustacheMap);
 		}
 		boolean elementSubclass = false;
 		for (OntClass superClass:superClasses) {
-			if ("https://spdx.org/rdf/3.0.0/terms/Core/Element".equals(superClass.getURI())) {
+			if (superClass.getURI().endsWith("Core/Element")) {
 				elementSubclass = true;
 				break;
 			}
@@ -1260,43 +1288,43 @@ public class ShaclToJava {
 	private @Nullable String getEqualsHashOverride(String classUri, List<OntClass> superClasses, Set<String> requiredImports) throws IOException {
 		// License classes need to override equals so that the license sets work properly
 		// NOTE: This needs to be checked first since licenses are subclasses of elements
-		if ("https://spdx.org/rdf/3.0.0/terms/ExpandedLicensing/ConjunctiveLicenseSet".equals(classUri)) {
+		if (classUri.endsWith("ExpandedLicensing/ConjunctiveLicenseSet")) {
 			Map<String, Object> mustacheMap = new HashMap<>();
 			mustacheMap.put("className", uriToClassName.get(classUri));
 			mustacheMap.put("primeNumber", "1381");
 			requiredImports.add("import java.util.HashSet;");
 			requiredImports.add("import java.util.Iterator;");
-			String licenseMemberPropName = uriToPropertyName.get("https://spdx.org/rdf/3.0.0/terms/ExpandedLicensing/member") + "s";
+			String licenseMemberPropName = uriToPropertyName.get("https://spdx.org/rdf/"+versionSemVer+"/terms/ExpandedLicensing/member") + "s";
 			String licenseMemberGetter = "get" + licenseMemberPropName.substring(0, 1).toUpperCase() + licenseMemberPropName.substring(1);
 			mustacheMap.put("licenseMembersGetter", licenseMemberGetter);
 			return mustacheToString(ShaclToJavaConstants.LICENSE_SET_EQUALS_OVERRIDE_TEMPLATE, mustacheMap);
 		}
-		if ("https://spdx.org/rdf/3.0.0/terms/ExpandedLicensing/DisjunctiveLicenseSet".equals(classUri)) {
+		if (classUri.endsWith("ExpandedLicensing/DisjunctiveLicenseSet")) {
 			Map<String, Object> mustacheMap = new HashMap<>();
 			mustacheMap.put("className", uriToClassName.get(classUri));
 			mustacheMap.put("primeNumber", "41");
 			requiredImports.add("import java.util.HashSet;");
 			requiredImports.add("import java.util.Iterator;");
-			String licenseMemberPropName = uriToPropertyName.get("https://spdx.org/rdf/3.0.0/terms/ExpandedLicensing/member") + "s";
+			String licenseMemberPropName = uriToPropertyName.get("https://spdx.org/rdf/"+versionSemVer+"/terms/ExpandedLicensing/member") + "s";
 			String licenseMemberGetter = "get" + licenseMemberPropName.substring(0, 1).toUpperCase() + licenseMemberPropName.substring(1);
 			mustacheMap.put("licenseMembersGetter", licenseMemberGetter);
 			return mustacheToString(ShaclToJavaConstants.LICENSE_SET_EQUALS_OVERRIDE_TEMPLATE, mustacheMap);
 		}
-		if ("https://spdx.org/rdf/3.0.0/terms/ExpandedLicensing/OrLaterOperator".equals(classUri)) {
+		if (classUri.endsWith("ExpandedLicensing/OrLaterOperator")) {
 			Map<String, Object> mustacheMap = new HashMap<>();
 			mustacheMap.put("className", uriToClassName.get(classUri));
-			String subjectPropertyName = uriToPropertyName.get("https://spdx.org/rdf/3.0.0/terms/ExpandedLicensing/subjectLicense");
+			String subjectPropertyName = uriToPropertyName.get("https://spdx.org/rdf/"+versionSemVer+"/terms/ExpandedLicensing/subjectLicense");
 			String subjectLicenseGetter = "get" + subjectPropertyName.substring(0, 1).toUpperCase() + subjectPropertyName.substring(1);
 			mustacheMap.put("subjectLicenseGetter", subjectLicenseGetter);
 			return mustacheToString(ShaclToJavaConstants.OR_LATER_EQUALS_OVERRIDE_TEMPLATE, mustacheMap);
 		}
-		if ("https://spdx.org/rdf/3.0.0/terms/ExpandedLicensing/WithAdditionOperator".equals(classUri)) {
+		if (classUri.endsWith("ExpandedLicensing/WithAdditionOperator")) {
 			Map<String, Object> mustacheMap = new HashMap<>();
 			mustacheMap.put("className", uriToClassName.get(classUri));
-			String subjectAdditionPropertyName = uriToPropertyName.get("https://spdx.org/rdf/3.0.0/terms/ExpandedLicensing/subjectAddition");
+			String subjectAdditionPropertyName = uriToPropertyName.get("https://spdx.org/rdf/"+versionSemVer+"/terms/ExpandedLicensing/subjectAddition");
 			String subjectLicenseGetter = "get" + subjectAdditionPropertyName.substring(0, 1).toUpperCase() + subjectAdditionPropertyName.substring(1);
 			mustacheMap.put("subjectAdditionGetter", subjectLicenseGetter);
-			String subjectExtendablePropertyName = uriToPropertyName.get("https://spdx.org/rdf/3.0.0/terms/ExpandedLicensing/subjectExtendableLicense");
+			String subjectExtendablePropertyName = uriToPropertyName.get("https://spdx.org/rdf/"+versionSemVer+"/terms/ExpandedLicensing/subjectExtendableLicense");
 			String extendableLicenseGetter = "get" + subjectExtendablePropertyName.substring(0, 1).toUpperCase() + subjectExtendablePropertyName.substring(1);
 			mustacheMap.put("extendableLicenseGetter", extendableLicenseGetter);
 			return mustacheToString(ShaclToJavaConstants.WITH_EQUALS_OVERRIDE_TEMPLATE, mustacheMap);
@@ -1333,7 +1361,7 @@ public class ShaclToJava {
 			numProperties += props.size();
 		}
 		if (numProperties > 0) {
-			requiredImports.add("import org.spdx.library.model.v3_0_0.SpdxConstantsV3;");
+			requiredImports.add("import org.spdx.library.model."+versionSuffix+".SpdxConstantsV3;");
 			requiredImports.add("import java.util.Optional;");
 		}
 		mustacheMap.put("elementProperties", propertyMap.get(PropertyType.ELEMENT));
@@ -1427,6 +1455,12 @@ public class ShaclToJava {
 		String propertyUri = propertyShape.getPath().toString().replaceAll("<", "").replaceAll(">", "");
 		
 		String name = uriToPropertyName.get(propertyUri);
+		if (Objects.isNull(name)) {
+			// This is a special case if a property is not defined in SHACL as either
+			// an ObjectProperty or an DataProperty - e.g. core:extension
+			name = uriToName(propertyUri);
+			uriToPropertyName.put(propertyUri, name);
+		}
 		retval.put("propertyName", name);
 		retval.put("propertyNameUpper", camelCaseToConstCase(name));
 		String getSetName = name.substring(0, 1).toUpperCase() + name.substring(1);
@@ -1476,8 +1510,8 @@ public class ShaclToJava {
 				classRestriction = collector.getExpectedClass();
 			}
 		}
-		
-		PropertyType propertyType = ShaclToJavaConstants.SET_PROPERTY_URIS.contains(propertyUri) ? PropertyType.OBJECT_SET : determinePropertyType(classRestriction, dataTypeRestriction, 
+		String propertySuffix = propertyUri.substring(propertyUri.lastIndexOf("/terms/"));
+		PropertyType propertyType = ShaclToJavaConstants.SET_PROPERTY_SUFFIXES.contains(propertySuffix) ? PropertyType.OBJECT_SET : determinePropertyType(classRestriction, dataTypeRestriction, 
 				minCardinality, maxCardinality);
 		if (PropertyType.OBJECT_COLLECTION.equals(propertyType) || PropertyType.STRING_COLLECTION.equals(propertyType) ||
 				PropertyType.ENUM_COLLECTION.equals(propertyType)) {
@@ -1705,7 +1739,7 @@ public class ShaclToJava {
 		retval.add("import org.spdx.core.InvalidSPDXAnalysisException;");
 		retval.add("import org.spdx.core.IModelCopyManager;");
 		retval.add("import org.spdx.core.IndividualUriValue;");
-		retval.add("import org.spdx.library.model.v3_0_0.ModelObjectV3;");
+		retval.add("import org.spdx.library.model."+versionSuffix+".ModelObjectV3;");
 		retval.add("import org.spdx.storage.IModelStore;");
 		retval.add("import org.spdx.storage.IModelStore.IdType;");
 		retval.add("import org.spdx.storage.IModelStore.IModelStoreLock;");
@@ -1823,7 +1857,7 @@ public class ShaclToJava {
 	 */
 	private File createUnitTestFile(String classUri, File dir) throws IOException {		
 		Path path = dir.toPath().resolve("src").resolve("test").resolve("java").resolve("org")
-				.resolve("spdx").resolve("library").resolve("model").resolve("v3_0_0");
+				.resolve("spdx").resolve("library").resolve("model").resolve(versionSuffix);
 		String[] parts = classUri.substring(ShaclToJavaConstants.SPDX_URI_PREFIX.length()).split("/");
 		for (int i = 2; i < parts.length-1; i++) {
 			path = path.resolve(parts[i].toLowerCase());
@@ -1843,7 +1877,7 @@ public class ShaclToJava {
 	 */
 	private File createJavaSourceFile(String classUri, File dir) throws IOException {		
 		Path path = dir.toPath().resolve("src").resolve("main").resolve("java").resolve("org")
-				.resolve("spdx").resolve("library").resolve("model").resolve("v3_0_0");
+				.resolve("spdx").resolve("library").resolve("model").resolve(versionSuffix);
 		String[] parts = classUri.substring(ShaclToJavaConstants.SPDX_URI_PREFIX.length()).split("/");
 		// [0] is version, [1] is "terms"
 		for (int i = 2; i < parts.length-1; i++) {
@@ -1864,7 +1898,7 @@ public class ShaclToJava {
 	 */
 	private File createExternalJavaSourceFile(String classUri, File dir) throws IOException {		
 		Path path = dir.toPath().resolve("src").resolve("main").resolve("java").resolve("org")
-				.resolve("spdx").resolve("library").resolve("model").resolve("v3_0_0");
+				.resolve("spdx").resolve("library").resolve("model").resolve(versionSuffix);
 		String[] parts = classUri.substring(ShaclToJavaConstants.SPDX_URI_PREFIX.length()).split("/");
 		// [0] is version, [1] is "terms"
 		for (int i = 2; i < parts.length-1; i++) {
@@ -1883,7 +1917,8 @@ public class ShaclToJava {
 	 */
 	private String uriToPkg(String classUri) {
 		String[] parts = classUri.substring(ShaclToJavaConstants.SPDX_URI_PREFIX.length()).split("/");
-		StringBuilder sb = new StringBuilder("org.spdx.library.model.v3_0_0");
+		StringBuilder sb = new StringBuilder("org.spdx.library.model.");
+		sb.append(versionSuffix);
 		for (int i = 2; i < parts.length-1; i++) {
 			sb.append(".");
 			sb.append(parts[i].toLowerCase());

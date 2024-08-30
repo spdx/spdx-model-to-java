@@ -15,7 +15,7 @@
  *   See the License for the specific language governing permissions and
  *   limitations under the License.
  */
-package org.spdx.library.model.v3_0_0;
+package org.spdx.library.model.{{versionSuffix}};
 
 import org.spdx.storage.PropertyDescriptor;
 
@@ -36,7 +36,7 @@ public class SpdxConstantsV3 {
 		}
 	}
 	
-	public static final String MODEL_SPEC_VERSION = "3.0.0";
+	public static final String MODEL_SPEC_VERSION = "{{{versionSemVer}}}";
 	
 	// Date format - NOTE: This format does not handle milliseconds.  Use Instant.parse for full ISO 8601 parsing
 	public static final String SPDX_DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ss'Z'";

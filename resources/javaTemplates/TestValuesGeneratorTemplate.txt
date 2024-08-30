@@ -2,7 +2,7 @@
  * SPDX-License-Identifier: Apache-2.0
  * Copyright (c) 2024 Source Auditor Inc.
  */
-package org.spdx.library.model.v3_0_0;
+package org.spdx.library.model.{{versionSuffix}};
 
 {{#imports}}
 {{.}}
@@ -339,12 +339,12 @@ public class TestValuesGenerator {
 	public TestValuesGenerator(IModelStore modelStore, IModelCopyManager copyManager) throws InvalidSPDXAnalysisException {
 		this.modelStore = modelStore;
 		this.copyManager = copyManager;
-		if (!ModelRegistry.getModelRegistry().containsSpecVersion("3.0.0")) {
+		if (!ModelRegistry.getModelRegistry().containsSpecVersion("{{{versionSemVer}}}")) {
 			ModelRegistry.getModelRegistry().registerModel(new TestSpdxModelInfo());
 		}
 		creationInfo = new CreationInfo.CreationInfoBuilder(modelStore, modelStore.getNextId(IdType.Anonymous), copyManager)
 							.setCreated("2010-01-29T18:30:22Z")
-							.setSpecVersion("3.0.0")
+							.setSpecVersion("{{{versionSemVer}}}")
 							.build();
 		AgentBuilder agentBuilder = new AgentBuilder(modelStore, "https://unique/id" + modelStore.getNextId(IdType.SpdxId), copyManager);
 		agentBuilder.setCreationInfo(creationInfo);
