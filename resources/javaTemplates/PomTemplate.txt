@@ -2,18 +2,79 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.spdx</groupId>
   <artifactId>spdx-java-model-3_0</artifactId>
-  <version>0.0.1-SNAPSHOT</version>
-  <name>spdx-java-model</name>
+  <version>0.1.0-Alpha</version>
+  <name>spdx-java-model-3</name>
   <description>Generated java model source code</description>
   <properties>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <maven.compiler.source>8</maven.compiler.source>
     <maven.compiler.target>8</maven.compiler.target>
   </properties>
+  <distributionManagement>
+    <repository>
+      <id>ossrh</id>
+      <name>spdx-spdx-tools</name>
+      <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+    </repository>
+  </distributionManagement>
+  <profiles>
+  <profile>
+      <id>doclint-java8-disable</id>
+      <activation>
+        <jdk>[1.8,)</jdk>
+      </activation>
+      <properties>
+        <javadoc.opts>-Xdoclint:none</javadoc.opts>
+      </properties>
+	</profile>
+    <profile>
+      <id>test</id>
+      <dependencies>
+        <dependency>
+          <groupId>org.apache.logging.log4j</groupId>
+          <artifactId>log4j-slf4j2-impl</artifactId>
+          <version>2.20.0</version>
+          <scope>test</scope>
+          <exclusions>
+            <exclusion>
+              <groupId>org.slf4j</groupId>
+              <artifactId>slf4j-api</artifactId>
+            </exclusion>
+          </exclusions>
+        </dependency>
+      </dependencies>
+    </profile>
+    <profile>
+      <id>gpg-signing</id>
+      <build>
+        <plugins>
+            <plugin>
+              <groupId>org.apache.maven.plugins</groupId>
+              <artifactId>maven-gpg-plugin</artifactId>
+              <version>1.6</version>
+              <executions>
+                <execution>
+                  <id>sign-artifacts</id>
+                  <phase>verify</phase>
+                  <goals>
+                    <goal>sign</goal>
+                  </goals>
+                  <configuration>
+                    <keyname>${gpg.keyname}</keyname>
+                    <passphraseServerId>${gpg.keyname}</passphraseServerId>
+                  </configuration>
+                </execution>
+              </executions>
+            </plugin>
+        </plugins>
+      </build>
+    </profile>
+  </profiles>
   <dependencies>
   	<dependency>
   		<groupId>org.spdx</groupId>
   		<artifactId>spdx-java-core</artifactId>
-  		<version>0.0.1-SNAPSHOT</version>
+  		<version>0.1.0-Alpha</version>
   	</dependency>
   	<dependency>
   		<groupId>org.slf4j</groupId>
@@ -46,6 +107,41 @@
 				<optimize>true</optimize>
 			</configuration>
 		</plugin>
+	  	<plugin>
+			<groupId>org.apache.maven.plugins</groupId>
+			<artifactId>maven-source-plugin</artifactId>
+			<version>3.2.1</version>
+			<executions>
+				<execution>
+		          <id>attach-sources</id>
+		          <phase>verify</phase>
+		          <goals>
+		            <goal>jar-no-fork</goal>
+		          </goals>
+				</execution>
+			</executions>
+	  	 </plugin>
+	  	 <plugin>
+			<groupId>org.apache.maven.plugins</groupId>
+			<artifactId>maven-javadoc-plugin</artifactId>
+			<version>3.5.0</version>
+			<configuration>
+				<quiet>true</quiet>
+				<notimestamp>true</notimestamp>
+				<additionalOptions>-Xdoclint:none</additionalOptions>
+			</configuration>
+			<executions>
+				<execution>
+		          <id>attach-javadocs</id>
+		          <configuration>
+		            <additionalparam>${javadoc.opts}</additionalparam>
+		          </configuration>
+		          <goals>
+		            <goal>jar</goal>
+		          </goals>
+				</execution>
+			</executions>
+	  	 </plugin>
 	  </plugins>
   </build>
 </project>
