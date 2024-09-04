@@ -2,14 +2,30 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.spdx</groupId>
   <artifactId>spdx-java-model-3_0</artifactId>
-  <version>0.1.0-Alpha</version>
+  <version>0.1.1-SNAPSHOT</version>
   <name>spdx-java-model-3</name>
   <description>Generated java model source code</description>
-  <properties>
-    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <maven.compiler.source>8</maven.compiler.source>
-    <maven.compiler.target>8</maven.compiler.target>
-  </properties>
+<url>https://github.com/spdx/spdx-java-model-3_0</url>
+  <licenses>
+    <license>
+      <name>The Apache Software License, Version 2.0</name>
+      <url>https://www.apache.org/licenses/LICENSE-2.0.txt</url>
+      <distribution>repo</distribution>
+    </license>
+  </licenses>
+  <developers>
+    <developer>
+      <id>goneall</id>
+      <name>Gary O'Neall</name>
+      <email>gary@sourceauditor.com</email>
+      <organization>SPDX</organization>
+      <organizationUrl>http://spdx.org</organizationUrl>
+    </developer>
+  </developers>
+  <organization>
+    <name>SPDX</name>
+    <url>http://spdx.org</url>
+  </organization>
   <distributionManagement>
     <repository>
       <id>ossrh</id>
@@ -17,15 +33,27 @@
       <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
     </repository>
   </distributionManagement>
-  <profiles>
-  <profile>
-      <id>doclint-java8-disable</id>
-      <activation>
-        <jdk>[1.8,)</jdk>
-      </activation>
-      <properties>
-        <javadoc.opts>-Xdoclint:none</javadoc.opts>
-      </properties>
+  <scm>
+    <url>https://github.com/spdx/spdx-java-model-3_0</url>
+    <connection>scm:git:git://github.com/spdx/spdx-java-model-3_0.git</connection>
+    <developerConnection>scm:git:git@github.com:spdx/spdx-java-model-3_0.git</developerConnection>
+    <tag>HEAD</tag>
+  </scm>
+  <properties>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <maven.compiler.source>8</maven.compiler.source>
+    <maven.compiler.target>8</maven.compiler.target>
+    <dependency-check-maven.version>8.0.1</dependency-check-maven.version>
+  </properties>
+  <profiles>  
+	<profile>
+		<id>doclint-java8-disable</id>
+		<activation>
+			<jdk>[1.8,)</jdk>
+		</activation>
+		<properties>
+			<javadoc.opts>-Xdoclint:none</javadoc.opts>
+		</properties>
 	</profile>
     <profile>
       <id>test</id>
@@ -44,31 +72,45 @@
         </dependency>
       </dependencies>
     </profile>
-    <profile>
-      <id>gpg-signing</id>
-      <build>
-        <plugins>
-            <plugin>
-              <groupId>org.apache.maven.plugins</groupId>
-              <artifactId>maven-gpg-plugin</artifactId>
-              <version>1.6</version>
-              <executions>
-                <execution>
-                  <id>sign-artifacts</id>
-                  <phase>verify</phase>
-                  <goals>
-                    <goal>sign</goal>
-                  </goals>
-                  <configuration>
-                    <keyname>${gpg.keyname}</keyname>
-                    <passphraseServerId>${gpg.keyname}</passphraseServerId>
-                  </configuration>
-                </execution>
-              </executions>
-            </plugin>
-        </plugins>
-      </build>
-    </profile>
+ 		<profile>
+			<id>release</id>
+			<build>
+				<plugins>
+		          <plugin>
+		              <groupId>org.apache.maven.plugins</groupId>
+		              <artifactId>maven-source-plugin</artifactId>
+		              <version>3.2.1</version>
+		              <executions>
+		                <execution>
+		                  <id>attach-sources</id>
+		                  <phase>verify</phase>
+		                  <goals>
+		                    <goal>jar-no-fork</goal>
+		                  </goals>
+		                </execution>
+		              </executions>
+		            </plugin>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-gpg-plugin</artifactId>
+						<version>3.1.0</version>
+						<executions>
+							<execution>
+								<id>sign-artifacts</id>
+								<phase>verify</phase>
+								<goals>
+									<goal>sign</goal>
+								</goals>
+								<configuration>
+									<keyname>${gpg.keyname}</keyname>
+									<passphraseServerId>${gpg.keyname}</passphraseServerId>
+								</configuration>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
   </profiles>
   <dependencies>
   	<dependency>
@@ -95,53 +137,132 @@
   	</dependency>
   </dependencies>
   <build>
-	  <plugins>
-	  	<plugin>
-			<groupId>org.apache.maven.plugins</groupId>
-			<artifactId>maven-compiler-plugin</artifactId>
-			<version>3.6.1</version>
+	<plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <version>3.11.0</version>
+        <configuration>
+          <encoding>${project.build.sourceEncoding}</encoding>
+          <showDeprecation>true</showDeprecation>
+          <showWarnings>true</showWarnings>
+          <optimize>true</optimize>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>build-helper-maven-plugin</artifactId>
+        <version>3.5.0</version>
+        <executions>
+          <execution>
+			<id>add-source</id>
+			<phase>generate-sources</phase>
+			<goals>
+				<goal>add-source</goal>
+			</goals>
 			<configuration>
-				<encoding>${project.build.sourceEncoding}</encoding>
-				<showDeprecation>true</showDeprecation>
-				<showWarnings>true</showWarnings>
-				<optimize>true</optimize>
+				<sources>
+					<source>generated/src/main/java</source>
+				</sources>
 			</configuration>
-		</plugin>
-	  	<plugin>
-			<groupId>org.apache.maven.plugins</groupId>
-			<artifactId>maven-source-plugin</artifactId>
-			<version>3.2.1</version>
-			<executions>
-				<execution>
-		          <id>attach-sources</id>
-		          <phase>verify</phase>
-		          <goals>
-		            <goal>jar-no-fork</goal>
-		          </goals>
-				</execution>
-			</executions>
-	  	 </plugin>
-	  	 <plugin>
-			<groupId>org.apache.maven.plugins</groupId>
-			<artifactId>maven-javadoc-plugin</artifactId>
-			<version>3.5.0</version>
-			<configuration>
-				<quiet>true</quiet>
-				<notimestamp>true</notimestamp>
-				<additionalOptions>-Xdoclint:none</additionalOptions>
-			</configuration>
-			<executions>
-				<execution>
-		          <id>attach-javadocs</id>
-		          <configuration>
-		            <additionalparam>${javadoc.opts}</additionalparam>
-		          </configuration>
-		          <goals>
-		            <goal>jar</goal>
-		          </goals>
-				</execution>
-			</executions>
-	  	 </plugin>
-	  </plugins>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-javadoc-plugin</artifactId>
+        <version>3.5.0</version>
+        <configuration>
+          <quiet>true</quiet>
+          <notimestamp>true</notimestamp>
+          <additionalOptions>-Xdoclint:none</additionalOptions>
+        </configuration>
+        <executions>
+          <execution>
+            <id>attach-javadocs</id>
+            <configuration>
+              <additionalparam>${javadoc.opts}</additionalparam>
+            </configuration>
+            <goals>
+              <goal>jar</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-jar-plugin</artifactId>
+        <version>3.3.0</version>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-source-plugin</artifactId>
+        <version>3.3.0</version>
+        <executions>
+          <execution>
+            <id>attach-sources</id>
+            <phase>verify</phase>
+            <goals>
+              <goal>jar-no-fork</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.spdx</groupId>
+        <artifactId>spdx-maven-plugin</artifactId>
+        <version>0.7.4</version>
+        <executions>
+          <execution>
+            <id>build-spdx</id>
+            <phase>prepare-package</phase>
+            <goals>
+              <goal>createSPDX</goal>
+            </goals>
+          </execution>
+        </executions>
+        <configuration>
+          <spdxDocumentNamespace>http://spdx.org/documents/spdx-java-model-3_0-${project.version}</spdxDocumentNamespace>
+          <defaultFileCopyright>Copyright (c) 2020 Source Auditor Inc.</defaultFileCopyright>
+          <defaultFileContributors>
+            <param>Gary O'Neall</param>
+          </defaultFileContributors>
+          <defaultLicenseInformationInFile>Apache-2.0</defaultLicenseInformationInFile>
+          <defaultFileConcludedLicense>Apache-2.0</defaultFileConcludedLicense>
+          <defaultFileNotice>Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+
+      http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.</defaultFileNotice>
+          <licenseDeclared>Apache-2.0</licenseDeclared>
+          <licenseConcluded>Apache-2.0</licenseConcluded>
+          <creators>
+            <param>Person: Gary O'Neall</param>
+          </creators>
+          <originator>Organization: SPDX</originator>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-release-plugin</artifactId>
+        <version>3.0.1</version>
+        <configuration>
+          <tagNameFormat>v@{project.version}</tagNameFormat>
+          <releaseProfiles>release</releaseProfiles>
+          <goals>deploy</goals>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.owasp</groupId>
+        <artifactId>dependency-check-maven</artifactId>
+        <version>${dependency-check-maven.version}</version>
+      </plugin>
+	</plugins>
   </build>
 </project>
