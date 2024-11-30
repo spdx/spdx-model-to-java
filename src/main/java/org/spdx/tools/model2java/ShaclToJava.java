@@ -44,13 +44,14 @@ import org.apache.jena.rdf.model.StmtIterator;
 import org.apache.commons.text.StringEscapeUtils;
 import org.apache.jena.graph.Node;
 import org.apache.jena.shacl.Shapes;
+import org.apache.jena.shacl.engine.constraint.ClassConstraint;
+import org.apache.jena.shacl.engine.constraint.ShNot;
 import org.apache.jena.shacl.engine.constraint.SparqlConstraint;
 import org.apache.jena.shacl.parser.Constraint;
 import org.apache.jena.shacl.parser.PropertyShape;
 import org.apache.jena.shacl.parser.Shape;
 import org.apache.jena.sparql.syntax.Element;
 import org.apache.jena.sparql.syntax.ElementGroup;
-import org.apache.jena.util.iterator.ExtendedIterator;
 
 import com.github.mustachejava.DefaultMustacheFactory;
 import com.github.mustachejava.Mustache;
@@ -811,16 +812,12 @@ public class ShaclToJava {
 		for (Resource individual:objectIndividuals) {
 			boolean hasLabel = false;
 			String individualClassUri = null;
-			String rangeUri = null;
 			StmtIterator propertyIter = individual.listProperties();
 			for ( ; propertyIter.hasNext() ; ) {
 				Statement stmt = propertyIter.next();
 				if (stmt.getPredicate().getURI().equals(ShaclToJavaConstants.TYPE_PRED) && stmt.getObject().isURIResource() &&
 						!stmt.getObject().asResource().getURI().equals(ShaclToJavaConstants.NAMED_INDIVIDUAL)) {
 					individualClassUri = stmt.getObject().asResource().getURI();
-				}
-				if (stmt.getPredicate().getURI().equals(ShaclToJavaConstants.RANGE_URI) && stmt.getObject().isURIResource()) {
-					rangeUri = stmt.getObject().asResource().getURI();
 				}
 				if (stmt.getPredicate().getURI().equals(ShaclToJavaConstants.LABEL_URI)) {
 					hasLabel = true;
@@ -829,11 +826,11 @@ public class ShaclToJava {
 			if (hasLabel && Objects.nonNull(individualClassUri)) {
 				// TODO: This is a bit of a hack, maybe there is a better way to see if this is a class
 				this.enumClassUris.add(individualClassUri);
-			} else if (Objects.nonNull(rangeUri)) {
-				List<String> individualsForRange = classUriToIndividualUris.get(rangeUri);
+			} else {
+				List<String> individualsForRange = classUriToIndividualUris.get(individualClassUri);
 				if (Objects.isNull(individualsForRange)) {
 					individualsForRange = new ArrayList<>();
-					classUriToIndividualUris.put(rangeUri, individualsForRange);
+					classUriToIndividualUris.put(individualClassUri, individualsForRange);
 				}
 				individualsForRange.add(individual.getURI());
 			}
@@ -1403,10 +1400,20 @@ public class ShaclToJava {
 		if (Objects.isNull(ontClass)) {
 			return false;
 		}
-		ExtendedIterator<Resource> iter = ontClass.listRDFTypes(true);
-		while (iter.hasNext()) {
-			if (ShaclToJavaConstants.ABSTRACT_TYPE_URI.equals(iter.next().getURI())) {
-				return true;
+		Shape classShape = shapeMap.get(ontClass.asNode());
+		if (Objects.nonNull(classShape)) {
+			for (Constraint constraint:classShape.getConstraints()) {
+				ConstraintCollector collector = new ConstraintCollector();
+				constraint.visit(collector);
+				ShNot notConstraint = collector.getNotConstraint();
+				if (Objects.nonNull(notConstraint) && Objects.nonNull(notConstraint.getOther())) {
+					for (Constraint otherConstraint:notConstraint.getOther().getConstraints()) {
+						if (Objects.nonNull(otherConstraint) && otherConstraint instanceof ClassConstraint &&
+								ontClass.getURI().equals(((ClassConstraint)otherConstraint).getExpectedClass().getURI())) {
+							return true;
+						}
+					}
+				}
 			}
 		}
 		return false;
