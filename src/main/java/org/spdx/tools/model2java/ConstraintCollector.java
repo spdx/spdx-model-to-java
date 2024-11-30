@@ -52,6 +52,7 @@ class ConstraintCollector implements ConstraintVisitor {
 	private Integer strMaxLenght = null;
 	private Node expectedClass = null;
 	private SparqlConstraint sparqlConstraint = null;
+	private ShNot notConstraint;
 	
 
 	@Override
@@ -147,8 +148,7 @@ class ConstraintCollector implements ConstraintVisitor {
 
 	@Override
 	public void visit(ShNot constraint) {
-		// ignore
-		
+		this.notConstraint = constraint;
 	}
 
 	@Override
@@ -276,5 +276,12 @@ class ConstraintCollector implements ConstraintVisitor {
 	 */
 	public SparqlConstraint getSparqlConstraint() {
 		return sparqlConstraint;
+	}
+
+	/**
+	 * @return the notConstraint
+	 */
+	public ShNot getNotConstraint() {
+		return notConstraint;
 	}
 }

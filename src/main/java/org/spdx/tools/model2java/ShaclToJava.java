@@ -44,13 +44,14 @@ import org.apache.jena.rdf.model.StmtIterator;
 import org.apache.commons.text.StringEscapeUtils;
 import org.apache.jena.graph.Node;
 import org.apache.jena.shacl.Shapes;
+import org.apache.jena.shacl.engine.constraint.ClassConstraint;
+import org.apache.jena.shacl.engine.constraint.ShNot;
 import org.apache.jena.shacl.engine.constraint.SparqlConstraint;
 import org.apache.jena.shacl.parser.Constraint;
 import org.apache.jena.shacl.parser.PropertyShape;
 import org.apache.jena.shacl.parser.Shape;
 import org.apache.jena.sparql.syntax.Element;
 import org.apache.jena.sparql.syntax.ElementGroup;
-import org.apache.jena.util.iterator.ExtendedIterator;
 
 import com.github.mustachejava.DefaultMustacheFactory;
 import com.github.mustachejava.Mustache;
@@ -1403,10 +1404,20 @@ public class ShaclToJava {
 		if (Objects.isNull(ontClass)) {
 			return false;
 		}
-		ExtendedIterator<Resource> iter = ontClass.listRDFTypes(true);
-		while (iter.hasNext()) {
-			if (ShaclToJavaConstants.ABSTRACT_TYPE_URI.equals(iter.next().getURI())) {
-				return true;
+		Shape classShape = shapeMap.get(ontClass.asNode());
+		if (Objects.nonNull(classShape)) {
+			for (Constraint constraint:classShape.getConstraints()) {
+				ConstraintCollector collector = new ConstraintCollector();
+				constraint.visit(collector);
+				ShNot notConstraint = collector.getNotConstraint();
+				if (Objects.nonNull(notConstraint) && Objects.nonNull(notConstraint.getOther())) {
+					for (Constraint otherConstraint:notConstraint.getOther().getConstraints()) {
+						if (Objects.nonNull(otherConstraint) && otherConstraint instanceof ClassConstraint &&
+								ontClass.getURI().equals(((ClassConstraint)otherConstraint).getExpectedClass().getURI())) {
+							return true;
+						}
+					}
+				}
 			}
 		}
 		return false;
