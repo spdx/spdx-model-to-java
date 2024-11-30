@@ -812,16 +812,12 @@ public class ShaclToJava {
 		for (Resource individual:objectIndividuals) {
 			boolean hasLabel = false;
 			String individualClassUri = null;
-			String rangeUri = null;
 			StmtIterator propertyIter = individual.listProperties();
 			for ( ; propertyIter.hasNext() ; ) {
 				Statement stmt = propertyIter.next();
 				if (stmt.getPredicate().getURI().equals(ShaclToJavaConstants.TYPE_PRED) && stmt.getObject().isURIResource() &&
 						!stmt.getObject().asResource().getURI().equals(ShaclToJavaConstants.NAMED_INDIVIDUAL)) {
 					individualClassUri = stmt.getObject().asResource().getURI();
-				}
-				if (stmt.getPredicate().getURI().equals(ShaclToJavaConstants.RANGE_URI) && stmt.getObject().isURIResource()) {
-					rangeUri = stmt.getObject().asResource().getURI();
 				}
 				if (stmt.getPredicate().getURI().equals(ShaclToJavaConstants.LABEL_URI)) {
 					hasLabel = true;
@@ -830,11 +826,11 @@ public class ShaclToJava {
 			if (hasLabel && Objects.nonNull(individualClassUri)) {
 				// TODO: This is a bit of a hack, maybe there is a better way to see if this is a class
 				this.enumClassUris.add(individualClassUri);
-			} else if (Objects.nonNull(rangeUri)) {
-				List<String> individualsForRange = classUriToIndividualUris.get(rangeUri);
+			} else {
+				List<String> individualsForRange = classUriToIndividualUris.get(individualClassUri);
 				if (Objects.isNull(individualsForRange)) {
 					individualsForRange = new ArrayList<>();
-					classUriToIndividualUris.put(rangeUri, individualsForRange);
+					classUriToIndividualUris.put(individualClassUri, individualsForRange);
 				}
 				individualsForRange.add(individual.getURI());
 			}
