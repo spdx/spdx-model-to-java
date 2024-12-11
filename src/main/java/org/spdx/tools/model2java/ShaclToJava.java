@@ -811,29 +811,35 @@ public class ShaclToJava {
 	 */
 	private void collectTypeInformation() {
 		for (Resource individual:objectIndividuals) {
-			boolean hasLabel = false;
 			String individualClassUri = null;
 			StmtIterator propertyIter = individual.listProperties();
-			for ( ; propertyIter.hasNext() ; ) {
+			while (propertyIter.hasNext()) {
 				Statement stmt = propertyIter.next();
 				if (stmt.getPredicate().getURI().equals(TYPE_PRED) && stmt.getObject().isURIResource() &&
 						!stmt.getObject().asResource().getURI().equals(ShaclToJavaConstants.NAMED_INDIVIDUAL)) {
 					individualClassUri = stmt.getObject().asResource().getURI();
 				}
-				if (stmt.getPredicate().getURI().equals(ShaclToJavaConstants.LABEL_URI)) {
-					hasLabel = true;
+			}
+			OntClass individualClass = model.getOntClass(individualClassUri);
+			List<OntClass> superClasses = new ArrayList<>();
+			addAllSuperClasses(individualClass, superClasses);
+			boolean elementSubClass = false;
+			for (OntClass superClass : superClasses) {
+				if (superClass.getURI().endsWith("/Element")) {
+					elementSubClass = true;
+					break;
 				}
 			}
-			if (hasLabel && Objects.nonNull(individualClassUri)) {
-				// TODO: This is a bit of a hack, maybe there is a better way to see if this is a class
-				this.enumClassUris.add(individualClassUri);
-			} else {
+			if (elementSubClass) {
+				// TODO: This is a bit of a hack, maybe there is a better way to see if this is not an enum
 				List<String> individualsForRange = classUriToIndividualUris.get(individualClassUri);
 				if (Objects.isNull(individualsForRange)) {
 					individualsForRange = new ArrayList<>();
 					classUriToIndividualUris.put(individualClassUri, individualsForRange);
 				}
 				individualsForRange.add(individual.getURI());
+			} else {
+				this.enumClassUris.add(individualClassUri);
 			}
 		}
 		
