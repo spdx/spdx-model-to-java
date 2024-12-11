@@ -44,7 +44,7 @@ import org.apache.jena.rdf.model.StmtIterator;
 import org.apache.commons.text.StringEscapeUtils;
 import org.apache.jena.graph.Node;
 import org.apache.jena.shacl.Shapes;
-import org.apache.jena.shacl.engine.constraint.ClassConstraint;
+import org.apache.jena.shacl.engine.constraint.HasValueConstraint;
 import org.apache.jena.shacl.engine.constraint.ShNot;
 import org.apache.jena.shacl.engine.constraint.SparqlConstraint;
 import org.apache.jena.shacl.parser.Constraint;
@@ -56,6 +56,8 @@ import org.apache.jena.sparql.syntax.ElementGroup;
 import com.github.mustachejava.DefaultMustacheFactory;
 import com.github.mustachejava.Mustache;
 
+import static org.spdx.tools.model2java.ShaclToJavaConstants.TYPE_PRED;
+
 /**
  * Generates Java source class files for the SPDX Java Library from the RDF Owl Document generated from the spec model
  * 
@@ -64,10 +66,10 @@ import com.github.mustachejava.Mustache;
  */
 public class ShaclToJava {
 	
-	OntModel model = null;
-	Shapes shapes = null;
-	Map<Node, Shape> shapeMap = null;
-	
+	OntModel model;
+	Shapes shapes;
+	Map<Node, Shape> shapeMap;
+
 	Set<String> enumClassUris = new HashSet<>(); // Set of enum URI's
 	Map<String, List<String>> classUriToIndividualUris = new HashMap<>(); // set of all non-enum individual URI's
 	Set<String> propertyUrisForConstants = new HashSet<>(); // Map of property URI's to be included in the SPDX Constants file
@@ -136,10 +138,10 @@ public class ShaclToJava {
 		allObjectProperties = model.listObjectProperties().toList();
 		objectIndividuals = new ArrayList<>();
 		Query asIndividualQuery = QueryFactory.create(String.format(
-				"select ?oi where {?oi <%s> <%s>}", ShaclToJavaConstants.TYPE_PRED, ShaclToJavaConstants.NAMED_INDIVIDUAL));
+				"select ?oi where {?oi <%s> <%s>}", TYPE_PRED, ShaclToJavaConstants.NAMED_INDIVIDUAL));
 		try (QueryExecution qexec = QueryExecutionFactory.create(asIndividualQuery, model)) {
 			ResultSet results = qexec.execSelect();
-			for ( ; results.hasNext() ; ) {
+			while (results.hasNext()) {
 				QuerySolution soln = results.nextSolution();
 				objectIndividuals.add(soln.getResource("oi"));
 			}
@@ -583,7 +585,6 @@ public class ShaclToJava {
 	/**
 	 * Generates the SPDX Individual factory file
 	 * @param dir source directory for the factory file
-	 * @param individualMustacheMaps list of mustache maps for the individual vocabulariess
 	 * @throws IOException thrown if any IO errors occurs
 	 */
 	private void generateIndividualFactory(File dir) throws IOException {
@@ -810,29 +811,35 @@ public class ShaclToJava {
 	 */
 	private void collectTypeInformation() {
 		for (Resource individual:objectIndividuals) {
-			boolean hasLabel = false;
 			String individualClassUri = null;
 			StmtIterator propertyIter = individual.listProperties();
-			for ( ; propertyIter.hasNext() ; ) {
+			while (propertyIter.hasNext()) {
 				Statement stmt = propertyIter.next();
-				if (stmt.getPredicate().getURI().equals(ShaclToJavaConstants.TYPE_PRED) && stmt.getObject().isURIResource() &&
+				if (stmt.getPredicate().getURI().equals(TYPE_PRED) && stmt.getObject().isURIResource() &&
 						!stmt.getObject().asResource().getURI().equals(ShaclToJavaConstants.NAMED_INDIVIDUAL)) {
 					individualClassUri = stmt.getObject().asResource().getURI();
 				}
-				if (stmt.getPredicate().getURI().equals(ShaclToJavaConstants.LABEL_URI)) {
-					hasLabel = true;
+			}
+			OntClass individualClass = model.getOntClass(individualClassUri);
+			List<OntClass> superClasses = new ArrayList<>();
+			addAllSuperClasses(individualClass, superClasses);
+			boolean elementSubClass = false;
+			for (OntClass superClass : superClasses) {
+				if (superClass.getURI().endsWith("/Element")) {
+					elementSubClass = true;
+					break;
 				}
 			}
-			if (hasLabel && Objects.nonNull(individualClassUri)) {
-				// TODO: This is a bit of a hack, maybe there is a better way to see if this is a class
-				this.enumClassUris.add(individualClassUri);
-			} else {
+			if (elementSubClass) {
+				// TODO: This is a bit of a hack, maybe there is a better way to see if this is not an enum
 				List<String> individualsForRange = classUriToIndividualUris.get(individualClassUri);
 				if (Objects.isNull(individualsForRange)) {
 					individualsForRange = new ArrayList<>();
 					classUriToIndividualUris.put(individualClassUri, individualsForRange);
 				}
 				individualsForRange.add(individual.getURI());
+			} else {
+				this.enumClassUris.add(individualClassUri);
 			}
 		}
 		
@@ -897,7 +904,7 @@ public class ShaclToJava {
 	 * @param classTypeRestriction class restriction if any
 	 * @param dataTypeRestriction data restriction if any
 	 * @param minRestriction minimum cardinality restriction if any
-	 * @param maxRextriction maximum cardinality restriction if any
+	 * @param maxRestriction maximum cardinality restriction if any
 	 * @return the property type based on the range and restrictions
 	 * @throws ShaclToJavaException 
 	 */
@@ -1402,15 +1409,20 @@ public class ShaclToJava {
 		}
 		Shape classShape = shapeMap.get(ontClass.asNode());
 		if (Objects.nonNull(classShape)) {
-			for (Constraint constraint:classShape.getConstraints()) {
-				ConstraintCollector collector = new ConstraintCollector();
-				constraint.visit(collector);
-				ShNot notConstraint = collector.getNotConstraint();
-				if (Objects.nonNull(notConstraint) && Objects.nonNull(notConstraint.getOther())) {
-					for (Constraint otherConstraint:notConstraint.getOther().getConstraints()) {
-						if (Objects.nonNull(otherConstraint) && otherConstraint instanceof ClassConstraint &&
-								ontClass.getURI().equals(((ClassConstraint)otherConstraint).getExpectedClass().getURI())) {
-							return true;
+			for (PropertyShape propertyShape : classShape.getPropertyShapes()) {
+				String propertyUri = propertyShape.getPath().toString().replaceAll("<", "").replaceAll(">", "");
+				if (TYPE_PRED.equals(propertyUri)) {
+					for (Constraint constraint : propertyShape.getConstraints()) {
+						ConstraintCollector collector = new ConstraintCollector();
+						constraint.visit(collector);
+						ShNot notConstraint = collector.getNotConstraint();
+						if (Objects.nonNull(notConstraint) && Objects.nonNull(notConstraint.getOther())) {
+							for (Constraint otherConstraint : notConstraint.getOther().getConstraints()) {
+								if (Objects.nonNull(otherConstraint) && otherConstraint instanceof HasValueConstraint &&
+										ontClass.getURI().equals(((HasValueConstraint) otherConstraint).getValue().getURI())) {
+									return true;
+								}
+							}
 						}
 					}
 				}
@@ -1422,21 +1434,21 @@ public class ShaclToJava {
 	/**
 	 * @param propertyShapes direct ontology properties
 	 * @param classShape Shape for the class containing the properties
-	 * @param requiredImport set of required imports for this class - updated with any additional imports
+	 * @param requiredImports set of required imports for this class - updated with any additional imports
 	 * @param propertyUrisForConstants set of URI's for any properties - updated with any additional values
 	 * @param classUri URI for the class containing the properties
 	 * @param superClasses all superclasses for the class
 	 * @return map of mustache strings to properties for any properties returning a type of Element
-	 * @throws ShaclToJavaException 
+	 * @throws ShaclToJavaException
 	 */
-	private Map<PropertyType, List<Map<String, Object>>> findProperties(List<PropertyShape> propertyShapes, Shape classShape, 
+	private Map<PropertyType, List<Map<String, Object>>> findProperties(List<PropertyShape> propertyShapes, Shape classShape,
 			Set<String> requiredImports, Set<String> propertyUrisForConstants, String classUri, List<OntClass> superClasses) throws ShaclToJavaException {
 		Map<PropertyType, List<Map<String, Object>>> retval = new HashMap<>();
 		for (PropertyType value:PropertyType.values()) {
 			retval.put(value, new ArrayList<Map<String, Object>>());
 		}
 		for (PropertyShape propertyShape:propertyShapes) {
-			if (!Objects.isNull(propertyShape)) {
+			if (!Objects.isNull(propertyShape) && propertyShape.getPath().toString().contains("/terms")) {
 				Map<String, Object> mustacheMap = propertyToMustachMap(propertyShape, requiredImports, 
 						propertyUrisForConstants, classUri, superClasses);
 				retval.get(mustacheMap.get("propertyType")).add(mustacheMap);
@@ -1447,8 +1459,7 @@ public class ShaclToJava {
 
 	/**
 	 * Maps a property to mustache map adding any required import strings and adding any required constant strings
-	 * @param classShape Shape of the class using the property
-	 * @param requiredImport set of required imports for this class - updated with any additional imports
+	 * @param requiredImports set of required imports for this class - updated with any additional imports
 	 * @param propertyUrisForConstants set of URI's for any properties - updated with any additional values
 	 * @param classUri URI of the class using the property
 	 * @param superClasses all superclasses for the class
@@ -1715,7 +1726,7 @@ public class ShaclToJava {
 	
 	/**
 	 * @param superClassUri URI for the superclass
-	 * @param requiredImport set of required imports - updated if the superClass adds a new import statement
+	 * @param requiredImports set of required imports - updated if the superClass adds a new import statement
 	 * @param classUri the URI for the class with the superClass
 	 * @return superClass for the class
 	 */
