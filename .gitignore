@@ -17,3 +17,5 @@ buildNumber.properties
 .classpath
 # Eclipse files
 .settings
+# IntelliJ settings
+.idea/
