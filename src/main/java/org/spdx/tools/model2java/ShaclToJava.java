@@ -656,7 +656,19 @@ public class ShaclToJava {
 				String propertyName = uriToPropertyName.get(propUri);
 				String propertyConstantName = propertyNameToPropertyConstant(propertyName, namespaceName);
 				propMustacheMap.put("propertyConstantName", propertyConstantName);
-				propMustacheMap.put("propertyConstantValue", propertyName);
+				String uriPropName = null;
+				if (RESERVED_JAVA_WORDS.containsValue(propertyName)) {
+					for (Entry<String, String> entry:RESERVED_JAVA_WORDS.entrySet()) {
+						if (entry.getValue().equals(propertyName)) {
+							uriPropName = entry.getKey();
+							break;
+						}
+					}
+				}
+				if (Objects.isNull(uriPropName)) {
+					uriPropName = propertyName;;
+				}
+				propMustacheMap.put("propertyConstantValue", uriPropName);
 				propMustacheList.add(propMustacheMap);
 			}
 			namespaceMustacheMap.put("propertyDescriptors", propMustacheList);
