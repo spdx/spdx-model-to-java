@@ -279,6 +279,18 @@ public class TestValuesGenerator {
 				return this;
 			}
 			{{/integerProperties}}
+			{{#doubleProperties}}
+
+			/**
+			 * Sets the initial value of {{{propertyName}}}
+			 * @parameter {{{propertyName}}} value to set
+			 * @return this for chaining
+			**/
+			public Mock{{{className}}}Builder {{{setter}}}({{{type}}} {{{propertyName}}}) {
+				{{#superSetter}}super.{{/superSetter}}{{^superSetter}}this.{{/superSetter}}{{{propertyName}}} = {{{propertyName}}};
+				return this;
+			}
+			{{/doubleProperties}}
 			{{#stringProperties}}
 			
 			/**
@@ -299,6 +311,9 @@ public class TestValuesGenerator {
 	{{#integerProperties}}
 	public static final Integer {{{propertyNameUpper}}}_TEST_VALUE = 55;
 	{{/integerProperties}}
+	{{#doubleProperties}}
+	public static final Double {{{propertyNameUpper}}}_TEST_VALUE = 55.1;
+	{{/doubleProperties}}
 	{{#stringProperties}}
 	{{^pattern}}
 	public static final String {{{propertyNameUpper}}}_TEST_VALUE = "test {{{propertyName}}}";
@@ -366,6 +381,9 @@ public class TestValuesGenerator {
 				{{#integerProperties}}
 				.{{{setter}}}({{{propertyNameUpper}}}_TEST_VALUE)
 				{{/integerProperties}}
+				{{#doubleProperties}}
+				.{{{setter}}}({{{propertyNameUpper}}}_TEST_VALUE)
+				{{/doubleProperties}}
 				{{#stringProperties}}
 				.{{{setter}}}({{{propertyNameUpper}}}_TEST_VALUE)
 				{{/stringProperties}}

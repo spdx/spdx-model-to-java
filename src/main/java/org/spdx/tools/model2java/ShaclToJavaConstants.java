@@ -85,8 +85,13 @@ public class ShaclToJavaConstants {
 		INTEGER_TYPES.add("http://www.w3.org/2001/XMLSchema#unsignedInt");
 		INTEGER_TYPES.add("http://www.w3.org/2001/XMLSchema#unsignedShort");
 		INTEGER_TYPES.add("http://www.w3.org/2001/XMLSchema#unsignedByte");
-		INTEGER_TYPES.add("http://www.w3.org/2001/XMLSchema#decimal");
 	}
+
+	public static Set<String> DOUBLE_TYPES = new HashSet<>();
+	static {
+		DOUBLE_TYPES.add("http://www.w3.org/2001/XMLSchema#decimal");
+	}
+
 	
 	public static Map<String, String> RESERVED_JAVA_WORDS = new HashMap<>();
 	static {

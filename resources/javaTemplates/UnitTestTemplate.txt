@@ -255,6 +255,28 @@ public class {{{className}}}Test extends TestCase {
 		{{/nonOptional}}
 	}
 	{{/integerProperties}}
+	{{#doubleProperties}}
+
+	/**
+	 * Test method for {@link {{{pkgName}}}.{{{className}}}#{{{setter}}}}.
+	 */
+	public void test{{{className}}}{{{setter}}}() throws InvalidSPDXAnalysisException {
+		{{{className}}} test{{{className}}} = generator.builderFor{{{className}}}Tests(TEST_OBJECT_URI).build();
+		{{#nonOptional}}
+		assertEquals(TestValuesGenerator.{{{propertyNameUpper}}}_TEST_VALUE, test{{{className}}}.{{{getter}}}());
+		{{/nonOptional}}
+		{{^nonOptional}}
+		assertEquals(Optional.of(TestValuesGenerator.{{{propertyNameUpper}}}_TEST_VALUE), test{{{className}}}.{{{getter}}}());
+		{{/nonOptional}}
+		test{{{className}}}.{{{setter}}}(new Double(653.6));
+		{{#nonOptional}}
+		assertEquals(new Double(653.6), test{{{className}}}.{{{getter}}}());
+		{{/nonOptional}}
+		{{^nonOptional}}
+		assertEquals(Optional.of(new Double(653.6)), test{{{className}}}.{{{getter}}}());
+		{{/nonOptional}}
+	}
+	{{/doubleProperties}}
 	{{#stringProperties}}
 	
 	/**
@@ -353,6 +375,8 @@ public class {{{className}}}Test extends TestCase {
 	{{/booleanProperties}}
 	{{#integerProperties}}
 	{{/integerProperties}}
+	{{#doubleProperties}}
+	{{/doubleProperties}}
 	{{#stringProperties}}
 	{{/stringProperties}}
 	{{#objectPropertyValueCollection}}

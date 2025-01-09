@@ -16,7 +16,6 @@ import java.util.Objects;
 import org.apache.jena.ontology.OntModel;
 import org.apache.jena.ontology.OntModelSpec;
 import org.apache.jena.rdf.model.ModelFactory;
-import org.apache.ws.commons.schema.XmlSchemaSerializer.XmlSchemaSerializerException;
 
 import junit.framework.TestCase;
 
@@ -36,11 +35,11 @@ public class ShaclToJavaTest extends TestCase {
 		super.tearDown();
 	}
 	
-	public void testConvertToJava() throws IOException, XmlSchemaSerializerException, ShaclToJavaException {
-		ShaclToJava otj = null;
+	public void testConvertToJava() throws IOException, ShaclToJavaException {
+		ShaclToJava otj;
 		File tempDir = Files.createTempDirectory("spdx_test").toFile();
 		try {
-			try (InputStream is = new FileInputStream(new File(MODEL_FILE_PATH))) {
+			try (InputStream is = new FileInputStream(MODEL_FILE_PATH)) {
 				OntModel model = ModelFactory.createOntologyModel(OntModelSpec.OWL_MEM);
 				model.read(is, "", "Turtle");
 				otj = new ShaclToJava(model);
@@ -68,7 +67,7 @@ public class ShaclToJavaTest extends TestCase {
 	}
 
 	/**
-	 * @param tempDir
+	 * @param tempDir directory to delete
 	 */
 	private boolean deleteDirectory(File tempDir) {
 		File[] files = tempDir.listFiles();
