@@ -56,6 +56,7 @@ import org.apache.jena.sparql.syntax.ElementGroup;
 import com.github.mustachejava.DefaultMustacheFactory;
 import com.github.mustachejava.Mustache;
 
+import static org.spdx.tools.model2java.ShaclToJavaConstants.RESERVED_JAVA_WORDS;
 import static org.spdx.tools.model2java.ShaclToJavaConstants.TYPE_PRED;
 
 /**
@@ -96,6 +97,7 @@ public class ShaclToJava {
 		ENUM,
 		BOOLEAN,
 		INTEGER,
+		DOUBLE,
 		STRING,
 		OBJECT_COLLECTION,
 		STRING_COLLECTION,
@@ -164,7 +166,8 @@ public class ShaclToJava {
 		String name = uriToName(uri);
 		if (uri.equals(nameUriMap.get(name))) {
 			return; // already there
-		} else if (nameUriMap.containsKey(name)) {
+		}
+		if (nameUriMap.containsKey(name)) {
 			String profile = uriToProfile(uri);
 			if ("Core".equalsIgnoreCase(profile)) {
 				// replace the existing short name
@@ -242,10 +245,6 @@ public class ShaclToJava {
 					propertyShapes.put(ps.getPath().toString(), ps);
 				}
 			}
-			List<OntClass> subClasses = new ArrayList<>();
-			ontClass.listSubClasses().forEach(oc -> {
-				subClasses.add(oc);
-			});
 			List<OntClass> superClasses = new ArrayList<>();
 			if (elementTypes.contains(classUri) ||
 					licenseAdditionTypes.contains(classUri) ||
@@ -343,7 +342,7 @@ public class ShaclToJava {
 	 */
 	private void generateTestValueGenerator(File dir,
 			Map<PropertyType, Map<String, Map<String, Object>>> allPropertiesInUse,
-			Map<String, Map<String, Object>> unitTestMaps) throws IOException {
+			Map<String, Map<String, Object>> unitTestMaps) throws IOException, ShaclToJavaException {
 		Map<String, Object> mustacheMap = new HashMap<>();
 		mustacheMap.put("versionSuffix", versionSuffix);
 		mustacheMap.put("versionSemVer", versionSemVer);
@@ -364,7 +363,7 @@ public class ShaclToJava {
 					requiredImports.add("import "+uriToPkg(typeUri) + "." + uriToClassName.get(typeUri) +";");
 				}
 			}
-			String propTypeStr = "";
+			String propTypeStr;
 			switch (entry.getKey()) {
 				case ELEMENT: propTypeStr = "elementProperties"; break;
 				case OBJECT: propTypeStr = "objectProperties"; break;
@@ -374,6 +373,7 @@ public class ShaclToJava {
 				case ENUM: propTypeStr = "enumerationProperties"; break;
 				case BOOLEAN: propTypeStr = "booleanProperties"; break;
 				case INTEGER: propTypeStr = "integerProperties"; break;
+				case DOUBLE: propTypeStr = "doubleProperties"; break;
 				case STRING: propTypeStr = "stringProperties"; break;
 				case OBJECT_COLLECTION: propTypeStr = "objectPropertyValueCollection"; break;
 				case STRING_COLLECTION: propTypeStr = "stringCollection"; break;
@@ -410,21 +410,23 @@ public class ShaclToJava {
 		requiredImports.add("import java.util.Collection;");
 		requiredImports.add("import java.util.Map;");
 		requiredImports.add("import java.util.HashMap;");
-		List<String> importList = new ArrayList<String>(requiredImports);
+		List<String> importList = new ArrayList<>(requiredImports);
 		Collections.sort(importList);
 		mustacheMap.put("imports", importList);
 		Path path = dir.toPath().resolve("src").resolve("test").resolve("java").resolve("org")
 				.resolve("spdx").resolve("library").resolve("model").resolve(versionSuffix);
 		Files.createDirectories(path);
 		File testValuesGeneratorFile = path.resolve("TestValuesGenerator.java").toFile();
-		testValuesGeneratorFile.createNewFile();
+		if (!testValuesGeneratorFile.createNewFile()) {
+			throw new ShaclToJavaException("Could not create test values generator file");
+		}
 		writeMustacheFile(ShaclToJavaConstants.TEST_VALUES_GENERATOR_TEMPLATE, testValuesGeneratorFile, mustacheMap);
 	}
 
 	/**
 	 * Generates the test mock files
-	 * @param dir
-	 * @throws IOException 
+	 * @param dir Directory for the mock files
+	 * @throws IOException on I/O Error
 	 */
 	private void generateMockFiles(File dir) throws IOException {
 		Path path = dir.toPath().resolve("src").resolve("test").resolve("java").resolve("org")
@@ -921,7 +923,9 @@ public class ShaclToJava {
 			return PropertyType.BOOLEAN;
 		} else if  (ShaclToJavaConstants.INTEGER_TYPES.contains(typeUri)) {
 			return PropertyType.INTEGER;
-		} else if  (ShaclToJavaConstants.STRING_TYPE.equals(typeUri) || ShaclToJavaConstants.DATE_TIME_TYPE.equals(typeUri) ||
+		} else if (ShaclToJavaConstants.DOUBLE_TYPES.contains(typeUri)) {
+			return PropertyType.DOUBLE;
+		}else if  (ShaclToJavaConstants.STRING_TYPE.equals(typeUri) || ShaclToJavaConstants.DATE_TIME_TYPE.equals(typeUri) ||
 				ShaclToJavaConstants.ANY_URI_TYPE.equals(typeUri) || stringTypes.contains(typeUri)) {
 			if (Objects.isNull(maxRestriction) || maxRestriction > 1) {
 				return PropertyType.STRING_COLLECTION;
@@ -1113,6 +1117,7 @@ public class ShaclToJava {
 		javaClassMap.put("enumerationProperties", propertyMap.get(PropertyType.ENUM));
 		javaClassMap.put("booleanProperties", propertyMap.get(PropertyType.BOOLEAN));
 		javaClassMap.put("integerProperties", propertyMap.get(PropertyType.INTEGER));
+		javaClassMap.put("doubleProperties", propertyMap.get(PropertyType.DOUBLE));
 		javaClassMap.put("stringProperties", propertyMap.get(PropertyType.STRING));
 		javaClassMap.put("objectPropertyValueCollection", propertyMap.get(PropertyType.OBJECT_COLLECTION));
 		javaClassMap.put("stringCollection", propertyMap.get(PropertyType.STRING_COLLECTION));
@@ -1376,6 +1381,7 @@ public class ShaclToJava {
 		mustacheMap.put("enumerationProperties", propertyMap.get(PropertyType.ENUM));
 		mustacheMap.put("booleanProperties", propertyMap.get(PropertyType.BOOLEAN));
 		mustacheMap.put("integerProperties", propertyMap.get(PropertyType.INTEGER));
+		mustacheMap.put("doubleProperties", propertyMap.get(PropertyType.DOUBLE));
 		mustacheMap.put("stringProperties", propertyMap.get(PropertyType.STRING));
 		mustacheMap.put("objectPropertyValueCollection", propertyMap.get(PropertyType.OBJECT_COLLECTION));
 		mustacheMap.put("stringCollection", propertyMap.get(PropertyType.STRING_COLLECTION));
@@ -1546,6 +1552,8 @@ public class ShaclToJava {
 			type = "String";
 		} else if (ShaclToJavaConstants.INTEGER_TYPES.contains(typeUri)) {
 			type = "Integer";
+		} else if (ShaclToJavaConstants.DOUBLE_TYPES.contains(typeUri)) {
+			type = "Double";
 		} else {
 			type = uriToClassName.get(typeUri);
 			if (!typeUri.startsWith(nameSpace) && 

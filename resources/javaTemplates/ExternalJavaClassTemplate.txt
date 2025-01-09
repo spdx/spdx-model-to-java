@@ -337,6 +337,33 @@ public class External{{{className}}} extends {{{className}}}  implements Individ
 		throw new InvalidSPDXAnalysisException("External elements can not set properties");
 	}
 	{{/integerProperties}}
+	{{#doubleProperties}}
+    {{#nonOptional}}
+    /**
+     * @return the {{{propertyName}}}
+     */
+    public @Nullable Double {{{getter}}}() throws InvalidSPDXAnalysisException {
+        return null;
+    }
+    {{/nonOptional}}
+    {{^nonOptional}}
+    /**
+     * @return the {{{propertyName}}}
+     */
+    public Optional<{{{type}}}> {{{getter}}}() throws InvalidSPDXAnalysisException {
+        return Optional.empty();
+    }
+    {{/nonOptional}}
+
+    /**
+     * @param {{{propertyName}}} the {{{propertyName}}} to set
+     * @return this to chain setters
+     * @throws InvalidSPDXAnalysisException
+     */
+    public {{{className}}} {{{setter}}}(@Nullable {{{type}}} {{{propertyName}}}) throws InvalidSPDXAnalysisException {
+        throw new InvalidSPDXAnalysisException("External elements can not set properties");
+    }
+    {{/doubleProperties}}
 	{{#stringProperties}}
 	{{#nonOptional}}
 	/**

@@ -261,6 +261,18 @@ public {{#abstract}}abstract{{/abstract}} class {{{className}}} extends {{{super
 		{{/nonOptional}}
 		{{/superSetter}}
 		{{/integerProperties}}
+		{{#doubleProperties}}
+		{{^superSetter}}
+		{{#nonOptional}}
+		if (Objects.nonNull(builder.{{{propertyName}}})) {
+			{{{setter}}}(builder.{{{propertyName}}});
+		}
+		{{/nonOptional}}
+		{{^nonOptional}}
+		{{{setter}}}(builder.{{{propertyName}}});
+		{{/nonOptional}}
+		{{/superSetter}}
+		{{/doubleProperties}}
 		{{#stringProperties}}
 		{{^superSetter}}
 		{{#nonOptional}}
@@ -753,6 +765,67 @@ public {{#abstract}}abstract{{/abstract}} class {{{className}}} extends {{{super
 	}	
 	{{/superSetter}}
 	{{/integerProperties}}
+	{{#doubleProperties}}
+	{{^superSetter}}
+	{{#nonOptional}}
+	/**
+	 * @return the {{{propertyName}}}
+	 */
+	public @Nullable Double {{{getter}}}() throws InvalidSPDXAnalysisException {
+		Optional<Double> retval = getDoublePropertyValue(SpdxConstantsV3.{{{propertyConstant}}});
+		return retval.isPresent() ? retval.get() : null;
+	}
+	{{/nonOptional}}
+	{{^nonOptional}}
+	/**
+	 * @return the {{{propertyName}}}
+	 */
+	public Optional<{{{type}}}> {{{getter}}}() throws InvalidSPDXAnalysisException {
+		return getDoublePropertyValue(SpdxConstantsV3.{{{propertyConstant}}});
+	}
+	{{/nonOptional}}
+
+	/**
+	 * @param {{{propertyName}}} the {{{propertyName}}} to set
+	 * @return this to chain setters
+	 * @throws InvalidSPDXAnalysisException
+	 */
+	public {{{className}}} {{{setter}}}(@Nullable {{{type}}} {{{propertyName}}}) throws InvalidSPDXAnalysisException {
+		{{#required}}
+		if (isStrict() && Objects.isNull({{{propertyName}}})) {
+			throw new InvalidSPDXAnalysisException("{{{propertyName}}} is a required property");
+		}
+		{{/required}}
+		{{#min}}
+		if (isStrict() && Objects.nonNull({{{propertyName}}}) && {{{propertyName}}} < {{{min}}}) {
+			throw new InvalidSPDXAnalysisException("{{{propertyName}}} value " + {{{propertyName}}} + " is less than the minimum {{{min}}} in {{{className}}}");
+		}
+		{{/min}}
+		{{#max}}
+		if (isStrict() && Objects.nonNull({{{propertyName}}}) && {{{propertyName}}} > {{{max}}}) {
+			throw new InvalidSPDXAnalysisException("{{{propertyName}}} value " + {{{propertyName}}} + " is greater than the maximum {{{max}}} in {{{className}}}");
+		}
+		{{/max}}
+		{{#superSetter}}
+		super.{{{setter}}}({{{propertyName}}});
+		{{/superSetter}}
+		setPropertyValue(SpdxConstantsV3.{{{propertyConstant}}}, {{{propertyName}}});
+		return this;
+	}
+	{{/superSetter}}
+	{{#superSetter}}
+	/**
+	 * @param {{{propertyName}}} the {{{propertyName}}} to set
+	 * @return this to chain setters
+	 * @throws InvalidSPDXAnalysisException
+	 */
+	@Override
+	public {{{className}}} {{{setter}}}(@Nullable {{{type}}} {{{propertyName}}}) throws InvalidSPDXAnalysisException {
+		super.{{{setter}}}({{{propertyName}}});
+		return this;
+	}
+	{{/superSetter}}
+	{{/doubleProperties}}
 	{{#stringProperties}}
 	{{^superSetter}}
 	{{#nonOptional}}
@@ -1111,6 +1184,58 @@ public {{#abstract}}abstract{{/abstract}} class {{{className}}} extends {{{super
 		}
 		{{/superSetter}}
 		{{/integerProperties}}
+		{{#doubleProperties}}
+		{{^superSetter}}
+		try {
+			{{#nonOptional}}
+			{{^hasConstraint}}
+			@SuppressWarnings("unused")
+			{{/hasConstraint}}
+			{{{type}}} {{{propertyName}}} = {{{getter}}}();
+			{{#required}}
+			if (Objects.isNull({{{propertyName}}}) &&
+					Collections.disjoint(profiles, Arrays.asList(new ProfileIdentifierType[] { {{{requiredProfiles}}} }))) {
+				retval.add("Missing {{{propertyName}}} in {{{className}}}");
+			}
+			{{/required}}
+			{{#min}}
+			if (Objects.nonNull({{{propertyName}}}) && {{{propertyName}}} < {{{min}}}) {
+				retval.add("{{{propertyName}}} value " + {{{propertyName}}} + " is less than the minimum {{{min}}} in {{{className}}}");
+			}
+			{{/min}}
+			{{#max}}
+			if (Objects.nonNull({{{propertyName}}}) && {{{propertyName}}} > {{{max}}}) {
+				retval.add("{{{propertyName}}} value " + {{{propertyName}}} + " is greater than the maximum {{{max}}} in {{{className}}}");
+			}
+			{{/max}}
+			{{/nonOptional}}
+			{{^nonOptional}}
+			{{^hasConstraint}}
+			@SuppressWarnings("unused")
+			{{/hasConstraint}}
+			Optional<{{{type}}}> {{{propertyName}}} = {{{getter}}}();
+			{{#required}}
+			if (!{{{propertyName}}}.isPresent() &&
+					Collections.disjoint(profiles, Arrays.asList(new ProfileIdentifierType[] { {{{requiredProfiles}}} }))) {
+				retval.add("Missing {{{propertyName}}} in {{{className}}}");
+			}
+			{{/required}}
+			{{#min}}
+			if ({{{propertyName}}}.isPresent() && {{{propertyName}}}.get() < {{{min}}}) {
+				retval.add("{{{propertyName}}} value " + {{{propertyName}}}.get() + " is less than the minimum {{{min}}} in {{{className}}}");
+			}
+			{{/min}}
+			{{#max}}
+			if ({{{propertyName}}}.isPresent() && {{{propertyName}}}.get() > {{{max}}}) {
+				retval.add("{{{propertyName}}} value " + {{{propertyName}}}.get() + " is greater than the maximum {{{max}}} in {{{className}}}");
+			}
+			{{/max}}
+			{{/nonOptional}}
+		} catch (InvalidSPDXAnalysisException e) {
+			retval.add("Error getting {{{propertyName}}} for {{{className}}}: "+e.getMessage());
+		}
+		{{/superSetter}}
+		{{/doubleProperties}}
 		{{#stringProperties}}
 		{{^superSetter}}
 		try {
@@ -1330,6 +1455,11 @@ public {{#abstract}}abstract{{/abstract}} class {{{className}}} extends {{{super
 		protected Integer {{{propertyName}}} = null;
 		{{/superSetter}}
 		{{/integerProperties}}
+		{{#doubleProperties}}
+		{{^superSetter}}
+		protected Double {{{propertyName}}} = null;
+		{{/superSetter}}
+		{{/doubleProperties}}
 		{{#stringProperties}}
 		{{^superSetter}}
 		protected String {{{propertyName}}} = null;
@@ -1536,6 +1666,18 @@ public {{#abstract}}abstract{{/abstract}} class {{{className}}} extends {{{super
 			return this;
 		}
 		{{/integerProperties}}
+		{{#doubleProperties}}
+
+		/**
+		 * Sets the initial value of {{{propertyName}}}
+		 * @parameter {{{propertyName}}} value to set
+		 * @return this for chaining
+		**/
+		public {{{className}}}Builder {{{setter}}}({{{type}}} {{{propertyName}}}) {
+			{{#superSetter}}super.{{/superSetter}}{{^superSetter}}this.{{/superSetter}}{{{propertyName}}} = {{{propertyName}}};
+			return this;
+		}
+		{{/doubleProperties}}
 		{{#stringProperties}}
 		
 		/**

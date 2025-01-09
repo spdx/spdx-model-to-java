@@ -286,6 +286,33 @@ public class {{{className}}} extends {{{superClass}}} implements IndividualUriVa
 		throw new InvalidSPDXAnalysisException("Can not set or modify a property of an Individual type");
 	}
 	{{/integerProperties}}
+    {{#doubleProperties}}
+	{{#nonOptional}}
+	/**
+	 * @return the {{{propertyName}}}
+	 */
+	public @Nullable Double {{{getter}}}() throws InvalidSPDXAnalysisException {
+		return null;
+	}
+	{{/nonOptional}}
+	{{^nonOptional}}
+	/**
+	 * @return the {{{propertyName}}}
+	 */
+	public Optional<{{{type}}}> {{{getter}}}() throws InvalidSPDXAnalysisException {
+		return Optional.empty();
+	}
+	{{/nonOptional}}
+
+	/**
+	 * @param {{{propertyName}}} the {{{propertyName}}} to set
+	 * @return this to chain setters
+	 * @throws InvalidSPDXAnalysisException
+	 */
+	public {{{className}}} {{{setter}}}(@Nullable {{{type}}} {{{propertyName}}}) throws InvalidSPDXAnalysisException {
+		throw new InvalidSPDXAnalysisException("Can not set or modify a property of an Individual type");
+	}
+	{{/doubleProperties}}
 	{{#stringProperties}}
 	{{#nonOptional}}
 	/**
