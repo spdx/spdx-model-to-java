@@ -1143,7 +1143,7 @@ public class ShaclToJava {
 		javaClassMap.put("classComments", toClassComment(comment));
 		String superClass = getSuperClass(superClassUri, requiredImports, classUri);
 		javaClassMap.put("superClass", superClass);
-		javaClassMap.put("verifySuperclass", superClass != "ModelObjectV3");
+		javaClassMap.put("verifySuperclass", !superClass.equals("ModelObjectV3"));
 		if (!this.uriToNamespaceUri(classUri).endsWith("Core")) {
 			requiredImports.add("import org.spdx.library.model."+versionSuffix+".core.ProfileIdentifierType;");
 		}
