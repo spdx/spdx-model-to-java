@@ -83,7 +83,7 @@ public class TestValuesGenerator {
 			{{#objectPropertyValueCollection}}	
 			/**
 			 * Adds a {{{propertyName}}} to the initial collection
-			 * @parameter {{{propertyName}}} {{{propertyName}}} to add
+			 * @param {{{propertyName}}} {{{propertyName}}} to add
 			 * @return this for chaining
 			**/
 			public Mock{{{className}}}Builder {{{adder}}}({{{type}}} {{{propertyName}}}) {
@@ -95,7 +95,7 @@ public class TestValuesGenerator {
 			
 			/**
 			 * Adds all elements from a collection to the initial {{{propertyName}}} collection
-			 * @parameter {{{propertyName}}}Collection collection to initialize the {{{propertyName}}}
+			 * @param {{{propertyName}}}Collection collection to initialize the {{{propertyName}}}
 			 * @return this for chaining
 			**/
 			public Mock{{{className}}}Builder {{{addAller}}}(Collection<{{{type}}}> {{{propertyName}}}Collection) {
@@ -109,7 +109,7 @@ public class TestValuesGenerator {
 			
 			/**
 			 * Adds a {{{propertyName}}} to the initial collection
-			 * @parameter {{{propertyName}}} {{{propertyName}}} to add
+			 * @param {{{propertyName}}} {{{propertyName}}} to add
 			 * @return this for chaining
 			**/
 			public Mock{{{className}}}Builder {{{adder}}}({{{type}}} {{{propertyName}}}) {
@@ -121,7 +121,7 @@ public class TestValuesGenerator {
 			
 			/**
 			 * Adds all elements from a collection to the initial {{{propertyName}}} collection
-			 * @parameter {{{propertyName}}}Collection collection to initialize the {{{propertyName}}}
+			 * @param {{{propertyName}}}Collection collection to initialize the {{{propertyName}}}
 			 * @return this for chaining
 			**/
 			public Mock{{{className}}}Builder {{{addAller}}}(Collection<{{{type}}}> {{{propertyName}}}Collection) {
@@ -135,7 +135,7 @@ public class TestValuesGenerator {
 			
 			/**
 			 * Adds a {{{propertyName}}} to the initial collection
-			 * @parameter {{{propertyName}}} {{{propertyName}}} to add
+			 * @param {{{propertyName}}} {{{propertyName}}} to add
 			 * @return this for chaining
 			**/
 			public Mock{{{className}}}Builder {{{adder}}}(String {{{propertyName}}}) {
@@ -147,7 +147,7 @@ public class TestValuesGenerator {
 			
 			/**
 			 * Adds all elements from a collection to the initial {{{propertyName}}} collection
-			 * @parameter {{{propertyName}}}Collection collection to initialize the {{{propertyName}}}
+			 * @param {{{propertyName}}}Collection collection to initialize the {{{propertyName}}}
 			 * @return this for chaining
 			**/
 			public Mock{{{className}}}Builder {{{addAller}}}(Collection<String> {{{propertyName}}}Collection) {
@@ -161,7 +161,7 @@ public class TestValuesGenerator {
 			
 			/**
 			 * Adds a {{{propertyName}}} to the initial collection
-			 * @parameter {{{propertyName}}} {{{propertyName}}} to add
+			 * @param {{{propertyName}}} {{{propertyName}}} to add
 			 * @return this for chaining
 			**/
 			public Mock{{{className}}}Builder {{{adder}}}({{{type}}} {{{propertyName}}}) {
@@ -173,7 +173,7 @@ public class TestValuesGenerator {
 			
 			/**
 			 * Adds all elements from a collection to the initial {{{propertyName}}} collection
-			 * @parameter {{{propertyName}}}Collection collection to initialize the {{{propertyName}}}
+			 * @param {{{propertyName}}}Collection collection to initialize the {{{propertyName}}}
 			 * @return this for chaining
 			**/
 			public Mock{{{className}}}Builder {{{addAller}}}(Set<{{{type}}}> {{{propertyName}}}Set) {
@@ -187,7 +187,7 @@ public class TestValuesGenerator {
 			
 			/**
 			 * Sets the initial value of {{{propertyName}}}
-			 * @parameter {{{propertyName}}} value to set
+			 * @param {{{propertyName}}} value to set
 			 * @return this for chaining
 			**/
 			public Mock{{{className}}}Builder {{{setter}}}({{{type}}} {{{propertyName}}}) {
@@ -199,7 +199,7 @@ public class TestValuesGenerator {
 			
 			/**
 			 * Sets the initial value of {{{propertyName}}}
-			 * @parameter {{{propertyName}}} value to set
+			 * @param {{{propertyName}}} value to set
 			 * @return this for chaining
 			**/
 			public Mock{{{className}}}Builder {{{setter}}}({{{type}}} {{{propertyName}}}) {
@@ -211,7 +211,7 @@ public class TestValuesGenerator {
 			
 			/**
 			 * Sets the initial value of {{{propertyName}}}
-			 * @parameter {{{propertyName}}} value to set
+			 * @param {{{propertyName}}} value to set
 			 * @return this for chaining
 			**/
 			public Mock{{{className}}}Builder {{{setter}}}({{{type}}} {{{propertyName}}}) {
@@ -223,7 +223,7 @@ public class TestValuesGenerator {
 			
 			/**
 			 * Sets the initial value of {{{propertyName}}}
-			 * @parameter {{{propertyName}}} value to set
+			 * @param {{{propertyName}}} value to set
 			 * @return this for chaining
 			**/
 			public Mock{{{className}}}Builder {{{setter}}}({{{type}}} {{{propertyName}}}) {
@@ -235,7 +235,7 @@ public class TestValuesGenerator {
 			
 			/**
 			 * Sets the initial value of {{{propertyName}}}
-			 * @parameter {{{propertyName}}} value to set
+			 * @param {{{propertyName}}} value to set
 			 * @return this for chaining
 			**/
 			public Mock{{{className}}}Builder {{{setter}}}({{{type}}} {{{propertyName}}}) {
@@ -247,7 +247,7 @@ public class TestValuesGenerator {
 			
 			/**
 			 * Sets the initial value of {{{propertyName}}}
-			 * @parameter {{{propertyName}}} value to set
+			 * @param {{{propertyName}}} value to set
 			 * @return this for chaining
 			**/
 			public Mock{{{className}}}Builder {{{setter}}}({{{type}}} {{{propertyName}}}) {
@@ -259,7 +259,7 @@ public class TestValuesGenerator {
 			
 			/**
 			 * Sets the initial value of {{{propertyName}}}
-			 * @parameter {{{propertyName}}} value to set
+			 * @param {{{propertyName}}} value to set
 			 * @return this for chaining
 			**/
 			public Mock{{{className}}}Builder {{{setter}}}({{{type}}} {{{propertyName}}}) {
@@ -271,7 +271,7 @@ public class TestValuesGenerator {
 			
 			/**
 			 * Sets the initial value of {{{propertyName}}}
-			 * @parameter {{{propertyName}}} value to set
+			 * @param {{{propertyName}}} value to set
 			 * @return this for chaining
 			**/
 			public Mock{{{className}}}Builder {{{setter}}}({{{type}}} {{{propertyName}}}) {
@@ -283,7 +283,7 @@ public class TestValuesGenerator {
 
 			/**
 			 * Sets the initial value of {{{propertyName}}}
-			 * @parameter {{{propertyName}}} value to set
+			 * @param {{{propertyName}}} value to set
 			 * @return this for chaining
 			**/
 			public Mock{{{className}}}Builder {{{setter}}}({{{type}}} {{{propertyName}}}) {
@@ -295,7 +295,7 @@ public class TestValuesGenerator {
 			
 			/**
 			 * Sets the initial value of {{{propertyName}}}
-			 * @parameter {{{propertyName}}} value to set
+			 * @param {{{propertyName}}} value to set
 			 * @return this for chaining
 			**/
 			public Mock{{{className}}}Builder {{{setter}}}(String {{{propertyName}}}) {

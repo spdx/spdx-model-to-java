@@ -1470,7 +1470,7 @@ public {{#abstract}}abstract{{/abstract}} class {{{className}}} extends {{{super
 		
 		/**
 		 * Adds a {{{propertyName}}} to the initial collection
-		 * @parameter {{{propertyName}}} {{{propertyName}}} to add
+		 * @param {{{propertyName}}} {{{propertyName}}} to add
 		 * @return this for chaining
 		**/
 		public {{{className}}}Builder {{{adder}}}({{{type}}} {{{propertyName}}}) {
@@ -1482,7 +1482,7 @@ public {{#abstract}}abstract{{/abstract}} class {{{className}}} extends {{{super
 		
 		/**
 		 * Adds all elements from a collection to the initial {{{propertyName}}} collection
-		 * @parameter {{{propertyName}}}Collection collection to initialize the {{{propertyName}}}
+		 * @param {{{propertyName}}}Collection collection to initialize the {{{propertyName}}}
 		 * @return this for chaining
 		**/
 		public {{{className}}}Builder {{{addAller}}}(Collection<{{{type}}}> {{{propertyName}}}Collection) {
@@ -1496,7 +1496,7 @@ public {{#abstract}}abstract{{/abstract}} class {{{className}}} extends {{{super
 		
 		/**
 		 * Adds a {{{propertyName}}} to the initial collection
-		 * @parameter {{{propertyName}}} {{{propertyName}}} to add
+		 * @param {{{propertyName}}} {{{propertyName}}} to add
 		 * @return this for chaining
 		**/
 		public {{{className}}}Builder {{{adder}}}({{{type}}} {{{propertyName}}}) {
@@ -1508,7 +1508,7 @@ public {{#abstract}}abstract{{/abstract}} class {{{className}}} extends {{{super
 		
 		/**
 		 * Adds all elements from a collection to the initial {{{propertyName}}} collection
-		 * @parameter {{{propertyName}}}Collection collection to initialize the {{{propertyName}}}
+		 * @param {{{propertyName}}}Collection collection to initialize the {{{propertyName}}}
 		 * @return this for chaining
 		**/
 		public {{{className}}}Builder {{{addAller}}}(Collection<{{{type}}}> {{{propertyName}}}Collection) {
@@ -1522,7 +1522,7 @@ public {{#abstract}}abstract{{/abstract}} class {{{className}}} extends {{{super
 		
 		/**
 		 * Adds a {{{propertyName}}} to the initial collection
-		 * @parameter {{{propertyName}}} {{{propertyName}}} to add
+		 * @param {{{propertyName}}} {{{propertyName}}} to add
 		 * @return this for chaining
 		**/
 		public {{{className}}}Builder {{{adder}}}(String {{{propertyName}}}) {
@@ -1534,7 +1534,7 @@ public {{#abstract}}abstract{{/abstract}} class {{{className}}} extends {{{super
 		
 		/**
 		 * Adds all elements from a collection to the initial {{{propertyName}}} collection
-		 * @parameter {{{propertyName}}}Collection collection to initialize the {{{propertyName}}}
+		 * @param {{{propertyName}}}Collection collection to initialize the {{{propertyName}}}
 		 * @return this for chaining
 		**/
 		public {{{className}}}Builder {{{addAller}}}(Collection<String> {{{propertyName}}}Collection) {
@@ -1548,7 +1548,7 @@ public {{#abstract}}abstract{{/abstract}} class {{{className}}} extends {{{super
 		
 		/**
 		 * Adds a {{{propertyName}}} to the initial collection
-		 * @parameter {{{propertyName}}} {{{propertyName}}} to add
+		 * @param {{{propertyName}}} {{{propertyName}}} to add
 		 * @return this for chaining
 		**/
 		public {{{className}}}Builder {{{adder}}}({{{type}}} {{{propertyName}}}) {
@@ -1560,7 +1560,7 @@ public {{#abstract}}abstract{{/abstract}} class {{{className}}} extends {{{super
 		
 		/**
 		 * Adds all elements from a collection to the initial {{{propertyName}}} collection
-		 * @parameter {{{propertyName}}}Collection collection to initialize the {{{propertyName}}}
+		 * @param {{{propertyName}}}Collection collection to initialize the {{{propertyName}}}
 		 * @return this for chaining
 		**/
 		public {{{className}}}Builder {{{addAller}}}(Set<{{{type}}}> {{{propertyName}}}Set) {
@@ -1574,7 +1574,7 @@ public {{#abstract}}abstract{{/abstract}} class {{{className}}} extends {{{super
 		
 		/**
 		 * Sets the initial value of {{{propertyName}}}
-		 * @parameter {{{propertyName}}} value to set
+		 * @param {{{propertyName}}} value to set
 		 * @return this for chaining
 		**/
 		public {{{className}}}Builder {{{setter}}}({{{type}}} {{{propertyName}}}) {
@@ -1586,7 +1586,7 @@ public {{#abstract}}abstract{{/abstract}} class {{{className}}} extends {{{super
 		
 		/**
 		 * Sets the initial value of {{{propertyName}}}
-		 * @parameter {{{propertyName}}} value to set
+		 * @param {{{propertyName}}} value to set
 		 * @return this for chaining
 		**/
 		public {{{className}}}Builder {{{setter}}}({{{type}}} {{{propertyName}}}) {
@@ -1598,7 +1598,7 @@ public {{#abstract}}abstract{{/abstract}} class {{{className}}} extends {{{super
 		
 		/**
 		 * Sets the initial value of {{{propertyName}}}
-		 * @parameter {{{propertyName}}} value to set
+		 * @param {{{propertyName}}} value to set
 		 * @return this for chaining
 		**/
 		public {{{className}}}Builder {{{setter}}}({{{type}}} {{{propertyName}}}) {
@@ -1610,7 +1610,7 @@ public {{#abstract}}abstract{{/abstract}} class {{{className}}} extends {{{super
 		
 		/**
 		 * Sets the initial value of {{{propertyName}}}
-		 * @parameter {{{propertyName}}} value to set
+		 * @param {{{propertyName}}} value to set
 		 * @return this for chaining
 		**/
 		public {{{className}}}Builder {{{setter}}}({{{type}}} {{{propertyName}}}) {
@@ -1622,7 +1622,7 @@ public {{#abstract}}abstract{{/abstract}} class {{{className}}} extends {{{super
 		
 		/**
 		 * Sets the initial value of {{{propertyName}}}
-		 * @parameter {{{propertyName}}} value to set
+		 * @param {{{propertyName}}} value to set
 		 * @return this for chaining
 		**/
 		public {{{className}}}Builder {{{setter}}}({{{type}}} {{{propertyName}}}) {
@@ -1634,7 +1634,7 @@ public {{#abstract}}abstract{{/abstract}} class {{{className}}} extends {{{super
 		
 		/**
 		 * Sets the initial value of {{{propertyName}}}
-		 * @parameter {{{propertyName}}} value to set
+		 * @param {{{propertyName}}} value to set
 		 * @return this for chaining
 		**/
 		public {{{className}}}Builder {{{setter}}}({{{type}}} {{{propertyName}}}) {
@@ -1646,7 +1646,7 @@ public {{#abstract}}abstract{{/abstract}} class {{{className}}} extends {{{super
 		
 		/**
 		 * Sets the initial value of {{{propertyName}}}
-		 * @parameter {{{propertyName}}} value to set
+		 * @param {{{propertyName}}} value to set
 		 * @return this for chaining
 		**/
 		public {{{className}}}Builder {{{setter}}}({{{type}}} {{{propertyName}}}) {
@@ -1658,7 +1658,7 @@ public {{#abstract}}abstract{{/abstract}} class {{{className}}} extends {{{super
 		
 		/**
 		 * Sets the initial value of {{{propertyName}}}
-		 * @parameter {{{propertyName}}} value to set
+		 * @param {{{propertyName}}} value to set
 		 * @return this for chaining
 		**/
 		public {{{className}}}Builder {{{setter}}}({{{type}}} {{{propertyName}}}) {
@@ -1670,7 +1670,7 @@ public {{#abstract}}abstract{{/abstract}} class {{{className}}} extends {{{super
 
 		/**
 		 * Sets the initial value of {{{propertyName}}}
-		 * @parameter {{{propertyName}}} value to set
+		 * @param {{{propertyName}}} value to set
 		 * @return this for chaining
 		**/
 		public {{{className}}}Builder {{{setter}}}({{{type}}} {{{propertyName}}}) {
@@ -1682,7 +1682,7 @@ public {{#abstract}}abstract{{/abstract}} class {{{className}}} extends {{{super
 		
 		/**
 		 * Sets the initial value of {{{propertyName}}}
-		 * @parameter {{{propertyName}}} value to set
+		 * @param {{{propertyName}}} value to set
 		 * @return this for chaining
 		**/
 		public {{{className}}}Builder {{{setter}}}(String {{{propertyName}}}) {
