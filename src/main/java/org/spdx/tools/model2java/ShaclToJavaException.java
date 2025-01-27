@@ -20,7 +20,7 @@ public class ShaclToJavaException extends Exception {
 	
 
 	/**
-	 * @param String msg
+	 * @param msg the message
 	 */
 	public ShaclToJavaException(String msg) {
 		super(msg);
