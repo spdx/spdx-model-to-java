@@ -5,22 +5,22 @@
 package org.spdx.tools.model2java;
 
 /**
- * 
+ *
  * Exception converting OWL to Java
- * 
+ *
  * @author gary
  *
  */
 public class ShaclToJavaException extends Exception {
 
 	/**
-	 * 
+	 *
 	 */
 	private static final long serialVersionUID = 1L;
-	
+
 
 	/**
-	 * @param String msg
+	 * @param msg the message
 	 */
 	public ShaclToJavaException(String msg) {
 		super(msg);
