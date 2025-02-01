@@ -1,15 +1,14 @@
 /**
+ * SPDX-FileCopyrightText: Copyright (c) 2023 Source Auditor Inc.
+ * SPDX-FileType: SOURCE
  * SPDX-License-Identifier: Apache-2.0
- * Copyright (c) 2023 Source Auditor Inc.
  */
 package org.spdx.tools.model2java;
 
 /**
- * 
  * Exception converting OWL to Java
- * 
- * @author gary
  *
+ * @author Gary O'Neall
  */
 public class ShaclToJavaException extends Exception {
 

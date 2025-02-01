@@ -1,6 +1,7 @@
 /**
+ * SPDX-FileCopyrightText: Copyright (c) 2024 Source Auditor Inc.
+ * SPDX-FileType: SOURCE
  * SPDX-License-Identifier: Apache-2.0
- * Copyright (c) 2024 Source Auditor Inc.
  */
 package org.spdx.tools.model2java;
 
@@ -16,13 +17,12 @@ import org.apache.jena.rdf.model.ModelFactory;
 
 /**
  * Command Line Interface for the ShaclToJava utility
- * 
- * Generates Java code from a SHACL file specifically for SPDX version 3+
- * 
- * Usage: ShaclToJavaCli spdx-model.ttl outputdirectory
- * 
- * @author Gary O'Neall
  *
+ * Generates Java code from a SHACL file specifically for SPDX version 3+
+ *
+ * Usage: ShaclToJavaCli spdx-model.ttl outputdirectory
+ *
+ * @author Gary O'Neall
  */
 public class ShaclToJavaCli {
 

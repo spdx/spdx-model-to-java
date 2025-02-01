@@ -1,6 +1,7 @@
 /**
+ * SPDX-FileCopyrightText: Copyright (c) {{{year}}} Source Auditor Inc.
+ * SPDX-FileType: SOURCE
  * SPDX-License-Identifier: Apache-2.0
- * Copyright (c) 2024 Source Auditor Inc.
  */
 package org.spdx.library.model.{{versionSuffix}};
 
@@ -29,8 +30,9 @@ import org.spdx.storage.PropertyDescriptor;
 
 
 /**
- * @author Gary O'Neall
+ * Model object for SPDX 3
  *
+ * @author Gary O'Neall
  */
 public abstract class ModelObjectV3 extends CoreModelObject {
 	
@@ -56,7 +58,7 @@ public abstract class ModelObjectV3 extends CoreModelObject {
 	 * @param objectUri
 	 * @param copyManager
 	 * @param create
-	 * @param idPrefix - prefix to be used when generating new SPDX IDs
+	 * @param idPrefix prefix to be used when generating new SPDX IDs
 	 * @throws InvalidSPDXAnalysisException
 	 */
 	public ModelObjectV3(IModelStore modelStore, String objectUri,
@@ -74,7 +76,6 @@ public abstract class ModelObjectV3 extends CoreModelObject {
 		super(builder, SpdxConstantsV3.MODEL_SPEC_VERSION);
 	}
 
-	
 	/**
 	 * @param specVersion Version of the SPDX spec to verify against
 	 * @param verifiedElementUris list of all element object URIs which have already been verified - prevents infinite recursion
@@ -179,8 +180,7 @@ public abstract class ModelObjectV3 extends CoreModelObject {
 			throw new SpdxInvalidTypeException("Invalid type for ExtendableLicense property: "+result.get().getClass().toString());
 		}
 	}
-	
-	
+
 	/**
 	 * Converts property values to an ExtendableLicense if possible
 	 * @param propertyDescriptor descriptor for the property
@@ -207,7 +207,7 @@ public abstract class ModelObjectV3 extends CoreModelObject {
 			throw new SpdxInvalidTypeException("Invalid type for LicenseAddition property: "+result.get().getClass().toString());
 		}
 	}
-	
+
 	/**
 	 * Converts property values to an SpdxElement if possible - if individual value, convert to the appropriate SpdxElement
 	 * @param propertyDescriptor Descriptor for the property
@@ -234,7 +234,7 @@ public abstract class ModelObjectV3 extends CoreModelObject {
 			throw new SpdxInvalidTypeException("Invalid type for SpdxElement property: "+result.get().getClass().toString());
 		}
 	}
-	
+
 	/**
 	 * @param propertyDescriptor property descriptor for the object in question
 	 * @return true if the object is "to" part of a relationship
@@ -242,12 +242,12 @@ public abstract class ModelObjectV3 extends CoreModelObject {
 	public boolean isRelatedElement(PropertyDescriptor propertyDescriptor) {
 		return SpdxConstantsV3.PROP_TO.equals(propertyDescriptor);
 	}
-	
+
 	{{#createBuilder}}
 	{{{.}}}
-	
+
 	{{/createBuilder}}
-	
+
 	public static class ModelObjectV3Builder extends CoreModelObjectBuilder {
 
 		/**

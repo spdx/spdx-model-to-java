@@ -1,6 +1,7 @@
 /**
+ * SPDX-FileCopyrightText: Copyright (c) 2023 Source Auditor Inc.
+ * SPDX-FileType: SOURCE
  * SPDX-License-Identifier: Apache-2.0
- * Copyright (c) 2023 Source Auditor Inc.
  */
 package org.spdx.tools.model2java;
 
@@ -61,9 +62,8 @@ import static org.spdx.tools.model2java.ShaclToJavaConstants.TYPE_PRED;
 
 /**
  * Generates Java source class files for the SPDX Java Library from the RDF Owl Document generated from the spec model
- * 
- * @author Gary O'Neall
  *
+ * @author Gary O'Neall
  */
 public class ShaclToJava {
 	

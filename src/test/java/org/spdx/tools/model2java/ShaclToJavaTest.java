@@ -1,6 +1,7 @@
 /**
+ * SPDX-FileCopyrightText: Copyright (c) 2023 Source Auditor Inc.
+ * SPDX-FileType: SOURCE
  * SPDX-License-Identifier: Apache-2.0
- * Copyright (c) 2023 Source Auditor Inc.
  */
 package org.spdx.tools.model2java;
 
@@ -20,8 +21,7 @@ import org.apache.jena.rdf.model.ModelFactory;
 import junit.framework.TestCase;
 
 /**
- * @author gary
- *
+ * @author Gary O'Neall
  */
 public class ShaclToJavaTest extends TestCase {
 	
