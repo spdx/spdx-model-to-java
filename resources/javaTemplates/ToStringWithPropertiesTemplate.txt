@@ -20,8 +20,8 @@
 			{{/nonOptional}}
 			sb.append(" ");
 			{{/toStringProperties}}
-			sb.setLenght(sb.length() == 0 ? 0 : sb.length()-1);
+			sb.setLength(sb.length() == 0 ? 0 : sb.length()-1);
 			return sb.toString();
 		} catch (InvalidSPDXAnalysisException e) {
-			return "Error: "+e.getMessage();
+			return "Error: " + e.getMessage();
 		}
