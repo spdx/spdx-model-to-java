@@ -1,4 +1,6 @@
 	/**
+	 * Get flatten license set
+	 *
 	 * License sets can contain other conjunctive license sets as members.  Logically,
 	 * the members of these "sub-conjunctive license sets" could be direct members and have the same
 	 * meaning.

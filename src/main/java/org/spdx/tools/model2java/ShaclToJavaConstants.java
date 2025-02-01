@@ -1,6 +1,7 @@
 /**
+ * SPDX-FileCopyrightText: Copyright (c) 2024 Source Auditor Inc.
+ * SPDX-FileType: SOURCE
  * SPDX-License-Identifier: Apache-2.0
- * Copyright (c) 2024 Source Auditor Inc.
  */
 package org.spdx.tools.model2java;
 
@@ -11,10 +12,9 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * @author Gary O'Neall
- * 
  * Constants used in ShaclToJava - moved to a separate file since ShaclToJava was getting way to big!
  *
+ * @author Gary O'Neall
  */
 public class ShaclToJavaConstants {
 	

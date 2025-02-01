@@ -1,6 +1,7 @@
 /**
+ * SPDX-FileCopyrightText: Copyright (c) 2024 Source Auditor Inc.
+ * SPDX-FileType: SOURCE
  * SPDX-License-Identifier: Apache-2.0
- * Copyright (c) 2024 Source Auditor Inc.
  */
 package org.spdx.tools.model2java;
 
@@ -39,8 +40,9 @@ import org.apache.jena.shacl.engine.constraint.ValueMinInclusiveConstraint;
 import org.apache.jena.shacl.parser.ConstraintVisitor;
 
 /**
- * @author gary
+ * Collection of constraints
  *
+ * @author Gary O'Neall
  */
 class ConstraintCollector implements ConstraintVisitor {
 	

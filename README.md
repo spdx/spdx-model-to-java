@@ -1,12 +1,16 @@
 # spdx-model-to-java
-Generates Java source files from the SPDX spec version 3+ suitable for inclusion in the SPDX Java Library
+
+Generates Java source files from the [SPDX spec version 3+][spdx-spec]
+suitable for inclusion in the SPDX Java Library
+
+[spdx-spec]: https://spdx.dev/use/specifications/
 
 ## Usage CLI
 
 To run the utility as a command line interface, execute the main method `ShaclToJavaCli` with 2 parameters:
+
 - model file in turtle format
 - output directory
-
 
 ## Usage Library
 
@@ -18,4 +22,5 @@ The `generate(dir)` method will generate the Java files in the dir directory.
 
 This is a utility specifically built and tested for use in the SPDX Java Library.  
 It is relatively stable for that purpose.
+
 There are still a few items marked as TODO in the code and some of the generated code will produce warnings in Java linter (e.g. unused import statements).
