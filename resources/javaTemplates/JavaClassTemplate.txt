@@ -1534,7 +1534,7 @@ public {{#abstract}}abstract{{/abstract}} class {{{className}}} extends {{{super
 		{{#objectPropertyValueSet}}
 		
 		/**
-		 * Adds a {{{propertyName}}} to the initial collection
+		 * Adds a {{{propertyName}}} to the initial set
 		 * @param {{{propertyName}}} {{{propertyName}}} to add
 		 * @return this for chaining
 		**/
@@ -1546,8 +1546,8 @@ public {{#abstract}}abstract{{/abstract}} class {{{className}}} extends {{{super
 		}
 		
 		/**
-		 * Adds all elements from a collection to the initial {{{propertyName}}} collection
-		 * @param {{{propertyName}}}Collection collection to initialize the {{{propertyName}}}
+		 * Adds all elements from a set to the initial {{{propertyName}}} set
+		 * @param {{{propertyName}}}Set set to initialize the {{{propertyName}}}
 		 * @return this for chaining
 		**/
 		public {{{className}}}Builder {{{addAller}}}(Set<{{{type}}}> {{{propertyName}}}Set) {
