@@ -16,7 +16,9 @@ To run the utility as a command line interface, execute the main method `ShaclTo
 
 To use the code as a library, the main entry point is the `ShaclToJava` class which takes a single parameter of the SPDX Ontology model.
 
-The `generate(dir)` method will generate the Java files in the dir directory.
+The `generate(dir)` method will generate the Java files in the `dir` directory.
+
+The API documentation is available at: <https://spdx.github.io/spdx-model-to-java>
 
 ## Development Status
 
