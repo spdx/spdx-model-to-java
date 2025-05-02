@@ -45,7 +45,7 @@
 	  <sonar.host.url>https://sonarcloud.io</sonar.host.url>
 	  <sonar.organization>spdx</sonar.organization>
 	  <sonar.projectKey>spdx-model-to-java</sonar.projectKey>
-	  <dependency-check-maven.version>8.0.1</dependency-check-maven.version>
+	  <dependency-check-maven.version>8.0.2</dependency-check-maven.version>
 	  <maven.compiler.release>11</maven.compiler.release>
 	  <javadoc.opts>-Xdoclint:none</javadoc.opts>
   </properties>
@@ -176,7 +176,7 @@
 		          </configuration>
 		        </execution>
 		      </executions>
-		    </plugin>	
+		    </plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
@@ -228,7 +228,7 @@
 			<plugin>
 				<groupId>org.spdx</groupId>
 					<artifactId>spdx-maven-plugin</artifactId>
-					<version>1.0.0</version>
+					<version>1.0.2</version>
 					<executions>
 						<execution>
 							<id>build-spdx</id>
