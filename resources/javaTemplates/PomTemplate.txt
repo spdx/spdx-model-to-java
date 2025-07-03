@@ -2,7 +2,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.spdx</groupId>
   <artifactId>spdx-java-model-3_0</artifactId>
-  <version>1.0.0-RC2</version>
+  <version>1.0.1</version>
   <name>spdx-java-model-3</name>
   <description>Generated java model source code</description>
 <url>https://github.com/spdx/spdx-java-model-3_0</url>
@@ -107,7 +107,7 @@
   	<dependency>
   		<groupId>org.spdx</groupId>
   		<artifactId>spdx-java-core</artifactId>
-  		<version>1.0.0-RC2</version>
+  		<version>1.0.0</version>
   	</dependency>
   	<dependency>
   		<groupId>org.slf4j</groupId>

@@ -43,6 +43,7 @@ public class SpdxModelClassFactoryV3 {
 		{{#typeToClass}}
 		typeToClassV3.put(SpdxConstantsV3.{{{classConstant}}}, {{{classPath}}}.class);
 		{{/typeToClass}}
+		typeToClassV3.put(org.spdx.library.model.{{versionSuffix}}.simplelicensing.InvalidLicenseExpression.INVALID_LICENSE_EXPRESSION_TYPE, org.spdx.library.model.{{versionSuffix}}.simplelicensing.InvalidLicenseExpression.class);
 		
 		SPDX_TYPE_TO_CLASS_V3 = Collections.unmodifiableMap(typeToClassV3);
 		
