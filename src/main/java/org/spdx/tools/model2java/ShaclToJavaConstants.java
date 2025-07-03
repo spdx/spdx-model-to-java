@@ -68,6 +68,7 @@ public class ShaclToJavaConstants {
 	public static final String UNIT_TEST_HELPER_TEMPLATE = "UnitTestHelperTemplate.txt";
 	public static final String TEST_VALUES_GENERATOR_TEMPLATE = "TestValuesGeneratorTemplate.txt";
 	public static final String TEST_MODEL_INFO_TEMPLATE = "TestModelInfoTemplate.txt";
+	public static final String INVALID_LICENSE_EXPRESSION_TEMPLATE = "InvalidLicenseExpressionTemplate.txt";
 	
 	public static Set<String> INTEGER_TYPES = new HashSet<>();
 	static {

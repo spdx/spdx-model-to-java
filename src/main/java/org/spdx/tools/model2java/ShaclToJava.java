@@ -320,6 +320,7 @@ public class ShaclToJava {
 		generateIndividualFactory(dir);
 		//TODO: Get the version from the SHACL file
 		generateMockFiles(dir);
+		generateInvalidLicenseExpression(dir);
 		return warnings;
 	}
 
@@ -472,6 +473,25 @@ public class ShaclToJava {
 		File file = path.resolve("pom.xml").toFile();
 		file.createNewFile();
 		writeMustacheFile(ShaclToJavaConstants.POM_TEMPLATE, file, new HashMap<>());
+	}
+
+	/**
+	 * @param dir
+	 * @throws IOException
+	 */
+	private void generateInvalidLicenseExpression(File dir) throws IOException {
+		Path path = dir.toPath().resolve("src").resolve("main").resolve("java").resolve("org")
+				.resolve("spdx").resolve("library").resolve("model").resolve(versionSuffix)
+				.resolve("simplelicensing");
+		Files.createDirectories(path);
+		File file = path.resolve("InvalidLicenseExpression.java").toFile();
+		if (!file.createNewFile()) {
+			throw new IOException(String.format("Unable to create %s", file.toString()));
+		}
+		Map<String, Object> mustacheMap = new HashMap<>();
+		mustacheMap.put("versionSuffix", versionSuffix);
+		mustacheMap.put("versionSemVer", versionSemVer);
+		writeMustacheFile(ShaclToJavaConstants.INVALID_LICENSE_EXPRESSION_TEMPLATE, file, mustacheMap);
 	}
 
 	/**
