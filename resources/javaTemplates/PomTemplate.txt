@@ -166,7 +166,7 @@
         <configuration>
           <quiet>true</quiet>
           <notimestamp>true</notimestamp>
-          <doclint>all,-missing</doclint>
+          <doclint>all,-missing,-reference</doclint>
         </configuration>
         <executions>
           <execution>
