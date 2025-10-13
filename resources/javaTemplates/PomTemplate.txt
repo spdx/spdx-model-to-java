@@ -36,7 +36,7 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <maven.compiler.source>8</maven.compiler.source>
     <maven.compiler.target>8</maven.compiler.target>
-    <dependency-check-maven.version>12.1.5</dependency-check-maven.version>
+    <dependency-check-maven.version>12.1.7</dependency-check-maven.version>
   </properties>
   <profiles>  
     <profile>
