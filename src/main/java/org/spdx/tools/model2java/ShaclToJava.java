@@ -673,9 +673,10 @@ public class ShaclToJava {
 			List<Map<String, Object>> propMustacheList = new ArrayList<>();
 			for (String propUri:propertyUris) {
 				Map<String, Object> propMustacheMap = new HashMap<>();
-				String propertyName = uriToPropertyName.get(propUri);
-				String propertyConstantName = propertyNameToPropertyConstant(propertyName, namespaceName);
+
+				String propertyConstantName = propertyNameToPropertyConstant(uriToPropertyName.get(propUri), namespaceName);
 				propMustacheMap.put("propertyConstantName", propertyConstantName);
+				String propertyName = uriToName(propUri);
 				String uriPropName = null;
 				if (RESERVED_JAVA_WORDS.containsValue(propertyName)) {
 					for (Entry<String, String> entry:RESERVED_JAVA_WORDS.entrySet()) {
@@ -686,7 +687,7 @@ public class ShaclToJava {
 					}
 				}
 				if (Objects.isNull(uriPropName)) {
-					uriPropName = propertyName;;
+					uriPropName = propertyName;
 				}
 				propMustacheMap.put("propertyConstantValue", uriPropName);
 				propMustacheList.add(propMustacheMap);
