@@ -95,7 +95,7 @@ public class SpdxModelClassFactoryV3 {
 			if (e.getTargetException() instanceof InvalidSPDXAnalysisException) {
 				throw (InvalidSPDXAnalysisException)e.getTargetException();
 			} else {
-				throw new InvalidSPDXAnalysisException("Unexpected invocation target exception for SPDX version 2 type: "+type, e);
+				throw new InvalidSPDXAnalysisException("Unexpected invocation target exception for SPDX version 3 type: "+type, e);
 			}
 		}
 	}
