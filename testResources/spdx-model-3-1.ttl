@@ -4785,7 +4785,7 @@ ns1:CreationInfo a owl:Class,
             sh:minCount 1 ;
             sh:nodeKind sh:Literal ;
             sh:path ns1:specVersion ;
-            sh:pattern "^(0|[1-9]\\d*)\\.(0|[1-9]\\d*)(?:\\.(0|[1-9]\\d*))(?:-((?:0|[1-9]\\d*|\\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\\.(?:0|[1-9]\\d*|\\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\\+([0-9a-zA-Z-]+(?:\\.[0-9a-zA-Z-]+)*))?$" ] .
+            sh:pattern "^(0|[1-9]\\d*)\\.(0|[1-9]\\d*)(\\.(0|[1-9]\\d*))?(?:-((?:0|[1-9]\\d*|\\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\\.(?:0|[1-9]\\d*|\\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\\+([0-9a-zA-Z-]+(?:\\.[0-9a-zA-Z-]+)*))?$" ] .
 
 ns4:CvssSeverityType a owl:Class ;
     rdfs:comment "Specifies the CVSS base, temporal, threat, or environmental severity type."@en .
