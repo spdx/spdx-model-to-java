@@ -24,8 +24,9 @@ import junit.framework.TestCase;
  * @author Gary O'Neall
  */
 public class ShaclToJavaTest extends TestCase {
-	
-	static final String MODEL_FILE_PATH = "testResources" + File.separator + "spdx-model.ttl";
+
+	static final String MODEL_DIR_PATH = "testResources";
+	static final String MODEL_FILE_PATH = MODEL_DIR_PATH + File.separator + "spdx-model-3-0-1.ttl";
 
 	protected void setUp() throws Exception {
 		super.setUp();
@@ -34,7 +35,7 @@ public class ShaclToJavaTest extends TestCase {
 	protected void tearDown() throws Exception {
 		super.tearDown();
 	}
-	
+
 	public void testConvertToJava() throws IOException, ShaclToJavaException {
 		ShaclToJava otj;
 		File tempDir = Files.createTempDirectory("spdx_test").toFile();
@@ -42,7 +43,7 @@ public class ShaclToJavaTest extends TestCase {
 			try (InputStream is = new FileInputStream(MODEL_FILE_PATH)) {
 				OntModel model = ModelFactory.createOntologyModel(OntModelSpec.OWL_MEM);
 				model.read(is, "", "Turtle");
-				otj = new ShaclToJava(model);
+				otj = new ShaclToJava(model, "v3_0_1");
 				List<String> warnings = otj.generate(tempDir);
 				assertTrue(warnings.isEmpty());
 				Path aIPath = tempDir.toPath().resolve("src")
@@ -61,6 +62,30 @@ public class ShaclToJavaTest extends TestCase {
 				assertTrue(enumFile.exists());
 				assertTrue(enumFile.isFile());
 			}
+		} finally {
+			assertTrue(deleteDirectory(tempDir));
+		}
+	}
+
+	public void testConvertToJavaCLI() throws IOException, ShaclToJavaException {
+		File tempDir = Files.createTempDirectory("spdx_test").toFile();
+		try {
+			assertEquals(0, ShaclToJavaCli.run(new String[] {MODEL_DIR_PATH, tempDir.getAbsolutePath()}));
+			Path modelPath = tempDir.toPath().resolve("src")
+					.resolve("main")
+					.resolve("java")
+					.resolve("org")
+					.resolve("spdx")
+					.resolve("library")
+					.resolve("model");
+			File v3Dir = modelPath.resolve("v3").toFile();
+			assertTrue(v3Dir.exists());
+			File v31Dir = modelPath.resolve("v3_1").toFile();
+			assertTrue(v31Dir.exists());
+			File v30Dir = modelPath.resolve("v3_0").toFile();
+			assertTrue(v30Dir.exists());
+			File v301Dir = modelPath.resolve("v3_0_1").toFile();
+			assertTrue(v301Dir.exists());
 		} finally {
 			assertTrue(deleteDirectory(tempDir));
 		}

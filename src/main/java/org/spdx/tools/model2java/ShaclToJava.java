@@ -125,13 +125,14 @@ public class ShaclToJava {
 	
 	/**
 	 * @param model model to use to generate the java files
+	 * @param packageVersion version string to use in package names
 	 */
-	public ShaclToJava(OntModel model) {
+	public ShaclToJava(OntModel model, String packageVersion) {
 		this.model = model;
 		String spdxUri = model.getNsPrefixURI("spdx");
 		versionSemVer = spdxUri.substring("https://spdx.org/rdf/".length());
 		versionSemVer = versionSemVer.substring(0, versionSemVer.indexOf('/'));
-		versionSuffix = "v" + versionSemVer.replaceAll("\\.", "_");
+		versionSuffix = packageVersion;
 		shapes = Shapes.parse(model);
 		shapeMap = shapes.getShapeMap();
 		allIndividuals = model.listIndividuals().toList();
@@ -1568,8 +1569,15 @@ public class ShaclToJava {
 			}
 		}
 		String propertySuffix = propertyUri.substring(propertyUri.lastIndexOf("/terms/"));
-		PropertyType propertyType = ShaclToJavaConstants.SET_PROPERTY_SUFFIXES.contains(propertySuffix) ? PropertyType.OBJECT_SET : determinePropertyType(classRestriction, dataTypeRestriction, 
-				minCardinality, maxCardinality);
+		PropertyType propertyType;
+		if (ShaclToJavaConstants.SET_PROPERTY_SUFFIXES.contains(propertySuffix)) {
+			propertyType = PropertyType.OBJECT_SET;
+		} else if ("extension".equals(name)) {
+			propertyType = PropertyType.OBJECT; // workaround for https://github.com/spdx/spec-parser/issues/207
+		} else {
+			propertyType = determinePropertyType(classRestriction, dataTypeRestriction,
+					minCardinality, maxCardinality);
+		}
 		if (PropertyType.OBJECT_COLLECTION.equals(propertyType) || PropertyType.STRING_COLLECTION.equals(propertyType) ||
 				PropertyType.ENUM_COLLECTION.equals(propertyType)) {
 			requiredImports.add("import java.util.Collection;");
@@ -1577,7 +1585,9 @@ public class ShaclToJava {
 			requiredImports.add("import java.util.Objects;");
 		}
  		retval.put("propertyType", propertyType);
-		String typeUri = getTypeUri(classRestriction, dataTypeRestriction);
+		String typeUri = "extension".equals(name) ?
+				String.format("https://spdx.org/rdf/%s/terms/Extension/Extension", this.versionSemVer) : // workaround for https://github.com/spdx/spec-parser/issues/207
+				getTypeUri(classRestriction, dataTypeRestriction);
 		String type;
 		if (ShaclToJavaConstants.BOOLEAN_TYPE.equals(typeUri)) {
 			type = "Boolean";
