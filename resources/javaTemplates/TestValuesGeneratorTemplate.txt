@@ -355,7 +355,7 @@ public class TestValuesGenerator {
 	public TestValuesGenerator(IModelStore modelStore, IModelCopyManager copyManager) throws InvalidSPDXAnalysisException {
 		this.modelStore = modelStore;
 		this.copyManager = copyManager;
-		if (!ModelRegistry.getModelRegistry().containsSpecVersion("{{{versionSemVer}}}")) {
+		if (!ModelRegistry.getModelRegistry().containsSpecVersion("{{{versionSuffix}}}")) {
 			ModelRegistry.getModelRegistry().registerModel(new TestSpdxModelInfo());
 		}
 		creationInfo = new CreationInfo.CreationInfoBuilder(modelStore, modelStore.getNextId(IdType.Anonymous), copyManager)
