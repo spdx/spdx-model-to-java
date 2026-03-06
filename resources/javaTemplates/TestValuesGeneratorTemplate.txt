@@ -329,23 +329,23 @@ public class TestValuesGenerator {
 	{{/enumerationProperties}}
 	{{#stringCollection}}
 	{{^pattern}}
-	public static final String {{{propertyNameUpper}}}_TEST_VALUE1 = "test 1 {{{propertyName}}}";
-	public static final String {{{propertyNameUpper}}}_TEST_VALUE2 = "test 2 {{{propertyName}}}";
-	public static final String {{{propertyNameUpper}}}_TEST_VALUE3 = "test 3 {{{propertyName}}}";
+	public static final String {{{propertyNameUpper}}}_COL_TEST_VALUE1 = "test 1 {{{propertyName}}}";
+	public static final String {{{propertyNameUpper}}}_COL_TEST_VALUE2 = "test 2 {{{propertyName}}}";
+	public static final String {{{propertyNameUpper}}}_COL_TEST_VALUE3 = "test 3 {{{propertyName}}}";
 	{{/pattern}}
 	{{#pattern}}
-	public static final String {{{propertyNameUpper}}}_TEST_VALUE1 = UnitTestHelper.genRandPattern("{{{pattern}}}");
-	public static final String {{{propertyNameUpper}}}_TEST_VALUE2 = UnitTestHelper.genRandPattern("{{{pattern}}}");
-	public static final String {{{propertyNameUpper}}}_TEST_VALUE3 = UnitTestHelper.genRandPattern("{{{pattern}}}");
+	public static final String {{{propertyNameUpper}}}_COL_TEST_VALUE1 = UnitTestHelper.genRandPattern("{{{pattern}}}");
+	public static final String {{{propertyNameUpper}}}_COL_TEST_VALUE2 = UnitTestHelper.genRandPattern("{{{pattern}}}");
+	public static final String {{{propertyNameUpper}}}_COL_TEST_VALUE3 = UnitTestHelper.genRandPattern("{{{pattern}}}");
 	{{/pattern}}
-	public static final List<String> {{{propertyNameUpper}}}_TEST_LIST1 = Arrays.asList(new String[] { {{{propertyNameUpper}}}_TEST_VALUE1, {{{propertyNameUpper}}}_TEST_VALUE2 });
-	public static final List<String> {{{propertyNameUpper}}}_TEST_LIST2 = Arrays.asList(new String[] { {{{propertyNameUpper}}}_TEST_VALUE3 });
+	public static final List<String> {{{propertyNameUpper}}}_TEST_LIST1 = Arrays.asList(new String[] { {{{propertyNameUpper}}}_COL_TEST_VALUE1, {{{propertyNameUpper}}}_COL_TEST_VALUE2 });
+	public static final List<String> {{{propertyNameUpper}}}_TEST_LIST2 = Arrays.asList(new String[] { {{{propertyNameUpper}}}_COL_TEST_VALUE3 });
 	{{/stringCollection}}
 	{{#enumPropertyValueCollection}}
-	public static final {{{type}}} {{{propertyNameUpper}}}_TEST_VALUE1 = {{{type}}}.values()[0];
-	public static final {{{type}}} {{{propertyNameUpper}}}_TEST_VALUE2 = {{{type}}}.values()[1];
-	public static final List<{{{type}}}> {{{propertyNameUpper}}}_TEST_LIST1 = Arrays.asList(new {{{type}}}[] { {{{propertyNameUpper}}}_TEST_VALUE1, {{{propertyNameUpper}}}_TEST_VALUE2 });
-	public static final List<{{{type}}}> {{{propertyNameUpper}}}_TEST_LIST2 = Arrays.asList(new {{{type}}}[] { {{{propertyNameUpper}}}_TEST_VALUE1 });
+	public static final {{{type}}} {{{propertyNameUpper}}}_COL_TEST_VALUE1 = {{{type}}}.values()[0];
+	public static final {{{type}}} {{{propertyNameUpper}}}_COL_TEST_VALUE2 = {{{type}}}.values()[1];
+	public static final List<{{{type}}}> {{{propertyNameUpper}}}_TEST_LIST1 = Arrays.asList(new {{{type}}}[] { {{{propertyNameUpper}}}_COL_TEST_VALUE1, {{{propertyNameUpper}}}_COL_TEST_VALUE2 });
+	public static final List<{{{type}}}> {{{propertyNameUpper}}}_TEST_LIST2 = Arrays.asList(new {{{type}}}[] { {{{propertyNameUpper}}}_COL_TEST_VALUE1 });
 	{{/enumPropertyValueCollection}}
 	
 	private IModelStore modelStore;
@@ -389,15 +389,15 @@ public class TestValuesGenerator {
 				.{{{setter}}}({{{propertyNameUpper}}}_TEST_VALUE)
 				{{/stringProperties}}
 				{{#stringCollection}}
-				.{{{adder}}}({{{propertyNameUpper}}}_TEST_VALUE1)
-				.{{{adder}}}({{{propertyNameUpper}}}_TEST_VALUE2)
+				.{{{adder}}}({{{propertyNameUpper}}}_COL_TEST_VALUE1)
+				.{{{adder}}}({{{propertyNameUpper}}}_COL_TEST_VALUE2)
 				{{/stringCollection}}
 				{{#enumerationProperties}}
 				.{{{setter}}}({{{propertyNameUpper}}}_TEST_VALUE1)
 				{{/enumerationProperties}}
 				{{#enumPropertyValueCollection}}
-				.{{{adder}}}({{{propertyNameUpper}}}_TEST_VALUE1)
-				.{{{adder}}}({{{propertyNameUpper}}}_TEST_VALUE2)
+				.{{{adder}}}({{{propertyNameUpper}}}_COL_TEST_VALUE1)
+				.{{{adder}}}({{{propertyNameUpper}}}_COL_TEST_VALUE2)
 				{{/enumPropertyValueCollection}}
 				{{#elementProperties}}
 				.{{{setter}}}(builderFor{{{type}}}Tests(modelStore.getNextId(IdType.SpdxId)).build())

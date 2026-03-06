@@ -9,12 +9,15 @@ suitable for inclusion in the SPDX Java Library
 
 To run the utility as a command line interface, execute the main method `ShaclToJavaCli` with 2 parameters:
 
-- model file in turtle format
+- input directory of model files in turtle format - there should be one model file per version to be generated
 - output directory
 
 ## Usage Library
 
-To use the code as a library, the main entry point is the `ShaclToJava` class which takes a single parameter of the SPDX Ontology model.
+To use the code as a library, the main entry point is the `ShaclToJava` class which takes two parameters:
+
+- SPDX Ontology model for the code to be generated
+- SPDX Ontology model for the previous version of the model - this will provide the proper class hierarchy for compatibility
 
 The `generate(dir)` method will generate the Java files in the `dir` directory.
 
