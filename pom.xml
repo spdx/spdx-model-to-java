@@ -30,13 +30,13 @@
 		<url>http://spdx.org</url>
 	</organization>
 	<scm>
-		<url>https://github.com/goneall/spdx-model-to-java</url>
-		<connection>https://github.com/goneall/spdx-model-to-java.git</connection>
-		<developerConnection>https://github.com/goneall/spdx-model-to-java.git</developerConnection>
+		<url>https://github.com/spdx/spdx-model-to-java</url>
+		<connection>https://github.com/spdx/spdx-model-to-java.git</connection>
+		<developerConnection>https://github.com/spdx/spdx-model-to-java.git</developerConnection>
 	</scm>
 	<issueManagement>
 		<system>Github</system>
-		<url>https://github.com/goneall/spdx-model-to-java/issues</url>
+		<url>https://github.com/spdx/spdx-model-to-java/issues</url>
 	</issueManagement>
 	<description>Generates Java source files from the SPDX spec version 3+ suitable for inclusion in the SPDX Java Library</description>
 
