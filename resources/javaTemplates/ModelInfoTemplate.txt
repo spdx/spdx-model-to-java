@@ -24,7 +24,7 @@ import org.spdx.storage.IModelStore;
  * GENERATED
  *
  */
-public class SpdxModelInfoV3_0 implements ISpdxModelInfo {
+public class SpdxModelInfo{{{versionSuffix}}} implements ISpdxModelInfo {
 
 	@Override
 	public Map<String, Enum<?>> getUriToEnumMap() {
@@ -33,7 +33,7 @@ public class SpdxModelInfoV3_0 implements ISpdxModelInfo {
 
 	@Override
 	public List<String> getSpecVersions() {
-		return Arrays.asList(new String[] {"{{{versionSuffix}}}"});
+		return Arrays.asList(new String[] {"{{{versionSemVer}}}"});
 	}
 
 	@Override

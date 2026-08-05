@@ -43,7 +43,7 @@ public class ShaclToJavaTest extends TestCase {
 			try (InputStream is = new FileInputStream(MODEL_FILE_PATH)) {
 				OntModel model = ModelFactory.createOntologyModel(OntModelSpec.OWL_MEM);
 				model.read(is, "", "Turtle");
-				otj = new ShaclToJava(model, "v3_0_1");
+				otj = new ShaclToJava(model, "v3_0_1", "3.0.1");
 				List<String> warnings = otj.generate(tempDir);
 				assertTrue(warnings.isEmpty());
 				Path aIPath = tempDir.toPath().resolve("src")

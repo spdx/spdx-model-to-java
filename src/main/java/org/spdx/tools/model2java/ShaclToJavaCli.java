@@ -16,7 +16,12 @@ import java.util.Objects;
 
 import org.apache.jena.ontology.OntModel;
 import org.apache.jena.ontology.OntModelSpec;
+import org.apache.jena.query.QueryExecution;
+import org.apache.jena.query.QueryExecutionFactory;
+import org.apache.jena.query.QuerySolution;
+import org.apache.jena.query.ResultSet;
 import org.apache.jena.rdf.model.ModelFactory;
+import org.apache.jena.rdf.model.RDFNode;
 
 /**
  * Command Line Interface for the ShaclToJava utility
@@ -101,17 +106,17 @@ public class ShaclToJavaCli {
 				String[] specVersionParts = specVersion.split("\\.");
 				String versionForPackageName = "v3_" +
 						(specVersionParts.length > 1 ? specVersionParts[1] : "0");
-				ShaclToJava s2j = new ShaclToJava(models.get(i), versionForPackageName);
+				ShaclToJava s2j = new ShaclToJava(models.get(i), versionForPackageName, specVersion);
 				warnings.addAll(s2j.generate(outputDir));
 				if ("3.0.1".equals(specVersion)) {
 					// generate the package version for the 3.0.1 patch version only - for compatibility
 					// going forward, we will only generate minor versions
-					ShaclToJava s2jdot = new ShaclToJava(models.get(i), "v3_0_1");
+					ShaclToJava s2jdot = new ShaclToJava(models.get(i), "v3_0_1", specVersion);
 					warnings.addAll(s2jdot.generate(outputDir));
 				}
 				if (i == models.size()-1) {
 					// for the latest version, create a package for the latest version
-					ShaclToJava s2jlatest = new ShaclToJava(models.get(i), "v3");
+					ShaclToJava s2jlatest = new ShaclToJava(models.get(i), "v3", specVersion);
 					warnings.addAll(s2jlatest.generate(outputDir));
 				}
 			} catch (IOException e) {
@@ -138,7 +143,26 @@ public class ShaclToJavaCli {
 	}
 
 	private static String getSpecVersion(OntModel model) {
-		String spdxUri = model.getNsPrefixURI("spdx");
+		//TODO: The following is a hack to work around https://github.com/spdx/spec-parser/issues/214
+		// Individual spdxOrg = model.getIndividual(model.getNsPrefixURI("ns1") + "SpdxOrganization");
+		String spdxUri = null;
+		try (QueryExecution query = QueryExecutionFactory.create(
+				"SELECT ?agent WHERE {<" + model.getNsPrefixURI("ns1") + "SpdxOrganization> <"
+						+ model.getNsPrefixURI("ns1") + "creationInfo> ?agent}", model)) {
+			ResultSet result = query.execSelect();
+			if (result.hasNext()) {
+				QuerySolution solution = result.next();
+				RDFNode agentNode = solution.get("?agent");
+				if (Objects.nonNull(agentNode)) {
+					spdxUri = agentNode.toString();
+				}
+			}
+
+		}
+		if (Objects.isNull(spdxUri)) {
+			spdxUri = model.getNsPrefixURI("spdx");
+		}
+		//TODO: end of hack
 		String versionSemVer = spdxUri.substring("https://spdx.org/rdf/".length());
 		versionSemVer = versionSemVer.substring(0, versionSemVer.indexOf('/'));
 		return versionSemVer;
