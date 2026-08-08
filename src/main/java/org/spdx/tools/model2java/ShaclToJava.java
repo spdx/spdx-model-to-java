@@ -521,11 +521,13 @@ public class ShaclToJava {
 		Path path = dir.toPath().resolve("src").resolve("main").resolve("java").resolve("org")
 				.resolve("spdx").resolve("library").resolve("model").resolve(versionSuffix);
 		Files.createDirectories(path);
-		File file = path.resolve(String.format("SpdxModelInfo%s.java", versionSuffix)).toFile();
+		String classSuffix = "3.0.1".equals(versionSemVer) ? "V3_0" : "V3";// for backwards compatibility
+		File file = path.resolve(String.format("SpdxModelInfo%s.java", classSuffix)).toFile();
 		file.createNewFile();
 		Map<String, Object> mustacheMap = new HashMap<>();
 		mustacheMap.put("versionSuffix", versionSuffix);
 		mustacheMap.put("versionSemVer", versionSemVer);
+		mustacheMap.put("classSuffix", classSuffix);
 		writeMustacheFile(ShaclToJavaConstants.MODEL_INFO_TEMPLATE, file, mustacheMap);
 	}
 
@@ -1210,7 +1212,6 @@ public class ShaclToJava {
 		requiredImports.add("import org.spdx.library.model."+versionSuffix+".core.Agent.AgentBuilder;");
 		requiredImports.add("import java.util.Arrays;");
 		requiredImports.add("import org.spdx.core.ModelRegistry;");
-		requiredImports.add("import org.spdx.library.model."+versionSuffix+".SpdxModelInfo"+versionSuffix+";");
 		requiredImports.add("import org.spdx.library.model."+versionSuffix+".TestValuesGenerator;");
 		imports = buildImports(new ArrayList<String>(requiredImports));
 		unitTestMap.put("imports", imports.toArray(new String[imports.size()]));

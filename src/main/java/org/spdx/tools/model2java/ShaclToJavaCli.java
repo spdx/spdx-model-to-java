@@ -165,6 +165,12 @@ public class ShaclToJavaCli {
 		//TODO: end of hack
 		String versionSemVer = spdxUri.substring("https://spdx.org/rdf/".length());
 		versionSemVer = versionSemVer.substring(0, versionSemVer.indexOf('/'));
+		String[] versionParts = versionSemVer.split("\\.");
+		if (versionParts.length == 1) {
+			versionSemVer = versionSemVer + ".0.0";
+		} else if (versionParts.length == 2) {
+			versionSemVer = versionSemVer + ".0";
+		}
 		return versionSemVer;
 	}
 	
