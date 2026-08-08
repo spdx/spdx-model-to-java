@@ -24,7 +24,7 @@ import org.spdx.storage.IModelStore;
  * GENERATED
  *
  */
-public class SpdxModelInfo{{{versionSuffix}}} implements ISpdxModelInfo {
+public class SpdxModelInfo{{{classSuffix}}} implements ISpdxModelInfo {
 
 	@Override
 	public Map<String, Enum<?>> getUriToEnumMap() {
