@@ -29,6 +29,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
+import static org.spdx.tools.model2java.ShaclToJavaConstants.RESERVED_JAVA_WORDS;
 import static org.spdx.tools.model2java.ShaclToJavaConstants.TYPE_PRED;
 
 /**
@@ -81,6 +82,15 @@ public class SpecVersionContainer implements Comparable<SpecVersionContainer> {
     final List<JavaClassModel> javaClasses = new ArrayList<>();
     final List<JavaClassModel> externalJavaClasses = new ArrayList<>();
     final List<UnitTestModel> unitTestClasses = new ArrayList<>();
+    final ConstantsModel constantsModel = new ConstantsModel();
+    final EnumFactoryModel enumFactoryModel = new EnumFactoryModel();
+    final ModelClassFactoryModel modelClassFactoryModel = new ModelClassFactoryModel();
+    final ModelObjectModel modelObjectModel = new ModelObjectModel();
+    final SpdxModelInfoModel spdxModelInfoModel = new SpdxModelInfoModel();
+    final PackageInfoModel packageInfoModel = new PackageInfoModel();
+    final IndividualFactoryModel individualFactoryModel = new IndividualFactoryModel();
+    final MockFileModel mockFileModel = new MockFileModel();
+    final InvalidLicenseExpressionModel invalidLicenseExpressionModel = new InvalidLicenseExpressionModel();
 
     /**
      * Create a container for model information related to a specific version of an SPDX specification
@@ -652,7 +662,6 @@ public class SpecVersionContainer implements Comparable<SpecVersionContainer> {
         buildModelObject(createBuilderList, classUris);
         buildSpdxModelInfo();
         buildPackageInfo();
-        buildPomFile();
         buildIndividualFactory();
         buildMockFiles();
         buildInvalidLicenseExpression();
@@ -660,43 +669,245 @@ public class SpecVersionContainer implements Comparable<SpecVersionContainer> {
 
 
     private void buildInvalidLicenseExpression() {
-        //TODO: Implement
+        invalidLicenseExpressionModel.setVersionSuffix(JavaCodeGenerator.VERSION_SUFFIX);
+        invalidLicenseExpressionModel.setVersionSemVer(versionSemVer);
     }
 
     private void buildMockFiles() {
-        //TODO: Implement
+        mockFileModel.setVersionSuffix(JavaCodeGenerator.VERSION_SUFFIX);
+        mockFileModel.setSpecVersion(versionSemVer);
     }
 
     private void buildIndividualFactory() {
-        //TODO: Implement
-    }
-
-    private void buildPomFile() {
-        //TODO: Implement
+        individualFactoryModel.setVersionSuffix(JavaCodeGenerator.VERSION_SUFFIX);
+        List<IndividualModel> individualModels = new ArrayList<>();
+        List<String> imports = new ArrayList<>();
+        for (List<String> individuals:this.classUriToIndividualUris.values()) {
+            for (String individualUri:individuals) {
+                String className = uriToClassName.get(individualUri);
+                String pkg = uriToPkg(individualUri);
+                IndividualModel individualModel = new IndividualModel();
+                individualModel.setIndividualUri(individualUri);
+                individualModel.setClassName(className);
+                individualModels.add(individualModel);
+                String importStr = "import "+pkg+"."+className + ";";
+                if (!imports.contains(importStr)) {
+                    imports.add(importStr);
+                }
+            }
+        }
+        Collections.sort(imports);
+        individualFactoryModel.setIndividuals(individualModels);
+        individualFactoryModel.setImports(imports);
     }
 
     private void buildPackageInfo() {
-        //TODO: Implement
+        packageInfoModel.setVersionSuffix(JavaCodeGenerator.VERSION_SUFFIX);
+        packageInfoModel.setVersionSemVer(versionSemVer);
     }
 
     private void buildSpdxModelInfo() {
-        //TODO: Implement
+        spdxModelInfoModel.setClassSuffix("3.0.1".equals(versionSemVer) ? "V3_0" : "V3");// for backwards compatibility
+        spdxModelInfoModel.setVersionSuffix(JavaCodeGenerator.VERSION_SUFFIX);
+        spdxModelInfoModel.setVersionSemVer(versionSemVer);
     }
 
+    /**
+     * Builds the ModelObjectModel
+     * @param createBuilderList list of createBuilder strings
+     * @param classUris list of all class URIs
+     */
     private void buildModelObject(List<String> createBuilderList, List<String> classUris) {
-        //TODO: Implement
+        modelObjectModel.setCreateBuilder(createBuilderList);
+        modelObjectModel.setVersionSuffix(JavaCodeGenerator.VERSION_SUFFIX);
+        modelObjectModel.setVersionSemVer(versionSemVer);
+        List<String> imports = new ArrayList<>();
+        for (String classUri:classUris) {
+            //TODO: Don't add abstract classes
+            if (!enumClassUris.contains(classUri) && !enumerationTypes.contains(classUri)) {
+                imports.add("import "+uriToPkg(classUri) + "." + uriToClassName.get(classUri) +";");
+            }
+        }
+        imports.add("import org.spdx.library.model."+JavaCodeGenerator.VERSION_SUFFIX+".core.ProfileIdentifierType;");
+        Collections.sort(imports);
+        modelObjectModel.setImports(imports);
     }
 
+    /**
+     * Builds the ModelClassFactory
+     * @param classUris URIs for all the classes
+     */
     private void buildModelClassFactory(List<String> classUris) {
-        //TODO: Implement
+        modelClassFactoryModel.setVersionSuffix(JavaCodeGenerator.VERSION_SUFFIX);
+        List<TypeToClassModel> typeToClasses = new ArrayList<>();
+        for (String classUri:classUris) {
+            String className = uriToClassName.get(classUri);
+            String profile = uriToProfile(classUri);
+            String packageName = uriToPkg(classUri);
+            String classConstant = camelCaseToConstCase(profile) + "_" + camelCaseToConstCase(className);
+            String classPath = packageName + "." + className;
+            TypeToClassModel typeToClassModel = new TypeToClassModel();
+            typeToClassModel.setClassConstant(classConstant);
+            typeToClassModel.setClassPath(classPath);
+            typeToClasses.add(typeToClassModel);
+        }
+
+        // Add individual types
+        for (List<String> individualUris:this.classUriToIndividualUris.values()) {
+            for (String individualUri:individualUris) {
+                String className = uriToClassName.get(individualUri);
+                String profile = uriToProfile(individualUri);
+                String packageName = uriToPkg(individualUri);
+                String classConstant = camelCaseToConstCase(profile) + "_" + camelCaseToConstCase(className);
+                String classPath = packageName + "." + className;
+                TypeToClassModel typeToClassModel = new TypeToClassModel();
+                typeToClassModel.setClassConstant(classConstant);
+                typeToClassModel.setClassPath(classPath);
+                typeToClasses.add(typeToClassModel);
+            }
+        }
+        modelClassFactoryModel.setTypeToClass(typeToClasses);
     }
 
-    private void buildEnumFactory(List<EnumModel> enumMustacheMaps) {
-        //TODO: Implement
+    /**
+     * Builds the Enum factory model
+     * @param enumModels list of enum models
+     */
+    private void buildEnumFactory(List<EnumModel> enumModels) {
+        enumFactoryModel.setEnumClasses(enumModels);
+        Set<String> pkgs = new HashSet<>();
+        for (EnumModel enumModel:enumModels) {
+            pkgs.add(enumModel.getPkgName() + "." + enumModel.getName());
+        }
+        List<String> imports = new ArrayList<>();
+        for (String pkg:pkgs) {
+            imports.add("import "+pkg+";");
+        }
+        Collections.sort(imports);
+        enumFactoryModel.setImports(imports);
+        enumFactoryModel.setVersionSuffix(JavaCodeGenerator.VERSION_SUFFIX);
     }
 
+    /**
+     * Builds the spdxConstants model
+     * @param classUris URIs for all the classes
+     */
     private void buildSpdxConstants(List<String> classUris) {
-        //TODO: Implement
+        Map<String, Set<String>> namespaceToPropUri = new HashMap<>();
+        for (String propUri:propertyUrisForConstants) {
+            String nameSpaceUri = this.uriToNamespaceUri(propUri);
+            Set<String> propUriSet = namespaceToPropUri.get(nameSpaceUri);
+            if (Objects.isNull(propUriSet)) {
+                propUriSet = new HashSet<>();
+                namespaceToPropUri.put(nameSpaceUri, propUriSet);
+            }
+            propUriSet.add(propUri);
+        }
+        constantsModel.setVersionSuffix(JavaCodeGenerator.VERSION_SUFFIX);
+        List<NamespaceModel> namespaceList = new ArrayList<>();
+        List<String> namespaceUris = new ArrayList<String>(namespaceToPropUri.keySet());
+        Collections.sort(namespaceUris);
+        for (String namespaceUri:namespaceUris) {
+            NamespaceModel namespaceModel = new NamespaceModel();
+            String namespaceName = uriToName(namespaceUri);
+            namespaceModel.setNamespaceName(namespaceName);
+            String namespaceConstantName = camelCaseToConstCase(namespaceName) + "_NAMESPACE";
+            namespaceModel.setNamespaceConstantName(namespaceConstantName);
+            namespaceModel.setNamespaceUri(namespaceUri);
+            List<String> propertyUris = new ArrayList<>(namespaceToPropUri.get(namespaceUri));
+            Collections.sort(propertyUris);
+            List<PropertyDescriptorModel> propList = new ArrayList<>();
+            for (String propUri:propertyUris) {
+                PropertyDescriptorModel propModel = new PropertyDescriptorModel();
+
+                String propertyConstantName = propertyNameToPropertyConstant(uriToPropertyName.get(propUri), namespaceName);
+                propModel.setPropertyConstantName(propertyConstantName);
+                String propertyName = uriToName(propUri);
+                String uriPropName = propNameToUriPropName(propertyName);
+                propModel.setPropertyConstantValue(uriPropName);
+                propList.add(propModel);
+            }
+            namespaceModel.setPropertyDescriptors(propList);
+            namespaceList.add(namespaceModel);
+        }
+        constantsModel.setNamespaces(namespaceList);
+        List<String> classConstantDefinitions = new ArrayList<>();
+        List<String> classConstants = new ArrayList<>();
+        for (String classUri:classUris) {
+            String className = uriToClassName.get(classUri);
+            String profile = uriToProfile(classUri);
+            String constName = camelCaseToConstCase(profile) + "_" + camelCaseToConstCase(className);
+            classConstantDefinitions.add("static final String " + constName + " = \"" + profile + "." + className + "\";");
+            classConstants.add(constName);
+        }
+        // Add class constants for the individuals
+        for (List<String> individualUris:this.classUriToIndividualUris.values()) {
+            for (String individualUri:individualUris) {
+                String className = uriToClassName.get(individualUri);
+                String profile = uriToProfile(individualUri);
+                String constName = camelCaseToConstCase(profile) + "_" + camelCaseToConstCase(className);
+                classConstantDefinitions.add("static final String " + constName + " = \"" + profile + "." + className + "\";");
+                classConstants.add(constName);
+            }
+        }
+        // Add in constants for the external classes
+        classConstantDefinitions.add("static final String " + "EXTERNAL_ELEMENT" + " = \"Core.ExternalElement\";");
+        classConstants.add("EXTERNAL_ELEMENT");
+
+        classConstantDefinitions.add("static final String " + "EXTERNAL_CUSTOM_LICENSE" + " = \"ExpandedLicensing.ExternalCustomLicense\";");
+        classConstants.add("EXTERNAL_CUSTOM_LICENSE");
+
+        classConstantDefinitions.add("static final String " + "EXTERNAL_CUSTOM_LICENSE_ADDITION" + " = \"ExpandedLicensing.ExternalCustomLicenseAddition\";");
+        classConstants.add("EXTERNAL_CUSTOM_LICENSE_ADDITION");
+
+        String classConstantString = buildClassConstant(classConstants);
+        constantsModel.setClassConstantDefinitions(classConstantDefinitions);
+        constantsModel.setAllClassConstants(classConstantString);
+        constantsModel.setVersionSemVer(versionSemVer);
+    }
+
+    /**
+     * Buidl a class constant string from a list of classes
+     * @param classConstants class constant strings
+     * @return a class constant string
+     */
+    private static String buildClassConstant(List<String> classConstants) {
+        StringBuilder classConstantString = new StringBuilder("static final String[] ALL_SPDX_CLASSES = {");
+        int lineLen = classConstantString.length();
+        classConstantString.append(classConstants.get(0));
+        for (int i = 1; i < classConstants.size(); i++) {
+            classConstantString.append(", ");
+            lineLen = lineLen + 2;
+            if (lineLen > 70) {
+                classConstantString.append("\n\t\t\t");
+                lineLen = 0;
+            }
+            classConstantString.append(classConstants.get(i));
+            lineLen = lineLen + classConstants.get(i).length();
+        }
+        classConstantString.append("};");
+        return classConstantString.toString();
+    }
+
+    /**
+     * Convert the property name used in the Java class to the URI version of the property name
+     * @param propertyName used in the class
+     * @return URI version of the property name which may be a Java reserved word
+     */
+    private static String propNameToUriPropName(String propertyName) {
+        String uriPropName = null;
+        if (RESERVED_JAVA_WORDS.containsValue(propertyName)) {
+            for (Map.Entry<String, String> entry:RESERVED_JAVA_WORDS.entrySet()) {
+                if (entry.getValue().equals(propertyName)) {
+                    uriPropName = entry.getKey();
+                    break;
+                }
+            }
+        }
+        if (Objects.isNull(uriPropName)) {
+            uriPropName = propertyName;
+        }
+        return uriPropName;
     }
 
     private void buildTestValueGenerator(Map<PropertyModel.PropertyType, Map<String, PropertyModel>> allPropertiesInUse, Map<String, UnitTestModel> unitTestMaps) {
@@ -788,7 +999,7 @@ public class SpecVersionContainer implements Comparable<SpecVersionContainer> {
         javaClassModel.setImports(imports.toArray(new String[0]));
         //TODO: Implement
         javaClassModel.setCompareUsingProperties(false); // use properties to implement compareTo
-        javaClassModel.setCompareProperties(new ArrayList<PropertyModel>()); // List of property mustache maps to use in compare
+        javaClassModel.setCompareProperties(new ArrayList<PropertyModel>()); // List of property models to use in compare
         String toStringString;
         try {
             toStringString = generateToString(classUri, superClasses);
@@ -1426,5 +1637,53 @@ public class SpecVersionContainer implements Comparable<SpecVersionContainer> {
 
     public List<String> getWarnings() {
         return this.warnings;
+    }
+
+    public List<JavaClassModel> getJavaClasses() {
+        return this.javaClasses;
+    }
+
+    public List<JavaClassModel> getExternalJavaClasses() {
+        return this.externalJavaClasses;
+    }
+
+    public List<UnitTestModel> getUnitTestClasses() {
+        return this.unitTestClasses;
+    }
+
+    public ConstantsModel getConstantsModel() {
+        return constantsModel;
+    }
+
+    public EnumFactoryModel getEnumFactoryModel() {
+        return this.enumFactoryModel;
+    }
+
+    public ModelClassFactoryModel getModelClassFactoryModel() {
+        return this.modelClassFactoryModel;
+    }
+
+    public ModelObjectModel getModelObjectModel() {
+        return this.modelObjectModel;
+    }
+
+    public SpdxModelInfoModel getSpdxModelInfoModel() {
+        return this.spdxModelInfoModel;
+    }
+
+    public PackageInfoModel getPackageInfoModel() {
+        return this.packageInfoModel;
+    }
+
+    public IndividualFactoryModel getIndividualFactoryModel() {
+        return this.individualFactoryModel;
+    }
+
+    public MockFileModel getMockFileModel() {
+        return this.mockFileModel;
+    }
+
+    public InvalidLicenseExpressionModel getInvalidLicenseExpressionModel() {
+        return this.invalidLicenseExpressionModel;
     }
 }
