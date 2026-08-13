@@ -91,6 +91,7 @@ public class SpecVersionContainer implements Comparable<SpecVersionContainer> {
     final IndividualFactoryModel individualFactoryModel = new IndividualFactoryModel();
     final MockFileModel mockFileModel = new MockFileModel();
     final InvalidLicenseExpressionModel invalidLicenseExpressionModel = new InvalidLicenseExpressionModel();
+    final TestValuesGeneratorModel testValuesGeneratorModel = new TestValuesGeneratorModel();
 
     /**
      * Create a container for model information related to a specific version of an SPDX specification
@@ -861,6 +862,7 @@ public class SpecVersionContainer implements Comparable<SpecVersionContainer> {
         classConstants.add("EXTERNAL_CUSTOM_LICENSE_ADDITION");
 
         String classConstantString = buildClassConstant(classConstants);
+        constantsModel.setClassConstants(classConstants);
         constantsModel.setClassConstantDefinitions(classConstantDefinitions);
         constantsModel.setAllClassConstants(classConstantString);
         constantsModel.setVersionSemVer(versionSemVer);
@@ -871,7 +873,7 @@ public class SpecVersionContainer implements Comparable<SpecVersionContainer> {
      * @param classConstants class constant strings
      * @return a class constant string
      */
-    private static String buildClassConstant(List<String> classConstants) {
+    public static String buildClassConstant(List<String> classConstants) {
         StringBuilder classConstantString = new StringBuilder("static final String[] ALL_SPDX_CLASSES = {");
         int lineLen = classConstantString.length();
         classConstantString.append(classConstants.get(0));
@@ -911,7 +913,73 @@ public class SpecVersionContainer implements Comparable<SpecVersionContainer> {
     }
 
     private void buildTestValueGenerator(Map<PropertyModel.PropertyType, Map<String, PropertyModel>> allPropertiesInUse, Map<String, UnitTestModel> unitTestMaps) {
-        //TODO: Implement
+        testValuesGeneratorModel.setVersionSuffix(JavaCodeGenerator.VERSION_SUFFIX);
+        testValuesGeneratorModel.setVersionSemVer(versionSemVer);
+        Set<String> requiredImports = new HashSet<>();
+        for (Map.Entry<PropertyModel.PropertyType, Map<String, PropertyModel>> entry:allPropertiesInUse.entrySet()) {
+            List<PropertyModel> propertiesForType = new ArrayList<>();
+            for (PropertyModel propertyMap:entry.getValue().values()) {
+                propertiesForType.add(propertyMap);
+                String typeUri = propertyMap.getTypeUri();
+                if (PropertyModel.PropertyType.ENUM.equals(entry.getKey()) || PropertyModel.PropertyType.OBJECT.equals(entry.getKey()) ||
+                        PropertyModel.PropertyType.OBJECT_COLLECTION.equals(entry.getKey()) ||
+                        PropertyModel.PropertyType.ENUM_COLLECTION.equals(entry.getKey()) ||
+                        PropertyModel.PropertyType.OBJECT_SET.equals(entry.getKey()) ||
+                        PropertyModel.PropertyType.ANY_LICENSE_INFO.equals(entry.getKey()) ||
+                        PropertyModel.PropertyType.LICENSE_ADDITION.equals(entry.getKey()) ||
+                        PropertyModel.PropertyType.EXTENDABLE_LICENSE.equals(entry.getKey()) ||
+                        PropertyModel.PropertyType.ELEMENT.equals(entry.getKey())) {
+                    requiredImports.add("import "+uriToPkg(typeUri) + "." + uriToClassName.get(typeUri) +";");
+                }
+            }
+            switch (entry.getKey()) {
+                case ELEMENT: testValuesGeneratorModel.setElementProperties(propertiesForType); break;
+                case OBJECT: testValuesGeneratorModel.setObjectProperties(propertiesForType); break;
+                case LICENSE_ADDITION: testValuesGeneratorModel.setLicenseAdditionProperties(propertiesForType); break;
+                case EXTENDABLE_LICENSE: testValuesGeneratorModel.setExtendableLicenseProperties(propertiesForType); break;
+                case ANY_LICENSE_INFO: testValuesGeneratorModel.setAnyLicenseInfoProperties(propertiesForType); break;
+                case ENUM: testValuesGeneratorModel.setEnumerationProperties(propertiesForType); break;
+                case BOOLEAN: testValuesGeneratorModel.setBooleanProperties(propertiesForType); break;
+                case INTEGER: testValuesGeneratorModel.setIntegerProperties(propertiesForType); break;
+                case DOUBLE: testValuesGeneratorModel.setDoubleProperties(propertiesForType); break;
+                case STRING: testValuesGeneratorModel.setStringProperties(propertiesForType); break;
+                case OBJECT_COLLECTION: testValuesGeneratorModel.setObjectPropertyValueCollection(propertiesForType); break;
+                case STRING_COLLECTION: testValuesGeneratorModel.setStringCollection(propertiesForType); break;
+                case OBJECT_SET: testValuesGeneratorModel.setObjectPropertyValueSet(propertiesForType); break;
+                case ENUM_COLLECTION: testValuesGeneratorModel.setEnumPropertyValueCollection(propertiesForType); break;
+                default: throw new RuntimeException("Unknown prop type: "+entry.getKey());
+            }
+        }
+
+        List<UnitTestModel> classesMaps = new ArrayList<>();
+        for (Map.Entry<String, UnitTestModel> entry:unitTestMaps.entrySet()) {
+            classesMaps.add(entry.getValue());
+            boolean isAbstract = entry.getValue().isAbstract();
+            if (isAbstract) {
+                requiredImports.add("import "+uriToPkg(entry.getKey()) + "." + uriToClassName.get(entry.getKey()) + ";");
+            }
+            requiredImports.add("import "+uriToPkg(entry.getKey()) + "." + uriToClassName.get(entry.getKey()) +
+                    "." + uriToClassName.get(entry.getKey()) + "Builder;");
+        }
+        testValuesGeneratorModel.setClassesForBuilders(classesMaps);
+        requiredImports.add("import java.util.Arrays;");
+        requiredImports.add("import org.spdx.core.IModelCopyManager;");
+        requiredImports.add("import org.spdx.core.InvalidSPDXAnalysisException;");
+        requiredImports.add("import org.spdx.core.ModelRegistry;");
+        requiredImports.add("import org.spdx.library.model."+JavaCodeGenerator.VERSION_SUFFIX+".core.CreationInfo;");
+        requiredImports.add("import org.spdx.library.model."+JavaCodeGenerator.VERSION_SUFFIX+".core.RelationshipCompleteness;");
+        requiredImports.add("import org.spdx.library.model."+JavaCodeGenerator.VERSION_SUFFIX+".core.RelationshipType;");
+        requiredImports.add("import org.spdx.library.model."+JavaCodeGenerator.VERSION_SUFFIX+".core.Agent.AgentBuilder;");
+        requiredImports.add("import org.spdx.storage.IModelStore;");
+        requiredImports.add("import org.spdx.storage.IModelStore.IdType;");
+        requiredImports.add("import java.util.List;");
+        requiredImports.add("import java.util.Objects;");
+        requiredImports.add("import java.util.Collection;");
+        requiredImports.add("import java.util.Map;");
+        requiredImports.add("import java.util.HashMap;");
+        List<String> importList = new ArrayList<>(requiredImports);
+        Collections.sort(importList);
+        testValuesGeneratorModel.setImports(importList);
     }
 
     private String buildDataForClass(String classUri, String name, ArrayList<PropertyShape> propertyShapes,
@@ -924,7 +992,7 @@ public class SpecVersionContainer implements Comparable<SpecVersionContainer> {
 
         Set<String> requiredImports = new HashSet<>();
         JavaClassModel javaClassModel = new JavaClassModel();
-
+        javaClassModel.setClassUri(classUri);
         javaClassModel.setAbstract(isAbstract);
         javaClassModel.setClassName(name);
         javaClassModel.setClassProfile(uriToProfile(classUri));
@@ -1685,5 +1753,9 @@ public class SpecVersionContainer implements Comparable<SpecVersionContainer> {
 
     public InvalidLicenseExpressionModel getInvalidLicenseExpressionModel() {
         return this.invalidLicenseExpressionModel;
+    }
+
+    public TestValuesGeneratorModel getTestValuesGeneratorModel() {
+        return this.testValuesGeneratorModel;
     }
 }

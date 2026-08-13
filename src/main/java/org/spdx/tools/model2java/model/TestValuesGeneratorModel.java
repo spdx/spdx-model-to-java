@@ -2,14 +2,14 @@ package org.spdx.tools.model2java.model;
 
 import java.util.List;
 
-public class BaseClassModel extends BaseModel {
-    private String className;
-    private String classProfile;
+public class TestValuesGeneratorModel {
+    private String versionSuffix;
+    private String versionSemVer;
     private List<PropertyModel> elementProperties;
     private List<PropertyModel> objectProperties;
-    private List<PropertyModel> anyLicenseInfoProperties;
     private List<PropertyModel> licenseAdditionProperties;
     private List<PropertyModel> extendableLicenseProperties;
+    private List<PropertyModel> anyLicenseInfoProperties;
     private List<PropertyModel> enumerationProperties;
     private List<PropertyModel> booleanProperties;
     private List<PropertyModel> integerProperties;
@@ -19,26 +19,20 @@ public class BaseClassModel extends BaseModel {
     private List<PropertyModel> stringCollection;
     private List<PropertyModel> objectPropertyValueSet;
     private List<PropertyModel> enumPropertyValueCollection;
-    private boolean suppressUnchecked;
-    private String year;
-    private String pkgName;
-    private String classComments;
-    private String superClass;
-    private String[] imports;
-    private String toStringName;
-    private String classUri;
+    private List<UnitTestModel> classesForBuilders;
+    private List<String> imports;
 
-    public String getClassName() {
-        return className;
+    public String getVersionSuffix() {
+        return versionSuffix;
     }
-    public void setClassName(String className) {
-        this.className = className;
+    public void setVersionSuffix(String versionSuffix) {
+        this.versionSuffix = versionSuffix;
     }
-    public String getClassProfile() {
-        return classProfile;
+    public String getVersionSemVer() {
+        return versionSemVer;
     }
-    public void setClassProfile(String classProfile) {
-        this.classProfile = classProfile;
+    public void setVersionSemVer(String versionSemVer) {
+        this.versionSemVer = versionSemVer;
     }
     public List<PropertyModel> getElementProperties() {
         return elementProperties;
@@ -52,12 +46,6 @@ public class BaseClassModel extends BaseModel {
     public void setObjectProperties(List<PropertyModel> objectProperties) {
         this.objectProperties = objectProperties;
     }
-    public List<PropertyModel> getAnyLicenseInfoProperties() {
-        return anyLicenseInfoProperties;
-    }
-    public void setAnyLicenseInfoProperties(List<PropertyModel> anyLicenseInfoProperties) {
-        this.anyLicenseInfoProperties = anyLicenseInfoProperties;
-    }
     public List<PropertyModel> getLicenseAdditionProperties() {
         return licenseAdditionProperties;
     }
@@ -69,6 +57,12 @@ public class BaseClassModel extends BaseModel {
     }
     public void setExtendableLicenseProperties(List<PropertyModel> extendableLicenseProperties) {
         this.extendableLicenseProperties = extendableLicenseProperties;
+    }
+    public List<PropertyModel> getAnyLicenseInfoProperties() {
+        return anyLicenseInfoProperties;
+    }
+    public void setAnyLicenseInfoProperties(List<PropertyModel> anyLicenseInfoProperties) {
+        this.anyLicenseInfoProperties = anyLicenseInfoProperties;
     }
     public List<PropertyModel> getEnumerationProperties() {
         return enumerationProperties;
@@ -124,48 +118,16 @@ public class BaseClassModel extends BaseModel {
     public void setEnumPropertyValueCollection(List<PropertyModel> enumPropertyValueCollection) {
         this.enumPropertyValueCollection = enumPropertyValueCollection;
     }
-    public boolean isSuppressUnchecked() {
-        return suppressUnchecked;
+    public List<UnitTestModel> getClassesForBuilders() {
+        return classesForBuilders;
     }
-    public void setSuppressUnchecked(boolean suppressUnchecked) {
-        this.suppressUnchecked = suppressUnchecked;
+    public void setClassesForBuilders(List<UnitTestModel> classesForBuilders) {
+        this.classesForBuilders = classesForBuilders;
     }
-    public String getYear() {
-        return year;
-    }
-    public void setYear(String year) {
-        this.year = year;
-    }
-    public String getPkgName() {
-        return pkgName;
-    }
-    public void setPkgName(String pkgName) {
-        this.pkgName = pkgName;
-    }
-    public String getClassComments() {
-        return classComments;
-    }
-    public void setClassComments(String classComments) {
-        this.classComments = classComments;
-    }
-    public String getSuperClass() {
-        return superClass;
-    }
-    public void setSuperClass(String superClass) {
-        this.superClass = superClass;
-    }
-    public String[] getImports() {
+    public List<String> getImports() {
         return imports;
     }
-    public void setImports(String[] imports) {
+    public void setImports(List<String> imports) {
         this.imports = imports;
     }
-    public String getToStringName() {
-        return toStringName;
-    }
-    public void setToStringName(String toStringName) {
-        this.toStringName = toStringName;
-    }
-    public void setClassUri(String classUri) { this.classUri = classUri; }
-    public String getClassUri() { return this.classUri; }
 }

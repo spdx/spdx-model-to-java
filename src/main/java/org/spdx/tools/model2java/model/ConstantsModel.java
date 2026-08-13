@@ -11,6 +11,7 @@ public class ConstantsModel extends BaseModel {
     private List<String> classConstantDefinitions;
     private String allClassConstants;
     private String versionSemVer;
+    private List<String> classConstants;
 
     public String getVersionSuffix() {
         return versionSuffix;
@@ -41,5 +42,13 @@ public class ConstantsModel extends BaseModel {
     }
     public void setVersionSemVer(String versionSemVer) {
         this.versionSemVer = versionSemVer;
+    }
+
+    public void setClassConstants(List<String> classConstants) {
+        this.classConstants = classConstants;
+    }
+
+    public List<String> getClassConstants() {
+        return this.classConstants;
     }
 }
