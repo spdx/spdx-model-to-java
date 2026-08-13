@@ -9,6 +9,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.reflect.InvocationTargetException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -28,7 +29,7 @@ public class JavaCodeGeneratorTest  extends TestCase {
         super.tearDown();
     }
 
-    public void testGenerateOneModel() throws IOException, ShaclToJavaException {
+    public void testGenerateOneModel() throws IOException, ShaclToJavaException, InvocationTargetException, IllegalAccessException {
         File tempDir = Files.createTempDirectory("spdx_test").toFile();
         try {
             try (InputStream is = new FileInputStream(MODEL_FILE_PATH)) {
@@ -45,7 +46,7 @@ public class JavaCodeGeneratorTest  extends TestCase {
                         .resolve("spdx")
                         .resolve("library")
                         .resolve("model")
-                        .resolve("v3_0_1")
+                        .resolve("v3")
                         .resolve("ai");
                 File classFile = aIPath.resolve("AIPackage.java").toFile();
                 File enumFile = aIPath.resolve("SafetyRiskAssessmentType.java").toFile();
@@ -59,7 +60,7 @@ public class JavaCodeGeneratorTest  extends TestCase {
         }
     }
 
-    public void testGenerateTwoModels() throws IOException, ShaclToJavaException {
+    public void testGenerateTwoModels() throws IOException, ShaclToJavaException, InvocationTargetException, IllegalAccessException {
         File tempDir = Files.createTempDirectory("spdx_test").toFile();
         try {
             SpecVersionContainer svc301;
@@ -84,7 +85,7 @@ public class JavaCodeGeneratorTest  extends TestCase {
                     .resolve("spdx")
                     .resolve("library")
                     .resolve("model")
-                    .resolve("v3_0_1")
+                    .resolve("v3")
                     .resolve("ai");
             File classFile = aIPath.resolve("AIPackage.java").toFile();
             File enumFile = aIPath.resolve("SafetyRiskAssessmentType.java").toFile();
