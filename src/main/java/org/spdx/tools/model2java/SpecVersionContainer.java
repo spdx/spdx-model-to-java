@@ -448,9 +448,9 @@ public class SpecVersionContainer implements Comparable<SpecVersionContainer> {
      * @param propertyShape property shape for the property
      * @return the SuperClassRequired balue based on the constraints
      */
-    private ShaclToJava.SuperclassRequired determineSuperRequired(List<OntClass> superClasses,
+    private SuperclassRequired determineSuperRequired(List<OntClass> superClasses,
                                                                   PropertyShape propertyShape) {
-        ShaclToJava.SuperclassRequired retval = ShaclToJava.SuperclassRequired.NONE;
+        SuperclassRequired retval = SuperclassRequired.NONE;
         for (OntClass ontClass:superClasses) {
             Shape classShape = shapeMap.get(ontClass.asNode());
             if (Objects.nonNull(classShape)) {
@@ -468,17 +468,17 @@ public class SpecVersionContainer implements Comparable<SpecVersionContainer> {
                         }
                         if (Objects.nonNull(minCardinality) && minCardinality > 0) {
                             // required
-                            if (ShaclToJava.SuperclassRequired.NONE.equals(retval)) {
-                                retval = ShaclToJava.SuperclassRequired.YES;
-                            } else if (ShaclToJava.SuperclassRequired.NO.equals(retval)) {
-                                retval = ShaclToJava.SuperclassRequired.BOTH;
+                            if (SuperclassRequired.NONE.equals(retval)) {
+                                retval = SuperclassRequired.YES;
+                            } else if (SuperclassRequired.NO.equals(retval)) {
+                                retval = SuperclassRequired.BOTH;
                             }
                         } else {
                             // not required
-                            if (ShaclToJava.SuperclassRequired.NONE.equals(retval)) {
-                                retval = ShaclToJava.SuperclassRequired.NO;
-                            } else if (ShaclToJava.SuperclassRequired.YES.equals(retval)) {
-                                retval = ShaclToJava.SuperclassRequired.BOTH;
+                            if (SuperclassRequired.NONE.equals(retval)) {
+                                retval = SuperclassRequired.NO;
+                            } else if (SuperclassRequired.YES.equals(retval)) {
+                                retval = SuperclassRequired.BOTH;
                             }
                         }
                     }
@@ -806,7 +806,7 @@ public class SpecVersionContainer implements Comparable<SpecVersionContainer> {
         }
         constantsModel.setVersionSuffix(JavaCodeGenerator.VERSION_SUFFIX);
         List<NamespaceModel> namespaceList = new ArrayList<>();
-        List<String> namespaceUris = new ArrayList<String>(namespaceToPropUri.keySet());
+        List<String> namespaceUris = new ArrayList<>(namespaceToPropUri.keySet());
         Collections.sort(namespaceUris);
         for (String namespaceUri:namespaceUris) {
             NamespaceModel namespaceModel = new NamespaceModel();
@@ -1063,11 +1063,11 @@ public class SpecVersionContainer implements Comparable<SpecVersionContainer> {
         } catch(IOException ex) {
             throw new ShaclToJavaException("I/O error converting Mustache template for hashOverride", ex);
         }
-        List<String> imports = buildImports(new ArrayList<String>(requiredImports));
+        List<String> imports = buildImports(new ArrayList<>(requiredImports));
         javaClassModel.setImports(imports.toArray(new String[0]));
         //TODO: Implement
         javaClassModel.setCompareUsingProperties(false); // use properties to implement compareTo
-        javaClassModel.setCompareProperties(new ArrayList<PropertyModel>()); // List of property models to use in compare
+        javaClassModel.setCompareProperties(new ArrayList<>()); // List of property models to use in compare
         String toStringString;
         try {
             toStringString = generateToString(classUri, superClasses);
@@ -1100,7 +1100,7 @@ public class SpecVersionContainer implements Comparable<SpecVersionContainer> {
         requiredImports.add("import java.util.Arrays;");
         requiredImports.add("import org.spdx.core.ModelRegistry;");
         requiredImports.add("import org.spdx.library.model."+JavaCodeGenerator.VERSION_SUFFIX+".TestValuesGenerator;");
-        imports = buildImports(new ArrayList<String>(requiredImports));
+        imports = buildImports(new ArrayList<>(requiredImports));
         unitTestModel.setImports(imports.toArray(new String[0]));
         unitTestModels.put(classUri, unitTestModel);
         try {
@@ -1536,10 +1536,10 @@ public class SpecVersionContainer implements Comparable<SpecVersionContainer> {
         String classNamespace = uriToNamespaceUri(classUri);
         boolean inSuperClass = inSuperClass(superClasses, propertyShape);
         retval.setSuperSetter(inSuperClass);
-        ShaclToJava.SuperclassRequired superRequired = inSuperClass ? determineSuperRequired(superClasses, propertyShape) :
-                ShaclToJava.SuperclassRequired.NONE;
+        SuperclassRequired superRequired = inSuperClass ? determineSuperRequired(superClasses, propertyShape) :
+                SuperclassRequired.NONE;
         boolean nonOptional = required && nameSpace.equals(classNamespace) &&
-                (ShaclToJava.SuperclassRequired.YES.equals(superRequired) || ShaclToJava.SuperclassRequired.NONE.equals(superRequired)); // we can't override an optional
+                (SuperclassRequired.YES.equals(superRequired) || SuperclassRequired.NONE.equals(superRequired)); // we can't override an optional
         retval.setNonOptional(nonOptional);
         boolean hasConstraint = required;
         if (Objects.nonNull(pattern)) {

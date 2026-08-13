@@ -111,4 +111,22 @@ public class JavaCodeGeneratorTest  extends TestCase {
         return tempDir.delete();
     }
 
+    public void testConvertToJavaCLI() throws IOException {
+        File tempDir = Files.createTempDirectory("spdx_test").toFile();
+        try {
+            assertEquals(0, JavaCodeGeneratorCli.run(new String[] {MODEL_DIR_PATH, tempDir.getAbsolutePath()}));
+            Path modelPath = tempDir.toPath().resolve("src")
+                    .resolve("main")
+                    .resolve("java")
+                    .resolve("org")
+                    .resolve("spdx")
+                    .resolve("library")
+                    .resolve("model");
+            File v3Dir = modelPath.resolve("v3").toFile();
+            assertTrue(v3Dir.exists());
+        } finally {
+            assertTrue(deleteDirectory(tempDir));
+        }
+    }
+
 }

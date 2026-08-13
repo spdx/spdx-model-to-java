@@ -9,8 +9,8 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 
@@ -28,7 +28,7 @@ import org.apache.jena.rdf.model.RDFNode;
  * <p/>
  * Generates Java code from a SHACL file specifically for SPDX version 3+
  * <p/>
- * Usage: ShaclToJavaCli inputdirectory outputdirectory
+ * Usage: JavaCodeGeneratorCli inputdirectory outputdirectory
  * <p/>
  * The input directory contains model files in TTL format for all versions to be generated
  * <p/>
@@ -36,7 +36,7 @@ import org.apache.jena.rdf.model.RDFNode;
  * <p/>
  * @author Gary O'Neall
  */
-public class ShaclToJavaCli {
+public class JavaCodeGeneratorCli {
 
 	/**
 	 * @param args args[0] input directory args[1] output directory
@@ -81,54 +81,39 @@ public class ShaclToJavaCli {
 			usage();
 			return -1;
 		}
-		List<OntModel> models = new ArrayList<>();
+		List<SpecVersionContainer> specVersions = new ArrayList<>();
 		for (File f : Objects.requireNonNull(inputDir.listFiles())) {
 			try (InputStream is = new FileInputStream(f)) {
 				OntModel model = ModelFactory.createOntologyModel(OntModelSpec.OWL_MEM);
 				model.read(is, "", "Turtle");
-				models.add(model);
+				specVersions.add(new SpecVersionContainer(model, getSpecVersion(model)));
 			} catch (IOException e) {
 				System.out.println("I/O Error reading ontology file");
 				usage();
 				return -1;
 			}
 		}
-		models.sort(new Comparator<OntModel>() {
-			@Override
-			public int compare(OntModel o1, OntModel o2) {
-				return(getSpecVersion(o1).compareTo(getSpecVersion(o2)));
-			}
-		});
-		List<String> warnings = new ArrayList<>();
-		for (int i = 0; i < models.size(); i++) {
-			try {
-				String specVersion = getSpecVersion(models.get(i));
-				String[] specVersionParts = specVersion.split("\\.");
-				String versionForPackageName = "v3_" +
-						(specVersionParts.length > 1 ? specVersionParts[1] : "0");
-				ShaclToJava s2j = new ShaclToJava(models.get(i), versionForPackageName, specVersion);
-				warnings.addAll(s2j.generate(outputDir));
-				if ("3.0.1".equals(specVersion)) {
-					// generate the package version for the 3.0.1 patch version only - for compatibility
-					// going forward, we will only generate minor versions
-					ShaclToJava s2jdot = new ShaclToJava(models.get(i), "v3_0_1", specVersion);
-					warnings.addAll(s2jdot.generate(outputDir));
-				}
-				if (i == models.size()-1) {
-					// for the latest version, create a package for the latest version
-					ShaclToJava s2jlatest = new ShaclToJava(models.get(i), "v3", specVersion);
-					warnings.addAll(s2jlatest.generate(outputDir));
-				}
-			} catch (IOException e) {
-				System.out.println("I/O Error writing output directory");
-				usage();
-				return -1;
-			} catch (ShaclToJavaException e) {
-				System.out.printf("Error generating Java code: %s%n", e.getMessage());
-				usage();
-				return -1;
-			}
-		}
+		JavaCodeGenerator jcg = new JavaCodeGenerator(specVersions);
+		List<String> warnings;
+        try {
+			warnings = jcg.generate(outputDir);
+        } catch (IOException e) {
+			System.out.println("I/O Error writing output directory");
+			usage();
+			return -1;
+        } catch (ShaclToJavaException e) {
+			System.out.printf("Error generating Java code: %s%n", e.getMessage());
+			usage();
+			return -1;
+        } catch (InvocationTargetException e) {
+			System.out.printf("Invocation Target Exception generating Java code: %s%n", e.getMessage());
+			usage();
+			return -1;
+        } catch (IllegalAccessException e) {
+			System.out.printf("Illegal Access Exception generating Java code: %s%n", e.getMessage());
+			usage();
+			return -1;
+        }
 		if (!warnings.isEmpty()) {
 			System.out.println("Shacl2Java completed with the following warnings:");
 			for (String warning:warnings) {
@@ -175,7 +160,7 @@ public class ShaclToJavaCli {
 	}
 	
 	private static void usage() {
-		System.out.println("Usage: ShaclToJavaCli inputdirectory outputdirectory");
+		System.out.println("Usage: JavaCodeGeneratorCli inputdirectory outputdirectory");
 	}
 
 }

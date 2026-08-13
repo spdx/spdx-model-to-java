@@ -33,7 +33,7 @@ public class SpdxModelInfo{{{classSuffix}}} implements ISpdxModelInfo {
 
 	@Override
 	public List<String> getSpecVersions() {
-		return Arrays.asList(new String[] {"{{{versionSemVer}}}"});
+		return Arrays.asList(new String[] { {{{supportedVersions}}} });
 	}
 
 	@Override
