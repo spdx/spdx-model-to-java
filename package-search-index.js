@@ -1,1 +1,1 @@
-packageSearchIndex = [{"l":"All Packages","u":"allpackages-index.html"},{"l":"org.spdx.tools.model2java"}];updateSearchResults();
+packageSearchIndex = [{"l":"All Packages","u":"allpackages-index.html"},{"l":"org.spdx.tools.model2java"},{"l":"org.spdx.tools.model2java.model"}];updateSearchResults();
