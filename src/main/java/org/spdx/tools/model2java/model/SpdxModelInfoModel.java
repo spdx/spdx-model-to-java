@@ -7,6 +7,7 @@ public class SpdxModelInfoModel extends BaseModel {
     private String versionSuffix;
     private String versionSemVer;
     private String classSuffix;
+    private String supportedVersions;
 
     public void setVersionSuffix(String versionSuffix) {
         this.versionSuffix = versionSuffix;
@@ -30,5 +31,13 @@ public class SpdxModelInfoModel extends BaseModel {
 
     public String getClassSuffix() {
         return this.classSuffix;
+    }
+
+    public void setSupportedVersions(String supportedVersions) {
+        this.supportedVersions = supportedVersions;
+    }
+
+    public String getSupportedVersions() {
+        return this.supportedVersions;
     }
 }

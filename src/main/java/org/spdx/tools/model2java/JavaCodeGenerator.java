@@ -26,6 +26,10 @@ public class JavaCodeGenerator {
     private final List<SpecVersionContainer> specVersions;
     private final List<String> warnings = new ArrayList<>();
 
+    /**
+     * Class to generate Java code from a list of SPDX specifications
+     * @param specVersions SpecVersionContainer which contains the model files for a given version of an SPDX Spec
+     */
     public JavaCodeGenerator(List<SpecVersionContainer> specVersions) {
         Objects.requireNonNull(specVersions);
         if (specVersions.isEmpty()) {
@@ -36,12 +40,20 @@ public class JavaCodeGenerator {
         specVersions.forEach(sv -> warnings.addAll(sv.getWarnings()));
     }
 
+    /**
+     * @param classModel Model file containing class information
+     * @return the class name qualified with the package name
+     */
     private String toQualifiedName(BaseClassModel classModel) {
         Objects.requireNonNull(classModel.getPkgName());
         Objects.requireNonNull(classModel.getClassName());
         return classModel.getPkgName() + "." + classModel.getClassName();
     }
 
+    /**
+     * @param enumModel Model file containing enumeration information
+     * @return the class name qualified with the package name
+     */
     private String toQualifiedName(EnumModel enumModel) {
         Objects.requireNonNull(enumModel.getPkgName());
         Objects.requireNonNull(enumModel.getName());
@@ -115,6 +127,11 @@ public class JavaCodeGenerator {
         return retval;
     }
 
+    /**
+     * Merge all java classes across versions
+     * @param enumClassToVersionMissingValues List of any missing values for an enum class by spec version
+     * @return all java classes merged
+     */
     List<JavaClassModel> mergeJavaClassModels(Map<String, Map<String, List<String>>> enumClassToVersionMissingValues) {
         List<JavaClassModel> retval = new ArrayList<>(this.specVersions.get(this.specVersions.size()-1).getJavaClasses());
         Map<String, Map<String, List<String>>> javaClassToVersionMissingProperties = new HashMap<>();
@@ -146,6 +163,10 @@ public class JavaCodeGenerator {
         return retval;
     }
 
+    /**
+     * Merges external java classes across different versions
+     * @return all external java classes from all spec versions
+     */
     List<JavaClassModel> mergeExternalJavaClassModels() {
         List<JavaClassModel> retval = new ArrayList<>(this.specVersions.get(this.specVersions.size()-1).getExternalJavaClasses());
         List<String> externalClassNames = retval.stream().map(this::toQualifiedName).collect(Collectors.toList());
@@ -163,6 +184,10 @@ public class JavaCodeGenerator {
         return retval;
     }
 
+    /**
+     * Merges unit tests across different versions
+     * @return all unit tests from all spec versions
+     */
     private List<UnitTestModel> mergeUnitTestModels() {
         List<UnitTestModel> retval = this.specVersions.get(this.specVersions.size()-1).getUnitTestClasses();
         List<String> unitTestNames = retval.stream().map(this::toQualifiedName).collect(Collectors.toList());
@@ -180,6 +205,12 @@ public class JavaCodeGenerator {
         return retval;
     }
 
+    /**
+     * Merges model class factories across different versions
+     * @return model class factories from all spec versions
+     * @throws InvocationTargetException on errors copying property values between model objects
+     * @throws IllegalAccessException on errors copying property values between model objects
+     */
     private ModelClassFactoryModel mergeModelClassFactories() throws InvocationTargetException, IllegalAccessException {
         ModelClassFactoryModel retval = new ModelClassFactoryModel();
         BeanUtils.copyProperties(retval, this.specVersions.get(this.specVersions.size()-1).getModelClassFactoryModel());
@@ -198,6 +229,12 @@ public class JavaCodeGenerator {
         return retval;
     }
 
+    /**
+     * Merges model objects across different versions
+     * @return model objects from all spec versions
+     * @throws InvocationTargetException on errors copying property values between model objects
+     * @throws IllegalAccessException on errors copying property values between model objects
+     */
     private ModelObjectModel mergeModelObjects() throws InvocationTargetException, IllegalAccessException {
         ModelObjectModel retval = new ModelObjectModel();
         BeanUtils.copyProperties(retval, this.specVersions.get(this.specVersions.size()-1).getModelObjectModel());
@@ -225,6 +262,12 @@ public class JavaCodeGenerator {
         return retval;
     }
 
+    /**
+     * Merges enum factory models across different versions
+     * @return enum factory models from all spec versions
+     * @throws InvocationTargetException on errors copying property values between model objects
+     * @throws IllegalAccessException on errors copying property values between model objects
+     */
     private EnumFactoryModel mergeEnumFactories() throws InvocationTargetException, IllegalAccessException {
         EnumFactoryModel retval = new EnumFactoryModel();
         BeanUtils.copyProperties(retval, this.specVersions.get(this.specVersions.size()-1).getEnumFactoryModel());
@@ -255,6 +298,99 @@ public class JavaCodeGenerator {
         return retval;
     }
 
+    /**
+     * Merges test value generators across different versions
+     * @return test value generators from all spec versions
+     * @throws InvocationTargetException on errors copying property values between model objects
+     * @throws IllegalAccessException on errors copying property values between model objects
+     * @exception ShaclToJavaException when the unable to merge properties
+     */
+    private TestValuesGeneratorModel mergeTestValuesGenerator() throws InvocationTargetException, IllegalAccessException, ShaclToJavaException {
+        TestValuesGeneratorModel retval = new TestValuesGeneratorModel();
+        BeanUtils.copyProperties(retval, this.specVersions.get(this.specVersions.size()-1).getTestValuesGeneratorModel());
+        for (int i = this.specVersions.size()-2; i >= 0; i--) {
+            TestValuesGeneratorModel testValuesGeneratorModelToMerge = this.specVersions.get(i).getTestValuesGeneratorModel();
+            List<String> missingPropertyConstantNames = mergeProperties(testValuesGeneratorModelToMerge.getBooleanProperties(),
+                    retval.getBooleanProperties());
+            missingPropertyConstantNames.addAll(mergeProperties(testValuesGeneratorModelToMerge.getElementProperties(),
+                    retval.getElementProperties()));
+            missingPropertyConstantNames.addAll(mergeProperties(testValuesGeneratorModelToMerge.getDoubleProperties(),
+                    retval.getDoubleProperties()));
+            missingPropertyConstantNames.addAll(mergeProperties(testValuesGeneratorModelToMerge.getEnumerationProperties(),
+                    retval.getEnumerationProperties()));
+            missingPropertyConstantNames.addAll(mergeProperties(testValuesGeneratorModelToMerge.getIntegerProperties(),
+                    retval.getIntegerProperties()));
+            missingPropertyConstantNames.addAll(mergeProperties(testValuesGeneratorModelToMerge.getObjectProperties(),
+                    retval.getObjectProperties()));
+            missingPropertyConstantNames.addAll(mergeProperties(testValuesGeneratorModelToMerge.getStringProperties(),
+                    retval.getStringProperties()));
+            missingPropertyConstantNames.addAll(mergeProperties(testValuesGeneratorModelToMerge.getExtendableLicenseProperties(),
+                    retval.getExtendableLicenseProperties()));
+            missingPropertyConstantNames.addAll(mergeProperties(testValuesGeneratorModelToMerge.getLicenseAdditionProperties(),
+                    retval.getLicenseAdditionProperties()));
+            missingPropertyConstantNames.addAll(mergeProperties(testValuesGeneratorModelToMerge.getAnyLicenseInfoProperties(),
+                    retval.getAnyLicenseInfoProperties()));
+            missingPropertyConstantNames.addAll(mergeProperties(testValuesGeneratorModelToMerge.getEnumPropertyValueCollection(),
+                    retval.getEnumPropertyValueCollection()));
+            missingPropertyConstantNames.addAll(mergeProperties(testValuesGeneratorModelToMerge.getObjectPropertyValueCollection(),
+                    retval.getObjectPropertyValueCollection()));
+            missingPropertyConstantNames.addAll(mergeProperties(testValuesGeneratorModelToMerge.getObjectPropertyValueSet(),
+                    retval.getObjectPropertyValueSet()));
+            missingPropertyConstantNames.addAll(mergeProperties(testValuesGeneratorModelToMerge.getStringCollection(),
+                    retval.getStringCollection()));
+
+            for (String missingPropertyConstantName:missingPropertyConstantNames) {
+                warnings.add(String.format("Latest spec version does not contain the test value property constant %s from spec version %s",
+                        missingPropertyConstantName, this.specVersions.get(i).getSpecVersion()));
+            }
+            List<String> missingImports = new ArrayList<>(testValuesGeneratorModelToMerge.getImports());
+            missingImports.removeAll(retval.getImports());
+            if (!missingImports.isEmpty()) {
+                for (String missingImport:missingImports) {
+                    retval.getImports().add(missingImport);
+                    warnings.add(String.format("Latest spec version does not contain the TestValuesFactory import %s from spec version %s",
+                            missingImport, this.specVersions.get(i).getSpecVersion()));
+                }
+            }
+        }
+        return retval;
+    }
+
+    /**
+     * Merge any additional properties in the fromProperties to the toProperties
+     * @param fromProperties properties to merge from
+     * @param toProperties resultant properties including all properties in both lists
+     * @return list of property constant names that were added
+     * @exception ShaclToJavaException when the unable to merge properties
+     */
+    private List<String> mergeProperties(List<PropertyModel> fromProperties, List<PropertyModel> toProperties) throws ShaclToJavaException {
+        if (Objects.isNull(fromProperties)) {
+            return new ArrayList<>();
+        }
+        if (Objects.isNull(toProperties) && !fromProperties.isEmpty()) {
+            throw new ShaclToJavaException("Can not merge properties int a null property list");
+        }
+        List<String> missingPropertyConstants = fromProperties.stream().map(PropertyModel::getPropertyConstant)
+                .collect(Collectors.toList());
+        List<String> currentPropertyConstants = toProperties.stream().map(PropertyModel::getPropertyConstant)
+                .collect(Collectors.toList());
+        missingPropertyConstants.removeAll(currentPropertyConstants);
+        if (!missingPropertyConstants.isEmpty()) {
+            for (PropertyModel prop : fromProperties) {
+                if (missingPropertyConstants.contains(prop.getPropertyConstant())) {
+                    toProperties.add(prop);
+                }
+            }
+        }
+        return missingPropertyConstants;
+    }
+
+    /**
+     * Merges individual factories across different versions
+     * @return individual factory model with merged data from all spec versions
+     * @throws InvocationTargetException on errors copying property values between model objects
+     * @throws IllegalAccessException on errors copying property values between model objects
+     */
     private IndividualFactoryModel mergeIndividualFactories() throws InvocationTargetException, IllegalAccessException {
         IndividualFactoryModel retval = new IndividualFactoryModel();
         BeanUtils.copyProperties(retval, this.specVersions.get(this.specVersions.size()-1).getIndividualFactoryModel());
@@ -287,6 +423,12 @@ public class JavaCodeGenerator {
         return retval;
     }
 
+    /**
+     * Merges constant models across different versions
+     * @return constants model with merged data from all spec versions
+     * @throws InvocationTargetException on errors copying property values between model objects
+     * @throws IllegalAccessException on errors copying property values between model objects
+     */
     private ConstantsModel mergeConstantsModels() throws InvocationTargetException, IllegalAccessException {
         ConstantsModel retval = new ConstantsModel();
         BeanUtils.copyProperties(retval, this.specVersions.get(this.specVersions.size()-1).getConstantsModel());
@@ -330,6 +472,22 @@ public class JavaCodeGenerator {
         return retval;
     }
 
+    private SpdxModelInfoModel mergeSpdxModelInfos() {
+        SpdxModelInfoModel retval = this.specVersions.get(this.specVersions.size()-1).getSpdxModelInfoModel();
+        List<String> supportedVersions = new ArrayList<>();
+        supportedVersions.add("\"" + retval.getVersionSemVer() + "\"");
+        for (int i = this.specVersions.size()-2; i >= 0; i--) {
+            supportedVersions.add("\"" + this.specVersions.get(i).getSpdxModelInfoModel().getVersionSemVer() + "\"");
+        }
+        retval.setSupportedVersions(String.join(",", supportedVersions));
+        return retval;
+    }
+
+    /**
+     * Collect all the property names used in the Java Class model
+     * @param javaClassModel Java class model containing lists of properties by type
+     * @return consolidated list of all property names
+     */
     private List<String> collectAllPropertyNames(JavaClassModel javaClassModel) {
         List<String> retval = new ArrayList<>();
         for (PropertyModel propertyModel: javaClassModel.getBooleanProperties()) {
@@ -387,6 +545,8 @@ public class JavaCodeGenerator {
      * @return list of warnings - if empty, all files were generated successfully
      * @throws IOException for any issues storing the files
      * @throws ShaclToJavaException errors in the ontology
+     * @throws InvocationTargetException on errors copying property values between model objects
+     * @throws IllegalAccessException on errors copying property values between model objects
      */
     public List<String> generate(File dir) throws IOException, ShaclToJavaException, InvocationTargetException, IllegalAccessException {
 
@@ -425,7 +585,7 @@ public class JavaCodeGenerator {
         writeMustacheFile(ShaclToJavaConstants.MODEL_CLASS_FACTORY_TEMPLATE, modelClassFactoryFile, mergeModelClassFactories());
         File modelObjectFile = topLevelSourcePath.resolve("ModelObjectV3.java").toFile();
         writeMustacheFile(ShaclToJavaConstants.BASE_MODEL_OBJECT_TEMPLATE, modelObjectFile, mergeModelObjects());
-        SpdxModelInfoModel spdxModelInfoModel = this.specVersions.get(this.specVersions.size()-1).getSpdxModelInfoModel();
+        SpdxModelInfoModel spdxModelInfoModel = mergeSpdxModelInfos();
         File spdxModelInfoFile = topLevelSourcePath.resolve(String.format("SpdxModelInfo%s.java", spdxModelInfoModel.getClassSuffix())).toFile();
         writeMustacheFile(ShaclToJavaConstants.MODEL_INFO_TEMPLATE, spdxModelInfoFile, spdxModelInfoModel);
         File packageInfoFile = topLevelSourcePath.resolve("package-info.java").toFile();
@@ -441,7 +601,7 @@ public class JavaCodeGenerator {
        File testValuesGeneratorFile = testPath.resolve("TestValuesGenerator.java").toFile();
        //TODO: Replace with merged test values generator
         writeMustacheFile(ShaclToJavaConstants.TEST_VALUES_GENERATOR_TEMPLATE, testValuesGeneratorFile,
-                this.specVersions.get(this.specVersions.size()-1).getTestValuesGeneratorModel());
+                mergeTestValuesGenerator());
         MockFileModel mockFileModel = this.specVersions.get(this.specVersions.size()-1).getMockFileModel();
         File mockModelStoreFile = testPath.resolve("MockModelStore.java").toFile();
         writeMustacheFile(ShaclToJavaConstants.MOCK_MODEL_STORE_TEMPLATE, mockModelStoreFile, mockFileModel);
@@ -530,7 +690,14 @@ public class JavaCodeGenerator {
         return retval;
     }
 
-    private void writeMustacheFile(String templateName, File file, Object mustacheMap) throws IOException {
+    /**
+     * Writes a file using a Mustache template
+     * @param templateName Name of Mustache template
+     * @param file File to write to
+     * @param mustacheObject Object to used to fill in the Mustache template
+     * @throws IOException on I/O error writing to file
+     */
+    private void writeMustacheFile(String templateName, File file, Object mustacheObject) throws IOException {
         String templateDirName = ShaclToJavaConstants.TEMPLATE_ROOT_PATH;
         File templateDirectoryRoot = new File(templateDirName);
         if (!(templateDirectoryRoot.exists() && templateDirectoryRoot.isDirectory())) {
@@ -538,34 +705,8 @@ public class JavaCodeGenerator {
         }
         DefaultMustacheFactory builder = new DefaultMustacheFactory(templateDirName);
         Mustache mustache = builder.compile(templateName);
-        FileOutputStream stream = null;
-        OutputStreamWriter writer = null;
-        try {
-            stream = new FileOutputStream(file);
-            writer = new OutputStreamWriter(stream, StandardCharsets.UTF_8);
-            mustache.execute(writer, mustacheMap);
-        } finally {
-            if (writer != null) {
-                writer.close();
-            }
-            if (stream != null) {
-                stream.close();
-            }
+        try (FileOutputStream stream = new FileOutputStream(file); OutputStreamWriter writer = new OutputStreamWriter(stream, StandardCharsets.UTF_8)) {
+            mustache.execute(writer, mustacheObject);
         }
     }
-
-
-    private void generateUnitTest(String classUri, UnitTestModel stringObjectMap) {
-        //TODO: Implement
-    }
-
-    private void generateExternalJavaClass(String classUri, JavaClassModel stringObjectMap) {
-        //TODO: Implement
-    }
-
-
-    private void generateJavaClass(String classUri, JavaClassModel stringObjectMap) {
-        //TODO: Implement
-    }
-
 }
