@@ -49,7 +49,21 @@ public class External{{{className}}} extends {{{className}}}  implements Individ
 	 */
 	public External{{{className}}}(IModelStore modelStore, String objectUri, @Nullable IModelCopyManager copyManager,
 			boolean create, String idPrefix) throws InvalidSPDXAnalysisException {
-			super(modelStore, objectUri, copyManager, create, idPrefix);
+			super(modelStore, objectUri, copyManager, create, SpdxConstantsV3.MODEL_SPEC_VERSION, idPrefix);
+	}
+
+	/**
+	 * @param modelStore Generally ignored for external
+	 * @param objectUri URI for the external element
+	 * @param copyManager Generally ignored for external
+	 * @param create Generally ignored for external
+	 * @param specVersion Version of the SPDX specification
+	 * @param idPrefix Generally ignored for external
+	 * @throws InvalidSPDXAnalysisException when unable to create the External{{{className}}}
+	 */
+	public External{{{className}}}(IModelStore modelStore, String objectUri, @Nullable IModelCopyManager copyManager,
+			boolean create, String specVersion, String idPrefix) throws InvalidSPDXAnalysisException {
+			super(modelStore, objectUri, copyManager, create, specVersion, idPrefix);
 	}
 
 	/**

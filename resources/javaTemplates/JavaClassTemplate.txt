@@ -53,7 +53,7 @@ public {{#abstract}}abstract{{/abstract}} class {{{className}}} extends {{{super
 				true, DefaultModelStore.getDefaultDocumentUri() + "#");
 	}
 
-	/**
+    /**
 	 * Create the {{{className}}} specifying the modelStore, objectUri and optional copyManager
 	 * @param modelStore Model store where the {{{className}}} is to be stored
 	 * @param objectUri URI or anonymous ID for the {{{className}}}
@@ -62,12 +62,27 @@ public {{#abstract}}abstract{{/abstract}} class {{{className}}} extends {{{super
 	 * @param idPrefix - prefix to be used when generating new SPDX IDs
 	 * @throws InvalidSPDXAnalysisException when unable to create the {{{className}}}
 	 */
+	public {{{className}}}(IModelStore modelStore, String objectUri, @Nullable IModelCopyManager copyManager,
+			boolean create, String idPrefix) throws InvalidSPDXAnalysisException {
+			this(modelStore, objectUri, copyManager, create, SpdxConstantsV3.MODEL_SPEC_VERSION, idPrefix);
+	}
+
+	/**
+	 * Create the {{{className}}} specifying the modelStore, objectUri and optional copyManager
+	 * @param modelStore Model store where the {{{className}}} is to be stored
+	 * @param objectUri URI or anonymous ID for the {{{className}}}
+	 * @param copyManager Copy manager for the {{{className}}} - can be null if copying is not required
+	 * @param create true if {{{className}}} is to be created
+	 * @param specVersion version of the SPDX specification
+	 * @param idPrefix - prefix to be used when generating new SPDX IDs
+	 * @throws InvalidSPDXAnalysisException when unable to create the {{{className}}}
+	 */
 	 {{#suppressUnchecked}}
 	 @SuppressWarnings("unchecked")
 	 {{/suppressUnchecked}}
 	public {{{className}}}(IModelStore modelStore, String objectUri, @Nullable IModelCopyManager copyManager,
-			boolean create, String idPrefix) throws InvalidSPDXAnalysisException {
-		super(modelStore, objectUri, copyManager, create, idPrefix);
+			boolean create, String specVersion, String idPrefix) throws InvalidSPDXAnalysisException {
+		super(modelStore, objectUri, copyManager, create, specVersion, idPrefix);
 		{{#objectPropertyValueCollection}}
 		{{^superSetter}}
 		if (!isExternal()) {

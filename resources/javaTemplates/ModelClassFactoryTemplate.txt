@@ -61,13 +61,14 @@ public class SpdxModelClassFactoryV3 {
 	 * @param objectUri URI for the object
 	 * @param type SPDX class or type
 	 * @param copyManager if non-null, allows for copying of properties from other model stores or document URI's when referenced
+	 * @param specVersion SPDX specification version
 	 * @param create if true, create the model object if it does not already exist
 	 * @param idPrefix optional prefix used for any new object URI's created in support of this model object
 	 * @return a ModelObject of type type
 	 * @throws InvalidSPDXAnalysisException
 	 */
 	public static ModelObjectV3 getModelObject(IModelStore modelStore, String objectUri,
-			String type, @Nullable IModelCopyManager copyManager, boolean create, String idPrefix) throws InvalidSPDXAnalysisException {
+			String type, @Nullable IModelCopyManager copyManager, String specVersion, boolean create, String idPrefix) throws InvalidSPDXAnalysisException {
 		Objects.requireNonNull(modelStore, "Model store can not be null");
 		Objects.requireNonNull(objectUri, "The object URI most not be null");
 		
@@ -79,8 +80,8 @@ public class SpdxModelClassFactoryV3 {
 			throw new InvalidSPDXAnalysisException("Can not instantiate an abstract class for the SPDX version 3 type: "+type);
 		}
 		try {
-			Constructor<?> con = clazz.getDeclaredConstructor(IModelStore.class, String.class, IModelCopyManager.class, boolean.class, String.class);
-			return (ModelObjectV3)con.newInstance(modelStore, objectUri, copyManager, create, idPrefix);
+			Constructor<?> con = clazz.getDeclaredConstructor(IModelStore.class, String.class, IModelCopyManager.class, boolean.class, String.class, String.class);
+			return (ModelObjectV3)con.newInstance(modelStore, objectUri, copyManager, create, specVersion, idPrefix);
 		} catch (NoSuchMethodException e) {
 			throw new InvalidSPDXAnalysisException("Could not create the model object SPDX version 3 type: "+type);
 		} catch (SecurityException e) {

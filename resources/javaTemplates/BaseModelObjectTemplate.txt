@@ -50,8 +50,17 @@ public abstract class ModelObjectV3 extends CoreModelObject {
 	 * @throws InvalidSPDXAnalysisException
 	 */
 	public ModelObjectV3(String objectUri) throws InvalidSPDXAnalysisException {
-		super(objectUri, SpdxConstantsV3.MODEL_SPEC_VERSION);
+		this(objectUri, SpdxConstantsV3.MODEL_SPEC_VERSION);
 	}
+
+    /**
+     * @param objectUri
+     * @param specVersion
+     * @throws InvalidSPDXAnalysisException
+     */
+    public ModelObjectV3(String objectUri, String specVersion) throws InvalidSPDXAnalysisException {
+        super(objectUri, specVersion);
+    }
 
 	/**
 	 * @param modelStore
@@ -64,8 +73,23 @@ public abstract class ModelObjectV3 extends CoreModelObject {
 	public ModelObjectV3(IModelStore modelStore, String objectUri,
 			IModelCopyManager copyManager, boolean create, @Nullable String idPrefix)
 			throws InvalidSPDXAnalysisException {
-		super(modelStore, objectUri, copyManager, create, SpdxConstantsV3.MODEL_SPEC_VERSION, idPrefix);
+		this(modelStore, objectUri, copyManager, create, SpdxConstantsV3.MODEL_SPEC_VERSION, idPrefix);
 	}
+
+    /**
+     * @param modelStore
+     * @param objectUri
+     * @param copyManager
+     * @param create
+     * @param specVersion
+     * @param idPrefix prefix to be used when generating new SPDX IDs
+     * @throws InvalidSPDXAnalysisException
+     */
+    public ModelObjectV3(IModelStore modelStore, String objectUri,
+            IModelCopyManager copyManager, boolean create, String specVersion, @Nullable String idPrefix)
+            throws InvalidSPDXAnalysisException {
+        super(modelStore, objectUri, copyManager, create, specVersion, idPrefix);
+    }
 
 	/**
 	 * @param builder
@@ -73,8 +97,18 @@ public abstract class ModelObjectV3 extends CoreModelObject {
 	 */
 	public ModelObjectV3(ModelObjectV3Builder builder)
 			throws InvalidSPDXAnalysisException {
-		super(builder, SpdxConstantsV3.MODEL_SPEC_VERSION);
+		this(builder, Objects.isNull(builder.getModelSpecVersion()) ? SpdxConstantsV3.MODEL_SPEC_VERSION : builder.getModelSpecVersion());
 	}
+
+    /**
+     * @param builder
+     * @param specVersion
+     * @throws InvalidSPDXAnalysisException
+     */
+    public ModelObjectV3(ModelObjectV3Builder builder, String specVersion)
+            throws InvalidSPDXAnalysisException {
+        super(builder, specVersion);
+    }
 
 	/**
 	 * @param specVersion Version of the SPDX spec to verify against
@@ -250,15 +284,36 @@ public abstract class ModelObjectV3 extends CoreModelObject {
 
 	public static class ModelObjectV3Builder extends CoreModelObjectBuilder {
 
+		private String modelSpecVersion = null;
+
 		/**
 		 * @param modelStore
 		 * @param objectUri
 		 * @param copyManager
 		 */
 		public ModelObjectV3Builder(IModelStore modelStore, String objectUri,
-				IModelCopyManager copyManager) {
+									IModelCopyManager copyManager) {
 			super(modelStore, objectUri, copyManager);
 		}
-		
+
+		/**
+		 * @param modelStore
+		 * @param objectUri
+		 * @param copyManager
+		 * @param specVersion
+		 */
+		public ModelObjectV3Builder(IModelStore modelStore, String objectUri,
+				IModelCopyManager copyManager, String specVersion) {
+			this(modelStore, objectUri, copyManager);
+			this.modelSpecVersion = specVersion;
+		}
+
+		public String getModelSpecVersion() {
+			return this.modelSpecVersion;
+		}
+
+		public void setModelSpecVersion(String modelSpecVersion) {
+			this.modelSpecVersion = modelSpecVersion;
+		}
 	}
 }
