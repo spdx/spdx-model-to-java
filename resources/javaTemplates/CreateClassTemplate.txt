@@ -6,5 +6,7 @@
 	 */
 	public {{{className}}}.{{{className}}}Builder create{{{className}}}(String objectUri) throws InvalidSPDXAnalysisException {
 		Objects.requireNonNull(objectUri, "objectUri can not be null");
-		return new {{{className}}}.{{{className}}}Builder(this, objectUri);
+		{{{className}}}.{{{className}}}Builder retval = new {{{className}}}.{{{className}}}Builder(this, objectUri);
+		retval.setModelSpecVersion(specVersion);
+		return retval;
 	}

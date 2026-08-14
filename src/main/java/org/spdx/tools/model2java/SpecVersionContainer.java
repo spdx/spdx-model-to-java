@@ -1015,8 +1015,8 @@ public class SpecVersionContainer implements Comparable<SpecVersionContainer> {
         for (List<PropertyModel> props:propertyMap.values()) {
             numProperties += props.size();
         }
+        requiredImports.add("import org.spdx.library.model."+JavaCodeGenerator.VERSION_SUFFIX+".SpdxConstantsV3;");
         if (numProperties > 0) {
-            requiredImports.add("import org.spdx.library.model."+JavaCodeGenerator.VERSION_SUFFIX+".SpdxConstantsV3;");
             requiredImports.add("import java.util.Optional;");
         }
         javaClassModel.setElementProperties(propertyMap.get(PropertyModel.PropertyType.ELEMENT));

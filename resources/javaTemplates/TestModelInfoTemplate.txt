@@ -63,7 +63,7 @@ public class TestSpdxModelInfo implements ISpdxModelInfo {
 				throw new InvalidSPDXAnalysisException("Error creating Mock class");
 			}
 		} else {
-			return SpdxModelClassFactoryV3.getModelObject(modelStore, objectUri, type, copyManager, create, idPrefix);
+			return SpdxModelClassFactoryV3.getModelObject(modelStore, objectUri, type, copyManager, specVersion, create, idPrefix);
 		}
 	}
 

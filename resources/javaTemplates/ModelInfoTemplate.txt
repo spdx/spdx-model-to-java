@@ -46,7 +46,7 @@ public class SpdxModelInfo{{{classSuffix}}} implements ISpdxModelInfo {
 			}
 			String[] typeParts = SpdxModelClassFactoryV3.SPDX_CLASS_TO_TYPE.get(typeClass).split("\\.");
 			String type = typeParts[0] + "." + "External" + typeParts[1];
-			return SpdxModelClassFactoryV3.getModelObject(store, uri, type, copyManager, true, "");
+			return SpdxModelClassFactoryV3.getModelObject(store, uri, type, copyManager, specVersion, true, "");
 		} else {
 			return new ExternalElement(uri);
 		}
@@ -62,7 +62,7 @@ public class SpdxModelInfo{{{classSuffix}}} implements ISpdxModelInfo {
 			String objectUri, String type, IModelCopyManager copyManager,
 			String specVersion, boolean create, String idPrefix)
 			throws InvalidSPDXAnalysisException {
-		return SpdxModelClassFactoryV3.getModelObject(modelStore, objectUri, type, copyManager, create, idPrefix);
+		return SpdxModelClassFactoryV3.getModelObject(modelStore, objectUri, type, copyManager, specVersion, create, idPrefix);
 	}
 
 	@Override
