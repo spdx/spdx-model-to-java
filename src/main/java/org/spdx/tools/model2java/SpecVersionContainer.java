@@ -861,6 +861,11 @@ public class SpecVersionContainer implements Comparable<SpecVersionContainer> {
         classConstantDefinitions.add("static final String " + "EXTERNAL_CUSTOM_LICENSE_ADDITION" + " = \"ExpandedLicensing.ExternalCustomLicenseAddition\";");
         classConstants.add("EXTERNAL_CUSTOM_LICENSE_ADDITION");
 
+        // Add in constants for the InvalidLicenseExpression
+
+        classConstantDefinitions.add("static final String " + "INVALID_LICENSE_EXPRESSION" + " = \"SimpleLicensing.InvalidLicenseExpression\";");
+        classConstants.add("INVALID_LICENSE_EXPRESSION");
+
         String classConstantString = buildClassConstant(classConstants);
         constantsModel.setClassConstants(classConstants);
         constantsModel.setClassConstantDefinitions(classConstantDefinitions);
